@@ -1,5 +1,5 @@
 # starvizem
-Data Visualization of star files in cryoEM
+Data Visualization of STAR files in cryoEM
 
 ## Context
 
