@@ -32,7 +32,8 @@
     ], 
     "params": [
       {
-        "job_type": 1
+        "key":"job_type",
+        "value": 1
       }, 
       {
         "is_continue": "false"

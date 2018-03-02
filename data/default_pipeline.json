@@ -6,6 +6,8 @@
     "headers": [
       "_rlnPipeLineJobCounter"
     ], 
+    "mx": 1,
+    "my": 1,
     "name": "pipeline_general"
   }, 
   {
@@ -130,7 +132,7 @@
       "_rlnPipeLineProcessStatus"
     ], 
     "mx": 4, 
-    "my": 35, 
+    "my": 28, 
     "name": "pipeline_processes", 
     "type": "loop"
   }, 
@@ -558,7 +560,7 @@
       "_rlnPipeLineEdgeToNode"
     ], 
     "mx": 2, 
-    "my": 39, 
+    "my": 78, 
     "name": "pipeline_output_edges", 
     "type": "loop"
   }
