@@ -7,7 +7,7 @@
   <body>
     <div id="root"></div>
     <h1>Hello StarVizEM!</h1>
-    <button onclick="getData(23)">Click</button>
+    <button onclick="getData('Class2D/job006')">Class2D/job006</button>
   <script type="text/javascript">
   const getJSON = (url) => {
     return new Promise( (resolve, reject) => {
@@ -29,9 +29,9 @@
     });
   };
   
-  const getData = (jobNum) => {
+  const getData = (job) => {
     // Main
-    getJSON('/json')
+    getJSON(job)
       .then( 
         (data) => console.log(JSON.stringify(data)), 
         (status) => alert(`Something went wrong - ${status}`) 
