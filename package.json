@@ -1,0 +1,32 @@
+{
+  "name": "starvizem",
+  "version": "0.0.1",
+  "description": "Data Visualization of STAR file in cryoEM",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crazybiocomputing/starvizem.git"
+  },
+  "keywords": [
+    "cryoEM",
+    "STAR",
+    "ECMASCript",
+    "node.js"
+  ],
+  "author": "Jean-Christophe Taveau",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/crazybiocomputing/starvizem/issues"
+  },
+  "homepage": "https://github.com/crazybiocomputing/starvizem#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "path": "^0.12.7"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
