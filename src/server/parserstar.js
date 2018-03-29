@@ -1,0 +1,137 @@
+/*
+ *  StarVizEM: STAR Files Visualization in CryoEM
+ *  Copyright (C) 2018  Jean-Christophe Taveau.
+ *
+ *  This file is part of StarVizEM
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with StarVizEM.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * Authors:
+ * Jean-Christophe Taveau
+ * Pauline Bock, Cyril Dourthe, Marie Econimides, Guillaume Sotton
+ */
+
+ 'use strict';
+
+const fs = require('fs');
+
+exports.readStar = (err, data) =>{ 
+
+	const parse = (input) => {
+		//creation of variables and objets of the incoming json
+		let blocklist = [];
+		let cptblock = -1;
+		let headerslist = [];
+		let datalist = [];
+		let colonnes = [];
+
+		//data-block structure
+		let block = {
+			name : "default",
+			headers : headerslist,
+			mx : 0,
+			my : 0,
+			type : "none",
+			data : datalist
+		};
+		
+		//json structure
+		let star = {
+			comment : "Created by STARVIZEM",
+			tables : blocklist
+					};   
+
+		//deleting spaces and getting lines
+		let lines = input.replace(/^\s*\n/gm, "") .split('\n');
+		lines.forEach( (line,index) => {
+		
+			let words = line.trim().split(/\s+/); 
+
+			//data block encountered
+			if (words[0].includes('data_')){
+				//incrementation of the number of data-blocks
+				cptblock = cptblock + 1;
+				//copy of the data block structure 
+				const copiedblock = Object.assign({}, block);
+				blocklist.push(copiedblock);
+				let tableName = words[0].substr(5,words[0].length || 'None');
+				blocklist[cptblock].name = tableName; 
+				//cleaning of the lists 
+				headerslist = [];       
+				datalist= [];
+				colonnes = [];
+			}
+
+			//loop_
+			if (words[0].includes('loop_')){
+				blocklist[cptblock].type = "loop";  
+			}
+
+			//column headers
+			if (words[0].includes('_rln')){
+				let title = words[0].substr(4, words[0].length || 'None');
+				headerslist.push(title);
+				blocklist[cptblock].mx = headerslist.length;    
+				blocklist[cptblock].headers = headerslist;   
+				colonnes.push([]);                      
+			}
+			
+			//data in a table
+			if(blocklist[cptblock].type == "loop"){
+				//definition of what is not data then test it
+				let notdata = /loop_|data_|_rln|\n+|\s+/.test(words[0]);
+				if(notdata == false){
+					let nbline = blocklist[cptblock].my;
+					blocklist[cptblock].my = (nbline +1);
+					//for each column of the data block 
+					for (let col=0; col<words.length; col++){
+						colonnes[col].push(words[col]);
+						datalist = colonnes.reduce(function(a, b){
+							return a.concat(b);
+						}, []);
+						blocklist[cptblock].data = datalist;
+					}
+				}
+			}
+			//data in one line
+			else{
+				if (words[1] != null && words[1] != "" ){
+					colonnes[0].push(words[1]);
+					datalist = colonnes.reduce(function(a, b){
+						return a.concat(b);
+					}, []);
+					blocklist[cptblock].data = datalist;
+					blocklist[cptblock].my = 1;
+				}
+			}
+	});
+		return star;
+	}
+
+	//MAIN
+	if(err){throw err;}
+	
+	//Parse StarFile
+	let star = parse(data);
+	if (star.error){
+		throw star.error
+	}
+
+	// Get JSON
+	let starJSON = JSON.stringify(star);
+	return starJSON;
+}
+
+fs.readFile("default_pipeline.star", "utf-8", readStar );
