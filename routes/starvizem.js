@@ -23,48 +23,14 @@
  */
  
 
-'use script';
+'use strict';
 
 
-const fs = require('fs');
-const path = require('path');
+const {getSTAR} = require('./server/star.js');
+const {init} = require('./server/init.js');
 
-/** src/server/starvizem.js **/
-const mkdirSync = (dirPath) => {
-  try {
-    fs.mkdirSync(dirPath);
-    console.log('StarVizEM directory created.');
-  } catch (err) {
-    if (err.code !== 'EEXIST') {
-      console.log('StarVizEM directory already exists.');
-      throw err;
-    }
-  }
+module.exports = {
+  getSTAR: getSTAR,
+  init: init
 }
-
-const createPipeline = () => {
-  // TODO
-}
-
-const createMotionCorrToSTAR = () => {
-  // TODO
-}
-
-const createCTFfindToSTAR = () => {
-  // TODO
-}
-
-exports.init = () => {
-  // 1- Check if StarVizEM directory exists
-  mkdirSync(path.resolve('./StarVizEM'));
-
-
-  // 2- Check default-pipeline.star and create appropriate JSON stuff
-  createPipeline();
-
-  // 3- Create STAR files of third-party programs
-  createMotionCorrToSTAR();
-  createCTFfindToSTAR();
-}
-
 
