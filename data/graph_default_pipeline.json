@@ -1,7 +1,7 @@
 [
   {
     "ID": 0, 
-    "jobsnumber": 28, 
+    "jobsnumber": 28
   }, 
   {
     "ID": 1, 
@@ -13,8 +13,13 @@
     ], 
     "error": "", 
     "inputs": [], 
+    "name": "Import/job001/", 
     "outputs": [
-      "Import/job001/movies.star"
+      {
+        "ID": "1->mov", 
+        "name": "Import/job001/movies.star", 
+        "type": "star"
+      }
     ], 
     "path": "Import/job001/", 
     "targets": [
@@ -28,11 +33,20 @@
     "error": "", 
     "inputs": [], 
     "outputs": [
-      3
+      {
+        "ID": "2->almg", 
+        "name": "MotionCorr/job002/corrected_micrographs.star", 
+        "type": "star"
+      }, 
+      {
+        "ID": "2->almgmov", 
+        "name": "MotionCorr/job002/corrected_micrograph_movies.star", 
+        "type": "star"
+      }
     ], 
     "params": [
       {
-        "key":"job_type",
+        "key": "job_type", 
         "value": 1
       }, 
       {
@@ -176,9 +190,7 @@
     "ID": 6, 
     "alias": "Class2D/manualpick/", 
     "inputs": [], 
-    "outputs": [
-      7
-    ], 
+    "outputs": [], 
     "path": "Class2D/job006/", 
     "targets": [
       7
@@ -322,7 +334,16 @@
   {
     "ID": 21, 
     "inputs": [], 
-    "outputs": [], 
+    "outputs": [
+      {
+        "id": "21.0", 
+        "name": "MaskCreate/job021/mask.mrc"
+      }, 
+      {
+        "id": "21.1", 
+        "name": "./MaskCreate/job021/mask.mrc"
+      }
+    ], 
     "path": "MaskCreate/job021/", 
     "targets": [
       22, 
@@ -364,7 +385,23 @@
   {
     "ID": 26, 
     "inputs": [], 
-    "outputs": [], 
+    "outputs": [
+      {
+        "id": "26.0", 
+        "name": "Polish/job026/shiny.star", 
+        "type": "star"
+      }, 
+      {
+        "id": "26.1", 
+        "name": "Polish/job026/shiny_post.mrc", 
+        "type": "mrc"
+      }, 
+      {
+        "id": "26.2", 
+        "name": "./Polish/job026/shiny.star", 
+        "type": "star"
+      }
+    ], 
     "path": "Polish/job026/", 
     "targets": [
       27
@@ -373,7 +410,20 @@
   {
     "ID": 27, 
     "inputs": [], 
-    "outputs": [], 
+    "outputs": [
+      {
+        "id": "27.0", 
+        "name": "Refine3D/job027/run_data.star"
+      }, 
+      {
+        "id": "27.1", 
+        "name": "Refine3D/job027/run_class001.mrc"
+      }, 
+      {
+        "id": "27.2", 
+        "name": "Refine3D/job027/run_half1_class001_unfil.mrc"
+      }
+    ], 
     "path": "Refine3D/job027/", 
     "star": [
       "run_data.star", 
@@ -468,14 +518,20 @@
     "ID": 28, 
     "alias": "PostProcess/shiny/", 
     "inputs": [
-      "./MaskCreate/job021/mask.mrc", 
-      "./Refine3D/job027/run_half1_class001_unfil.mrc"
+      "21.0", 
+      "27.1"
     ], 
     "outputs": [
-      "PostProcess/job028/postprocess.mrc", 
-      "PostProcess/job028/postprocess_masked.mrc", 
-      "PostProcess/job028/logfile.pdf", 
-      "PostProcess/job028/flowchart.pdf"
+      {
+        "id": "28.0",
+        "type": "mrc", 
+        "name": "PostProcess/job028/postprocess.mrc"
+      }, 
+      {
+        "id": "28.1", 
+        "type": "mrc",
+        "name": "PostProcess/job028/postprocess_masked.mrc"
+      }
     ], 
     "path": "PostProcess/job028/", 
     "star": [
