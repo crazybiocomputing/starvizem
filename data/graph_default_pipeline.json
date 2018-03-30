@@ -5,6 +5,7 @@
   }, 
   {
     "ID": 1, 
+    "class": 1,
     "alias": "Import/movies/", 
     "command": [
       "echo importing...", 
@@ -28,6 +29,7 @@
   }, 
   {
     "ID": 2, 
+    "class": 2,
     "alias": "None", 
     "command": "`which relion_run_motioncorr` --i ./Import/job001/movies.star --o MotionCorr/job002/ --save_movies  --first_frame_sum 1 --last_frame_sum 16 --use_motioncor2 --bin_factor 1 --motioncor2_exe /public/EM/MOTIONCOR2/MotionCor2 --bfactor 150 --angpix 3.54 --patch_x 5 --patch_y 5 --gpu \"0\" --dose_weighting --voltage 300 --dose_per_frame 1 --preexposure 0", 
     "error": "", 
