@@ -23,8 +23,9 @@
  */
  
 
-'use script';
+'use strict';
 
+const http = require('http');
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -52,12 +53,18 @@ app.listen(port, function (error) {
   if(error) {
       console.log(error);
   }
-  console.log('Open your browser at http://localhost:3000.\nCTRL+C to exit');
+  console.log(process.env.IP);
+  console.log(this.address());
+  console.log('Open your web browser at http://localhost:3000.\nCTRL+C to exit');
 });
 
 // 3- Routes
 app.get('/',  (req, res,next) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/test',  (req, res,next) => {
+  res.sendFile(path.join(__dirname, './test/00_json.html'));
 });
 
 // Routes - JSON response
