@@ -26,6 +26,101 @@
 'use strict';
 
 const arcDiagram = (data) => {
+    
+//Width and height variables
+let width = 1600;
+let height = 500;
 
+//Create SVG
+let svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+let simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.alias; }))
+    .force("charge", d3.forceManyBody())
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+//Import data
+d3.json("graphe1.json", function(error, graph) {
+        if (error) throw error;    
+
+//Define link between jobs , doesn't work actually
+let link = svg.append("g")
+      .attr("class", "jobs")
+      .selectAll("line")
+      .data(graph.jobs)
+    .enter().append("line")
+     
+
+//Define nodes
+let node= svg.append("g")
+    .attr("class", "jobs")
+    .selectAll("g")
+    .data(graph.jobs)
+    .enter().append("g")
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout)
+
+//Define circles
+let circles = node.append("circle")
+      .attr("r", 5)
+
+//Define text
+let lables = node.append("text")
+      .text(function(d) {
+        return d.alias;
+      })
+      .attr('x', -2)
+      .attr('y', 8);          
+
+simulation
+      .nodes(graph.jobs)
+      .on("tick", ticked);  
+
+
+/*simulation.force("link")
+      .links(graph.jobs); */   
+
+//Generate coordonnate
+function ticked() {
+    link
+        .attr("x1", function(d) { return d.alias.x; })
+        .attr("y1", function(d) { return d.alias.y; })
+        .attr("x2", function(d) { return d.targets.x; })
+        .attr("y2", function(d) { return d.targets.y; });
+    
+    node
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + 220 + ")";
+        })
+           
+  }
+
+//Enhance height of the object
+function mouseover() {
+  d3.select(this).select("circle").transition()
+      .duration(750)
+      .attr("r", 16);
+}
+
+//Go back to the default size
+function mouseout() {
+  d3.select(this).select("circle").transition()
+      .duration(750)
+      .attr("r", 5);
+}  
+
+//create a canvas on the html page corresponding to the jobs that we have click on
+function click() {
+       
+}
+
+//Unselect a job
+function dblclick(d) {
+  
+}
+
+});
 };
 
