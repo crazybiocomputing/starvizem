@@ -35,6 +35,9 @@ let height = 500;
 let svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
+ 
+//Color
+let color = d3.scaleOrdinal(d3.schemeCategory20);
 
 let simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.alias; }))
@@ -65,6 +68,7 @@ let node= svg.append("g")
 //Define circles
 let circles = node.append("circle")
       .attr("r", 5)
+      .attr("fill", function(d) { return color(d.class); })
 
 //Define text
 let lables = node.append("text")
