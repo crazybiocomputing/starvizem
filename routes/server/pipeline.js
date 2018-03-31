@@ -147,7 +147,6 @@ const readPipeline = (err,data) =>{
         
       }
 
-    }
     /* error test
     for(let jb = 0; jb < joblist.length; jb++){
       let jobpath = joblist[jb].path;
