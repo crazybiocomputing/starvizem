@@ -45,7 +45,7 @@ let simulation = d3.forceSimulation()
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 //Import data
-d3.json("graphe1.json", function(error, graph) {
+let data=d3.json("graphe1.json", function(error, graph) {
         if (error) throw error;    
 
 //Define link between jobs , doesn't work actually
