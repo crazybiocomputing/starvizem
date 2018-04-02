@@ -76,7 +76,12 @@ let lables = node.append("text")
         return d.alias;
       })
       .attr('x', -2)
-      .attr('y', 8);          
+      .attr('y', 8)
+      .style("writing-mode","vertical-rl")
+      .style("text-orientation","sideways")
+      .style("fill","black") 
+      .style("font-size","10px")
+      .style("font-family", "Arial");
 
 simulation
       .nodes(graph.jobs)
