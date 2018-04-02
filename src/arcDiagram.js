@@ -122,7 +122,9 @@ function mouseout() {
 
 //create a canvas on the html page corresponding to the jobs that we have click on
 function click() {
-       
+   let svg1 = d3.select("body").append("svg")
+    .attr("width", 400)
+    .attr("height", 300);  
 }
 
 //Unselect a job
