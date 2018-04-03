@@ -2,11 +2,12 @@
 <html>
   <head>
     <meta charset="utf8">
-    <title>Sample Project</title>
+    <title>StarVizEM</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="index.css" />
   </head>
   <body>
     <div id="root"></div>
-    <h1>Hello StarVizEM!</h1>
+    <h1>StarVizEM!</h1>
     <button onclick="getData('Class2D/job006')">Class2D/job006</button>
   <script type="text/javascript">
   const getJSON = (url) => {
@@ -37,10 +38,17 @@
         (status) => alert(`Something went wrong - ${status}`) 
       );  
   };
-
-  
   </script>
+    
+    <div class="sidenav">
+        <a href="#classe2D">classe2D</a>
+        <a href="#classe3D">classe3D</a>
+        <a href="#Param">Paramètres</a>
+
+    </div>
   <script src="http://d3js.org/d3.v4.js"></script>
-  <script src="/src/arcDiagram.js"></script>  
+  <script src="/src/arcDiagram.js"></script> 
+    <script src="/src/donut.js"></script>
+    <script src="/src/barChart.js"></script>
   </body>
 </html>
