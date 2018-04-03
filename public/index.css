@@ -1,0 +1,27 @@
+body {
+    background-color: rgb(41, 81, 129);
+}
+
+h1 {
+    text-align: center;
+}
+
+.sidenav {
+    height: 90%;
+    width: 9%;
+    position: fixed;
+    top: 10%;
+    left: 0;
+    background-color: #f1f1f1;
+    overflow-x: hidden;
+    padding-top: 5%;
+}
+
+.sidenav a {
+    padding: 5%;
+    height: 7%;
+    font-size: 20px;
+    background-color: #a1a1ac;
+    color: #262d36;
+    display: list-item;
+}
