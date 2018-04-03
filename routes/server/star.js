@@ -43,7 +43,6 @@ const readSTAR = (data) => {
     let blocklist = [];
     let cptblock = -1;
     let headerslist = [];
-    let datalist = [];
     let columns = [];
 
     // Data-block structure
@@ -53,7 +52,7 @@ const readSTAR = (data) => {
       mx : 0,
       my : 0,
       type : "none",
-      data : datalist
+      data : []
     };
     
     // JSON structure
@@ -80,7 +79,6 @@ const readSTAR = (data) => {
         blocklist[cptblock].name = tableName; 
         //cleaning of the lists 
         headerslist = [];
-        datalist= [];
         columns = [];
       }
 
@@ -103,15 +101,14 @@ const readSTAR = (data) => {
         // definition of what is not data then test it
         let notdata = /loop_|data_|_rln|\n+|\s+/.test(words[0]);
         if(notdata == false){
-          let nbline = blocklist[cptblock].my;
-          blocklist[cptblock].my = (nbline +1);
+          if (words[0] != "" && words[0] != null){
+            let nbline = blocklist[cptblock].my;
+            blocklist[cptblock].my = (nbline +1);
+         }
           // for each column of the data block 
           for (let col=0; col<words.length; col++){
             columns[col].push(words[col]);
-            datalist = columns.reduce(function(a, b){
-              return a.concat(b);
-            }, []);
-            blocklist[cptblock].data = datalist;
+            blocklist[cptblock].data = columns;
           }
         }
       }
@@ -120,10 +117,7 @@ const readSTAR = (data) => {
       else {
         if (words[1] != null && words[1] != "" ) {
           columns[0].push(words[1]);
-          datalist = columns.reduce(function(a, b){
-            return a.concat(b);
-          }, []);
-          blocklist[cptblock].data = datalist;
+          blocklist[cptblock].data = columns;
           blocklist[cptblock].my = 1;
         }
       }
