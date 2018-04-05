@@ -1,0 +1,15 @@
+job_type == 7
+is_continue == false
+Submit to queue? == No
+Re-center the class averages? == Yes
+Regroup the particles? == No
+OR select from picked coords: == 
+OR select from particles.star: == 
+OR select from micrographs.star: == 
+Select classes from model.star: == ./Class3D/job018/run_it025_model.star
+Minimum dedicated cores per node: == 24
+Approximate nr of groups:  == 1
+Additional arguments: == 
+Queue submit command: == qsub
+Standard submission script: == /public/EM/RELION/relion-prerelease/bin/qsub.csh
+Queue name:  == openmpi

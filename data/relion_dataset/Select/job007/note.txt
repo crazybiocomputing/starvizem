@@ -1,0 +1,5 @@
+
+ ++++ Executing new job on Fri Jun  9 09:45:20 2017
+ ++++ with the following command(s): 
+`which relion_display` --gui --i Class2D/job006/run_it025_model.star --allow_save --fn_parts Select/job007/particles.star --fn_imgs Select/job007/class_averages.star --recenter  
+ ++++ 

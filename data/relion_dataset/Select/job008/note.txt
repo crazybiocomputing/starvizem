@@ -1,0 +1,5 @@
+
+ ++++ Executing new job on Fri Jun  9 09:46:54 2017
+ ++++ with the following command(s): 
+`which relion_manualpick` --i CtfFind/job003/micrographs_ctf.star --odir ManualPick/job004/ --pickname manualpick --allow_save  --selection Select/job008/micrographs_selected.star --scale 0.5 --sigma_contrast 3 --black 0 --white 0 --lowpass 20 --angpix 3.54 --ctf_scale 1 --particle_diameter 200  & 
+ ++++ 

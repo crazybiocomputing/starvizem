@@ -1,0 +1,5 @@
+
+ ++++ Executing new job on Fri Jun  9 13:41:50 2017
+ ++++ with the following command(s): 
+`which relion_display` --gui --i ./Class3D/job018/run_it025_model.star --allow_save --fn_parts Select/job019/particles.star 
+ ++++ 

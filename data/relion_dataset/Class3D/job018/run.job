@@ -1,0 +1,61 @@
+job_type == 9
+is_continue == false
+Has reference been CTF-corrected? == Yes
+Ignore CTFs until first peak? == No
+Have data been phase-flipped? == No
+Apply helical symmetry? == Yes
+Combine iterations through disc? == No
+Do CTF-correction? == Yes
+Do helical reconstruction? == No
+Perform local angular searches? == No
+Do local searches of symmetry? == No
+Use parallel disc I/O? == Yes
+Pre-read all particles into RAM? == Yes
+Submit to queue? == No
+Use subsets for initial updates? == No
+Mask individual particles with zeros? == Yes
+Perform image alignment? == Yes
+Continue from here:  == 
+Input images STAR file: == ./Select/job013/particles.star
+Reference mask (optional): == 
+Reference map: == InitialModel/symC1/inimodel_symD2.mrc
+Which GPUs to use: == 0:1:2:3
+Number of asymmetrical units: == 1
+Range factor of local averaging: == -1
+Helical rise search (A) - Step: == 0
+Initial helical rise (A): == 0
+Helical rise search (A) - Max: == 0
+Helical rise search (A) - Min: == 0
+Tube diameter - inner (A): == -1
+Tube diameter - outer (A): == -1
+Helical twist search (deg) - Step: == 0
+Initial helical twist (deg): == 0
+Helical twist search (deg) - Max: == 0
+Helical twist search (deg) - Min: == 0
+Central Z length (%): == 30
+Limit resolution E-step to (A):  == -1
+Initial low-pass filter (A): == 50
+Number of subset updates: == 3
+Minimum dedicated cores per node: == 24
+Number of classes: == 4
+Number of iterations: == 25
+Number of MPI procs: == 5
+Number of pooled particles: == 3
+Number of threads: == 6
+Offset search range (pix): == 5
+Offset search step (pix): == 1
+Additional arguments: == 
+Mask diameter (A): == 200
+Queue submit command: == qsub
+Standard submission script: == /public/EM/RELION/relion-prerelease/bin/qsub.csh
+Queue name:  == openmpi
+Angular search range - psi (deg): == 10
+Angular search range - tilt (deg): == 15
+Ref. map is on absolute greyscale? == Yes
+Angular sampling interval: == 7.5 degrees
+Copy particles to scratch directory: == 
+Local angular search range: == 5
+Initial subset size: == 10000
+Symmetry: == C1
+Regularisation parameter T: == 4
+Use GPU acceleration? == Yes

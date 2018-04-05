@@ -1,0 +1,20 @@
+
+ ++++ Executing new job on Fri Jun  9 10:01:22 2017
+ ++++ with the following command(s): 
+`which relion_display` --gui --i ./Sort/job012/particles_sort.star --allow_save --fn_imgs Select/job013/particles.star 
+ ++++ 
+
+ ++++ Executing new job on Fri Jun  9 10:04:43 2017
+ ++++ with the following command(s): 
+`which relion_display` --gui --i ./Sort/job012/particles_sort.star --allow_save --fn_imgs Select/job013/particles.star 
+ ++++ 
+
+ ++++ Executing new job on Fri Jun  9 10:54:12 2017
+ ++++ with the following command(s): 
+`which relion_display` --gui --i ./Sort/job012/particles_sort.star --allow_save --fn_imgs Select/job013/particles.star 
+ ++++ 
+
+ ++++ Executing new job on Fri Jun  9 10:55:03 2017
+ ++++ with the following command(s): 
+`which relion_display` --gui --i ./Sort/job012/particles_sort.star --allow_save --fn_imgs Select/job013/particles.star 
+ ++++ 

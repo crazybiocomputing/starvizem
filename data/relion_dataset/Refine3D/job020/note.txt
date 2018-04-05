@@ -1,0 +1,5 @@
+
+ ++++ Executing new job on Fri Jun  9 13:43:30 2017
+ ++++ with the following command(s): 
+`which relion_refine_mpi` --o Refine3D/job020/run --auto_refine --split_random_halves --i ./Select/job019/particles.star --ref ./Class3D/job018/run_it025_class002.mrc --ini_high 50 --dont_combine_weights_via_disc --preread_images  --pool 3 --ctf --ctf_corrected_ref --particle_diameter 200 --flatten_solvent --zero_mask --oversampling 1 --healpix_order 2 --auto_local_healpix_order 4 --offset_range 5 --offset_step 2 --sym D2 --low_resol_join_halves 40 --norm --scale  --j 6 --gpu "0:1:2:3" 
+ ++++ 

@@ -1,0 +1,5 @@
+
+ ++++ Executing new job on Tue Jun  6 15:06:49 2017
+ ++++ with the following command(s): 
+`which relion_refine` --o Class2D/job006/run --i Extract/job005/particles.star --dont_combine_weights_via_disc --preread_images  --pool 3 --ctf  --iter 25 --tau2_fudge 2 --particle_diameter 200 --K 10 --flatten_solvent  --zero_mask  --oversampling 1 --psi_step 12 --offset_range 5 --offset_step 2 --norm --scale  --j 1 --gpu "4" 
+ ++++ 
