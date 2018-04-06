@@ -47,6 +47,11 @@ svzm.init();
   // https://stackoverflow.com/questions/5778245/expressjs-how-to-structure-an-application
   // https://spinspire.com/article/creating-expressjs-environment-webpack-react-and-babel-configurations
 
+// Static
+console.log('dir ' + __dirname);
+app.use(express.static(__dirname + '/public'));
+app.use('/js',express.static(__dirname + '/src')); // Only for debug
+
 // Start server with express.js
 // Now we can listen on port 3000 and report if there are any errors in doing so.
 app.listen(port, function (error) {
@@ -58,20 +63,25 @@ app.listen(port, function (error) {
   console.log('Open your web browser at http://localhost:3000.\nCTRL+C to exit');
 });
 
+
 // 3- Routes
 app.get('/',  (req, res,next) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 app.get('/test',  (req, res,next) => {
-  res.sendFile(path.join(__dirname, './test/00_json.html'));
+  res.sendFile(path.join(__dirname, './test/00_index.html'));
+});
+
+app.get('/test/:file',  (req, res,next) => {
+  res.sendFile(path.join(__dirname, `./test/${req.params.file}`));
 });
 
 // Routes - JSON response
 app.get('/Class2D/:job/', (req, res,next) => {
   // TODO
   let id = parseInt(req.params.job.match(/\d+/g)[0]);
-  svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_model.star`).then( (data) => res.json(data), (err) => console.log(err));
+  svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_data.star`).then( (data) => res.json(data), (err) => console.log(err));
 
   // res.send(json);
   // svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_model.star`).then( (data) => data, (err) => console.log(err));

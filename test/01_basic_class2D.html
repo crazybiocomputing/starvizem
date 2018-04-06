@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Test Class2D</title>
+    <script src="../javascripts/d3.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/arcDiagram.js"></script>
+    <script src="../js/barChart.js"></script>
+    <script src="../js/donut.js"></script>
+  </head>
+  <body>
+    <h1>Tests of StarVizEM - Class2D + Text</h1>
+
+    <button onclick="createDashBoard('/Class2D/job006')">Class2D/job006</button>
+    <button onclick="createDashBoard('/Class2D/job014')">Class2D/job014</button>
+    
+    <content id="root"></content>
+    
+  <script type="text/javascript">
+  
+  const createDashBoard = (job) => {
+    // Get JSON data from web service
+    d3.json(job)
+      .then( (star) => {
+        // Create a minimal dashboard :-D
+        let root = document.getElementById('root');
+        let list = document.createElement('ul');
+        root.appendChild(list);
+        star.tables.forEach( (table) => {
+          let item = document.createElement('li');
+          item.innerHTML = `<strong>Table Name</strong>: ${table.name = (table.name === "" ? "None" : table.name)}, <strong>Columns</strong>: ${table.mx}, <strong>Rows</strong>: ${table.my}`;
+          list.appendChild(item);
+        });
+      });
+  };
+
+  </script>
+  </body>
+</html>
