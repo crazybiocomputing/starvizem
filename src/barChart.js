@@ -39,19 +39,42 @@ let data2 = d3.json("chart.json", function(error, graph) {
         .style("background-color", "rgb(180, 188, 215)")
         .style("position", "absolute")
         .style("top", "53%")
-        .style("left", "40%");
+        .style("left", "40%")
+        .append("g");
 
     //Color
     let color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    let simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2));
+    //axis
+    let x = d3.scaleLinear()
+        .range([0, width - 50]);
 
-    //Import data
+    let y = d3.scaleBand()
+        .range([height - 50, 40])
+        .padding(0.1);
 
-    if (error) throw error;
+    let datas = graph.imagenbperclass;
+    datas.sort(function(a, b) { return a.nblong - b.nblong; });
+
+    x.domain([0, d3.max(datas, function(d) { return d.nblong })]);
+    y.domain(datas.map(function(d) { return d.id }));
 
 
+    svg.selectAll(".bar")
+        .data(datas)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("fill", function(d, i) { return color(i); })
+        .attr("x", 40)
+        .attr("width", function(d) { return x(d.nblong); })
+        .attr("y", function(d) { return y(d.id); })
+        .attr("height", y.bandwidth());
+
+    svg.append("g")
+        .attr("transform", "translate(30,0)")
+        .call(d3.axisLeft(y));
+
+    svg.append("g")
+        .attr("transform", "translate(40, 400)")
+        .call(d3.axisBottom(x));
 });
