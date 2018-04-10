@@ -46,79 +46,62 @@ const readSTAR = (data) => {
     let columns = [];
 
     // Data-block structure
-    let block = {
-      name : "default",
-      headers : headerslist,
-      mx : 0,
-      my : 0,
-      type : "none",
-      data : []
-    };
+    let block;
+    
+    let status = 0;
     
     // JSON structure
     let star = {
       comment : "Created by StarVizEM",
-      tables : blocklist
+      tables : []
     };
 
     // Cleanup: Deleting spaces
     let lines = input.replace(/^\s*\n/gm, "") .split('\n');
     
-    // For each line, extract the keywords: `data_`, `loop_`, `_rln`, and `_xxx`
+    // For each line, extract the keywords: `data_`, `loop_`, and `_xxx`
     lines.forEach( (line,index) => {
       let words = line.trim().split(/\s+/); 
-
-      //data block encountered
+      
+      // Data block
       if (words[0].includes('data_')){
-        //incrementation of the number of data-blocks
-        cptblock = cptblock + 1;
-        //copy of the data block structure 
-        const copiedblock = Object.assign({}, block);
-        blocklist.push(copiedblock);
-        let tableName = words[0].substr(5,words[0].length || 'None');
-        blocklist[cptblock].name = tableName; 
-        //cleaning of the lists 
-        headerslist = [];
-        columns = [];
+        // Create a new data block structure 
+        block = {
+          name : words[0].substr(5,words[0].length) || 'None', // ??
+          headers : [],
+          data : [],
+          mx : 0,
+          my : 0,
+          type : 0 // 0: single line; 1: loop
+        };
+        star.tables.push(block);
       }
 
       // Keyword `loop_`
-      if (words[0].includes('loop_')){
-        blocklist[cptblock].type = "loop";  
+      else if (words[0].includes('loop_')) {
+        block.type = 1;  
       }
-
-      // Column headers
-      if (words[0].includes('_rln')){
-        let title = words[0].substr(4, words[0].length || 'None');
-        headerslist.push(title);
-        blocklist[cptblock].mx = headerslist.length;
-        blocklist[cptblock].headers = headerslist;
-        columns.push([]);
+      // Column headers and type == 'single row'
+      else if (words[0][0] === '_' && block.type === 0){
+        block.headers.push(words[0]);
+        block.mx = 1;
+        block.my = 1;
+        // Create new Column
+        block.data.push([isNaN(words[1]) ? words[1] : parseFloat(words[1])]);
       }
-        
-      // Data in a table
-      if(blocklist[cptblock].type == "loop"){
-        // definition of what is not data then test it
-        let notdata = /loop_|data_|_rln|\n+|\s+/.test(words[0]);
-        if(notdata == false){
-          if (words[0] != "" && words[0] != null){
-            let nbline = blocklist[cptblock].my;
-            blocklist[cptblock].my = (nbline +1);
-         }
-          // for each column of the data block 
-          for (let col=0; col<words.length; col++){
-            columns[col].push(words[col]);
-            blocklist[cptblock].data = columns;
-          }
-        }
+      // Column headers and type == 'multi-rows'
+      else if (words[0][0] === '_' && block.type === 1){
+        block.headers.push(words[0]);
+        block.mx++;
+        // Create new Column
+        block.data.push([]);
       }
-        
-      // Data in one line
       else {
-        if (words[1] != null && words[1] != "" ) {
-          columns[0].push(words[1]);
-          blocklist[cptblock].data = columns;
-          blocklist[cptblock].my = 1;
+        block.my++;
+        // For each column of the data block 
+        for (let col in words) {
+          let v = words[col];
+          block.data[col].push(isNaN(v) ? v : parseFloat(v));
         }
       }
     });
@@ -143,6 +126,7 @@ const readSTAR = (data) => {
  * Get STAR file
  */
 exports.getSTAR = (filename) => {
+  console.log(filename);
   return fs.readFileAsync(filename, "utf-8").then(readSTAR, (err) => console.log(err));
 };
 

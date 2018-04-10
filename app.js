@@ -69,16 +69,20 @@ app.get('/',  (req, res,next) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
-app.get('/test',  (req, res,next) => {
+app.post('/star', (req, res,next) => {
+  console.log(`${req.body.run}/${req.body.job}/${req.body.file}`);
+  svzm.getSTAR(`./${req.query.run}/${req.query.job}/${req.query.file}`).then( (data) => res.json(data), (err) => console.log(err));
+});
+
+app.get('/test', (req, res,next) => {
   res.sendFile(path.join(__dirname, './test/00_index.html'));
 });
 
-app.get('/test/:file',  (req, res,next) => {
-  res.sendFile(path.join(__dirname, `./test/${req.params.file}`));
-});
+
 
 // Routes - JSON response
 app.get('/Class2D/:job/', (req, res,next) => {
+  console.log('Class2D');
   // TODO
   let id = parseInt(req.params.job.match(/\d+/g)[0]);
   svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_data.star`).then( (data) => res.json(data), (err) => console.log(err));
