@@ -94,7 +94,13 @@ const readPipeline = (starjson) => {
     });
 
   // Get Input Edges
-  
+  // TODO
+    table = getTable('pipeline_input_edges',input);
+    Array.from({length: table.my}, (v,i) => i)
+      .forEach( (index) => {
+        let row = getRow(index,table);
+        let jobIndex = 0;
+      });
 /*
     for (let i in input.tables) {
       console.input.tables[i].
