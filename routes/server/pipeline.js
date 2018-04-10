@@ -26,52 +26,88 @@
 'use strict';
 
 const fs = require('fs');
+const svzm = require('./star.js');
 
-const readPipeline = (err,data) =>{ 
+/**
+ * Parse RELION Pipeline Data
+ *
+ * @author TODO
+ */
+const readPipeline = (starjson) => { 
 
-  const parsemy = (input) => {
+  const getTable = (tablename,starobj) => starobj.tables.find( (table) => table.name === tablename);
+
+  const getColumnIndex = (headername,table) => table.headers.findIndex( (head) => head === headername);
+
+  const getRow = (index,table) => table.data.reduce( (row,column) => [...row,column[index]], []); 
+
+  const getColumn = (headername,table) => (table.type === 1) ? table.data[getColumnIndex(headername,table)] : ['None'];
+  
+  const getValue = (headername,table) => (table.type === 0) ? table.data[getColumnIndex(headername,table)][0] : -1;
+
+  const parsePipeline = (input) => {
     
-    //creation of variables and objects in the incoming json
-    let joblist = [];
-    let targettable = {};
-    let inputtable = {};
-    let outputtable = {};
-    let classes = { "Import" : 1, "MotionCorr":2, "CtfFind":3, "ManualPick":4, "Extract":5, "Class2D":6, "Select": 7, "Autopick" : 8, "Sort" : 9, "InitialModel":10, "Class3D":11, "Refine3D":12, "MaskCreate":13, "PostProcess": 14, "LocalRes": 15, "MovieRefine":16, "Polish":17};
+
+    const processes = { "Import" : 1, "MotionCorr": 2, "CtfFind":3, "ManualPick":4, "Extract":5, "Class2D":6, "Select": 7, "Autopick" : 8, "Sort" : 9, "InitialModel":10, "Class3D":11, "Refine3D":12, "MaskCreate":13, "PostProcess": 14, "LocalRes": 15, "MovieRefine":16, "Polish":17};
     
-    //job structure
-    let job = {
-      id : 0,
-      alias : "default",
-      path : "default",
-      class : 0,
-      targets : [],
-      inputs : [],
-      outputs : [],
-      command : "default",
-      params : {},
-      error : "default"
-    }
-     
+
     //json pipe structure
     let pipe = {
-      comment : "Created by STARVIZEM",
-      jobsnumber : 0,
-      jobs : joblist
-      };   
+      comment : 'Created by STARVIZEM',
+      jobsnumber : -1,
+      jobs : []
+    };   
     
-    //parsing
-    let defjson = JSON.parse(input);
+    // Get jobs number in table `PipeLineJobCounter`
+    pipe.jobsnumber = getValue('_rlnPipeLineJobCounter',getTable('pipeline_general',input));
+    
+    // Get jobs name + aliases
+    let table = getTable('pipeline_processes',input);
+    Array.from({length: table.my}, (v,i) => i).forEach( (index) => {
+      let row = getRow(index,table);
+      let words = row[0].split('/');
+      let job = {
+        id : index,
+        name: row[0],
+        alias : row[1],
+        path : row[0],
+        process : processes[words[0]],
+        params : [],
+        command : "None",
+        error : "None"
+      };
+      
+      // Get data in `run.job`
+      try {
+        fs.readFileSync('./' + job.path+'/run.job','utf-8')
+          .split(/\n/)
+          .forEach( (line) => {
+            let pair = line.split(' == ');
+            job.params.push(pair);
+          });
+      }
+      catch (err) {
+      
+      };
 
-    for (let i = 0; i<defjson.tables.length ; i++){
+      pipe.jobs.push(job);
+    });
+
+  // Get Input Edges
+  
+/*
+    for (let i in input.tables) {
+      console.input.tables[i].
+
 
       //number of jobs
-      if (defjson.tables[i].headers[0] == "PipeLineJobCounter"){
-        pipe.jobsnumber = parseInt(defjson.tables[i].data[0]);
+      if (input.tables[i].headers[0] === "PipeLineJobCounter"){
+        pipe.jobsnumber = parseInt(input.tables[i].data[0]);
       }
 
-      //push each jobs in the joblist, data on processes
-      if (defjson.tables[i].name == "pipeline_processes"){
-        let processes = defjson.tables[i].data;
+      //push each job in the joblist, data on processes
+      if (input.tables[i].name === "pipeline_processes"){
+        let processes = input.tables[i].data;
         for (let j=0; j< pipe.jobsnumber-1; j++){
           const copiedjob = Object.assign({}, job);
           joblist.push(copiedjob);
@@ -96,9 +132,9 @@ const readPipeline = (err,data) =>{
       }
 
       //data on input edges
-      if (defjson.tables[i].name == "pipeline_input_edges"){
-        let inputsjobs = defjson.tables[i].data;
-        let nblines = defjson.tables[i].my;
+      if (input.tables[i].name === "pipeline_input_edges"){
+        let inputsjobs = input.tables[i].data;
+        let nblines = input.tables[i].my;
         for (let j=0; j< nblines; j++){
           let data = inputsjobs[j].split(/\//);
           if (data.includes(".")){
@@ -110,14 +146,14 @@ const readPipeline = (err,data) =>{
           let targetjob = parseInt(inputsjobs[j+nblines].substr(-4,3));
 
           for (let index = 0; index < pipe.jobsnumber-1; index++){
-            if (joblist[index].id == sourcejob){
+            if (joblist[index].id === sourcejob){
               targettable[sourcejob].push(targetjob);
               joblist[index].targets = targettable[sourcejob];
             }
           }
 
           for (let index = 0; index < pipe.jobsnumber-1; index++){
-            if (joblist[index].id == targetjob){
+            if (joblist[index].id === targetjob){
               inputtable[targetjob].push(sourcefile);
             }
             joblist[index].inputs = inputtable[index+1];
@@ -126,10 +162,10 @@ const readPipeline = (err,data) =>{
         }
       }
 
-      //data on output edges
-      if(defjson.tables[i].name == "pipeline_output_edges"){
-        let outputsjobs = defjson.tables[i].data;
-        let nblines = defjson.tables[i].my;
+      // Data on output edges
+      if(input.tables[i].name === "pipeline_output_edges"){
+        let outputsjobs = input.tables[i].data;
+        let nblines = input.tables[i].my;
         for (let j =0; j<nblines-1; j++){
           let data = outputsjobs[j+nblines].split(/\//);
           if (data.includes(".") || data.includes("")){
@@ -138,7 +174,7 @@ const readPipeline = (err,data) =>{
           let outputjob = parseInt(data[1].substr(-3));
           let outputnode = data[0]+"/"+data[1]+"/"+data[2];
           for (let index = 0; index < pipe.jobsnumber-1; index ++){
-            if (joblist[index].id == outputjob){
+            if (joblist[index].id === outputjob){
               outputtable[outputjob].push(outputnode);
               joblist[index].outputs = outputtable[outputjob];
             }
@@ -146,7 +182,7 @@ const readPipeline = (err,data) =>{
         }
         
       }
-
+*/
     /* error test
     for(let jb = 0; jb < joblist.length; jb++){
       let jobpath = joblist[jb].path;
@@ -157,25 +193,31 @@ const readPipeline = (err,data) =>{
           joblist[jb].error = data;
         }
       });
-      */
+
     
     };
-
+      */
     return pipe;
   }
 
-  //MAIN
-  if(err){throw err;}
+  /***** MAIN *****/
   
   //Parse JSONFile
-  let json = parsemy(data);
-  if (json.error){
-    throw json.error
-  }
+  let graph = parsePipeline(starjson);
 
-  let pipeJSON = JSON.stringify(json);
-  console.log(pipeJSON);
-  return pipeJSON;
+
+  let pipeJSON = JSON.stringify(graph);
+  // console.log(pipeJSON);
+  return graph;
 
 }
-fs.readFile("default_pipeline.json", "utf-8", readJson);
+
+/**
+ * Get RELION Pipeline
+ */
+exports.getPipeline = (filename) => {
+  console.log(filename);
+  return svzm.getSTAR(filename).then(readPipeline, (err) => console.log(err));
+};
+
+//fs.readFile("default_pipeline.json", "utf-8", readJson);
