@@ -45,6 +45,11 @@ const readPipeline = (starjson) => {
   
   const getValue = (headername,table) => (table.type === 0) ? table.data[getColumnIndex(headername,table)][0] : -1;
 
+  const getItem = (rowIndex,headername,table) => table.data[getColumnIndex(headername,table)][rowIndex];
+
+  const getJob = (jobID,starobj) => starobj.jobs.find( (job) => job.jobID === jobID) ;
+  
+  
   const parsePipeline = (input) => {
     
 
@@ -68,11 +73,13 @@ const readPipeline = (starjson) => {
       let words = row[0].split('/');
       let job = {
         id : index,
+        jobID : parseInt(row[0].match(/job(\d+)/)[1]),
         name: row[0],
         alias : row[1],
         path : row[0],
         process : processes[words[0]],
         params : [],
+        targets: [],
         command : "None",
         error : "None"
       };
@@ -98,8 +105,10 @@ const readPipeline = (starjson) => {
     table = getTable('pipeline_input_edges',input);
     Array.from({length: table.my}, (v,i) => i)
       .forEach( (index) => {
-        let row = getRow(index,table);
-        let jobIndex = 0;
+        let jobid = parseInt(getItem(index,'_rlnPipeLineEdgeFromNode',table).match(/job(\d+)/)[1]);
+        let srcJob = getJob(jobid,pipe);
+        let targetJob = parseInt(getItem(index,'_rlnPipeLineEdgeProcess',table).match(/job(\d+)/)[1]);
+        srcJob.targets.push(targetJob);
       });
 /*
     for (let i in input.tables) {

@@ -27,10 +27,12 @@
 
 
 const {getSTAR} = require('./server/star.js');
+const {getPipeline} = require('./server/pipeline.js');
 const {init} = require('./server/init.js');
 
 module.exports = {
   getSTAR: getSTAR,
+  getPipeline: getPipeline,
   init: init
 }
 

@@ -69,6 +69,11 @@ app.get('/',  (req, res,next) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
+app.get('/pipeline', (req, res,next) => {
+  console.log(__dirname);
+  svzm.getPipeline('./default_pipeline.star').then( (data) => res.json(data), (err) => console.log(err));
+});
+
 app.post('/star', (req, res,next) => {
   console.log(`${req.body.run}/${req.body.job}/${req.body.file}`);
   svzm.getSTAR(`./${req.query.run}/${req.query.job}/${req.query.file}`).then( (data) => res.json(data), (err) => console.log(err));
