@@ -26,6 +26,11 @@
 'use strict';
 
 const fs = require('fs');
+const svzm = require('./star.js');
+const Star = require('./Star.js');
+const Table = require('./Table.js');
+const Job = require('./Job.js');
+
 
 /**
  * Get the data of a Class2D job
@@ -35,10 +40,9 @@ const fs = require('fs');
  *
  * @author Pauline Bock
  */
+const readClass2D = (err,data) =>{ 
 
-const readData = (err,data) =>{ 
-
-	const parsemy = (input) => {
+  const parseClass2D = (input) => {
     //creation of variables and objects in the incoming json
     let dataclass = {
       id : 0,
@@ -52,8 +56,8 @@ const readData = (err,data) =>{
       classesnumber : 0,
       imagenbperclass: []
     }
-		
-		//parsing
+    
+    //parsing
     let jsondata = JSON.parse(input);  
     let nbdatalines = jsondata.tables[0].my-1;
     let classmax = 0;
@@ -101,21 +105,35 @@ const readData = (err,data) =>{
 
   class2D.classesnumber = classmax;
     
-	return class2D;
-	};
+  return class2D;
+  };
 
   //MAIN
-	if(err){throw err;}
-	
-	//Parse JSONFile
-	let json = parsemy(data);
-	if (json.error){
-		throw json.error
-	}
+  if(err){throw err;}
+  
+  //Parse JSONFile
+  let json = parsemy(data);
+  if (json.error){
+    throw json.error
+  }
 
-	let dataJSON = JSON.stringify(json);
-	console.log(dataJSON);
-	return dataJSON;
+  let dataJSON = JSON.stringify(json);
+  console.log(dataJSON);
+  
+      // Get data in `run.job`
+      try {
+        fs.readFileSync('./' + job.path+'/run.job','utf-8')
+          .split(/\n/)
+          .forEach( (line) => {
+            let pair = line.split(' == ');
+            job.params.push(pair);
+          });
+      }
+      catch (err) {
+      
+      };
+  
+  return dataJSON;
 
 }
 
