@@ -83,6 +83,9 @@ app.get('/test', (req, res,next) => {
   res.sendFile(path.join(__dirname, './test/00_index.html'));
 });
 
+app.get('/test/:file',  (req, res,next) => {
+  res.sendFile(path.join(__dirname, `./test/${req.params.file}`));
+});
 
 
 // Routes - JSON response
