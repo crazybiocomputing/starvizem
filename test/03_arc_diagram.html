@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Test Arc Diagram</title>
+    <script src="../javascripts/d3.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/arcDiagram.js"></script>
+    <script src="../js/barChart.js"></script>
+    <script src="../js/donut.js"></script>
+
+  <script type="text/javascript">
+  
+  const createGraph = () => {
+    // Get JSON data from web service
+    d3.json('/pipeline')
+      .then( (graph) => {
+        // Create a minimal dashboard :-D
+        let root = document.getElementById('root');
+        let list = document.createElement('ul');
+        root.appendChild(list);
+        graph.jobs.forEach( (job) => {
+          let item = document.createElement('li');
+          item.innerHTML = `<strong>JobID</strong>: ${job.jobID}, <strong>Alias</strong>: ${job.alias}, <strong>Path</strong>: ${job.path}`;
+          list.appendChild(item);
+        });
+      });
+  };
+
+  </script>
+
+  </head>
+  <body onload="createGraph();">
+    <h1>Tests of StarVizEM - Arc Diagram</h1>
+    
+    <content id="root"></content>
+    
+  </body>
+</html>
