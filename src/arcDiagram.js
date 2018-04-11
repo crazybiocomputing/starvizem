@@ -25,7 +25,7 @@
 
 'use strict';
 
-let data = d3.json("graphe1.json", function(error, graph) {
+d3.json("http://localhost:3000/pipeline", function(error, graph) {
 
     //Width and height variables
     let width = 1600;
@@ -46,13 +46,12 @@ let data = d3.json("graphe1.json", function(error, graph) {
     let color = d3.scaleOrdinal(d3.schemeCategory20);
 
     let simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }))
-        .force("charge", d3.forceManyBody())
+        .force("link", d3.forceLink().id(function(d) { return d.jobID; }))
+        .force("charge", d3.forceManyBody().strength(-100).distanceMin(120))
+        .force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
         .force("center", d3.forceCenter(width / 2, height / 2));
 
     //Import data
-
-    if (error) throw error;
 
     //Define link between jobs , doesn't work actually
     let link = svg.append("g")
@@ -74,12 +73,12 @@ let data = d3.json("graphe1.json", function(error, graph) {
     //Define circles
     let circles = node.append("circle")
         .attr("r", 5)
-        .attr("fill", function(d) { return color(d.class); })
+        .attr("fill", function(d) { return color(d.process); })
 
     //Define text
     let lables = node.append("text")
         .text(function(d) {
-            return d.id;
+            return d.jobID;
         })
         .attr('x', -2)
         .attr('y', 8)
