@@ -26,7 +26,7 @@
 'use strict';
 
 
-const {getSTAR} = require('./server/star.js');
+const {getSTAR} = require('./server/stargate.js');
 const {getPipeline} = require('./server/pipeline.js');
 const {init} = require('./server/init.js');
 

@@ -26,7 +26,7 @@
 'use strict';
 
 const fs = require('fs');
-const svzm = require('./star.js');
+const svzm = require('./stargate.js');
 const Star = require('./Star.js');
 const Table = require('./Table.js');
 const Job = require('./Job.js');
@@ -39,6 +39,23 @@ const Job = require('./Job.js');
 const readPipeline = (starjson) => { 
 
   const getJob = (jobID,pipe_obj) => pipe_obj.jobs.find( (job) => job.jobID === jobID) ;
+
+  // Get number of particles/micrographs/movies in STAR `filename`
+  const getNumRaster = (process,job,filename) => {
+    // TODO
+    try {
+      fs.readFileSync(process+job+filename,'utf-8')
+        .split(/\n/)
+        .forEach( (line) => {
+          let pair = line.split(' == ');
+          job.params.push(pair);
+        });
+    }
+    catch (err) {
+    
+    };
+  };
+  
   
   const parsePipeline = (input) => {
     
@@ -79,22 +96,6 @@ const readPipeline = (starjson) => {
         error : "None"
       };
       
-      // Get data in `run.job`
-      // HACK Must be done here ???
-      // TODO elsewhere
-/*
-      try {
-        fs.readFileSync('./' + job.path+'/run.job','utf-8')
-          .split(/\n/)
-          .forEach( (line) => {
-            let pair = line.split(' == ');
-            job.params.push(pair);
-          });
-      }
-      catch (err) {
-      
-      };
-*/
       pipe.jobs.push(job);
     });
 
@@ -111,9 +112,8 @@ const readPipeline = (starjson) => {
         targetJob.inputs.push(inputfile);
       });
 
-  // Get Output Edges
-  // TODO
-
+    // Get Output Edges
+    // TODO
     table = starobj.getTable('pipeline_output_edges');
     Array.from({length: table.my}, (v,i) => i)
       .forEach( (index) => {
