@@ -38,21 +38,17 @@ const fs = require('fs');
  */
 const readSTAR = (data) => { 
 
+  // STAR parser
   const parse = (input) => {
-    // Init Variables and objects of the incoming JSON
-    let blocklist = [];
-    let cptblock = -1;
-    let headerslist = [];
-    let columns = [];
 
-    // Data-block structure
+    // Init variables
     let block;
-    
     let status = 0;
     
-    // JSON structure
+    // Default parameter
     let star = {
       comment : "Created by StarVizEM",
+      date: (new Date()).toString().split(' ').splice(1,4).join('/'),
       tables : []
     };
 
@@ -116,8 +112,6 @@ const readSTAR = (data) => {
     throw star.error
   }
 
-  // Get JSON
-  let starJSON = JSON.stringify(star);
   return star;
 }
 
@@ -129,4 +123,7 @@ exports.getSTAR = (filename) => {
   console.log(filename);
   return fs.readFileAsync(filename, "utf-8").then(readSTAR, (err) => console.log(err));
 };
+
+exports.readSTAR = readSTAR;
+
 

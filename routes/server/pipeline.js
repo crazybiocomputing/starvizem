@@ -34,22 +34,35 @@ const Job = require('./Job.js');
 /**
  * Parse RELION Pipeline Data
  *
- * @author TODO
+ * @params {object} starjson - STAR object
+ * @return {object} - Returns a graph ready to display with D3
+ *
+ * @author Pauline Bock
+ * @author Jean-Christophe Taveau
  */
 const readPipeline = (starjson) => { 
 
+  /* 
+   * Get job in pipeline object
+   *
+   * @author Jean-Christophe Taveau
+   */
   const getJob = (jobID,pipe_obj) => pipe_obj.jobs.find( (job) => job.jobID === jobID) ;
 
-  // Get number of particles/micrographs/movies in STAR `filename`
+  /*
+   * Get number of particles/micrographs/movies in STAR `filename`
+   *
+   * @author Jean-Christophe Taveau
+   */
   const getNumRaster = (process,job,filename) => {
     // TODO
     try {
-      fs.readFileSync(process+job+filename,'utf-8')
-        .split(/\n/)
-        .forEach( (line) => {
-          let pair = line.split(' == ');
-          job.params.push(pair);
-        });
+      let txt = fs.readFileSync(process+job+filename,'utf-8');
+      let star = svzm.readSTAR(txt);
+      // Only one table
+      if (star.tables.length === 1) {
+        return star.tables[0].my;
+      }
     }
     catch (err) {
     
@@ -66,6 +79,7 @@ const readPipeline = (starjson) => {
     //json pipe structure
     let pipe = {
       comment : 'Created by STARVIZEM',
+      date: (new Date()).toString().split(' ').splice(1,4).join('/'),
       jobsnumber : -1,
       jobs : []
     };   

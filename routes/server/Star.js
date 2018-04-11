@@ -63,6 +63,17 @@ module.exports = class Star {
   static getJobID(process) {
     return parseInt(process.match(/job(\d+)/)[1]);
   }
+  
+  /**
+   * Get a job ID from the process name
+   *
+   * @author Jean-Christophe Taveau
+   */
+  static splitPath(filename) {
+    let words = filename.split('/');
+    let start = (words[0] === '.') ? 1; 0;
+    return words.slice(start,start + 3);
+  }
 
 }
 
