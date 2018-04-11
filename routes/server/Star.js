@@ -71,7 +71,7 @@ module.exports = class Star {
    */
   static splitPath(filename) {
     let words = filename.split('/');
-    let start = (words[0] === '.') ? 1; 0;
+    let start = (words[0] === '.') ? 1: 0;
     return words.slice(start,start + 3);
   }
 
