@@ -20,20 +20,41 @@
  *
  * Authors:
  * Jean-Christophe Taveau
+ * Pauline Bock, Cyril Dourthe, Marie Econimides, Guillaume Sotton
  */
  
-
 'use strict';
 
+module.exports = class Table {
 
-const {getSTAR} = require('./server/star.js');
-const {getPipeline} = require('./server/pipeline.js');
-const {init} = require('./server/init.js');
+  constructor(other) {
+    Object.assign(this, other);
+  }
+  
+  static create(other) {
+    return new Table(other);
+  }
+  
+  getColumnIndex(headername) {
+    return this.headers.findIndex( (head) => head === headername);
+  }
+
+  getRow(index) {
+    return this.data.reduce( (row,column) => [...row,column[index]], []); 
+  } 
+
+  getColumn(headername) {
+    return (this.type === 1) ? this.data[this.getColumnIndex(headername)] : ['None'];
+  } 
+  
+  getValue(columnHeader) {
+    return (this.type === 0) ? this.data[this.getColumnIndex(columnHeader)][0] : -1;
+  } 
+
+  getItem(rowIndex,headername) {
+    return this.data[this.getColumnIndex(headername)][rowIndex];
+  } 
 
 
-module.exports = {
-  getSTAR: getSTAR,
-  getPipeline: getPipeline,
-  init: init
 }
 

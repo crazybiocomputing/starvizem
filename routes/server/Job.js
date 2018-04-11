@@ -20,20 +20,23 @@
  *
  * Authors:
  * Jean-Christophe Taveau
+ * Pauline Bock, Cyril Dourthe, Marie Econimides, Guillaume Sotton
  */
  
-
 'use strict';
 
+module.exports = class Job {
 
-const {getSTAR} = require('./server/star.js');
-const {getPipeline} = require('./server/pipeline.js');
-const {init} = require('./server/init.js');
+  constructor(other) {
+    Object.assign(this, other);
+  }
+  
+  static create(other) {
+    return new Job(other);
+  }
+  
 
 
-module.exports = {
-  getSTAR: getSTAR,
-  getPipeline: getPipeline,
-  init: init
+
 }
 

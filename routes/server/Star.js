@@ -20,20 +20,50 @@
  *
  * Authors:
  * Jean-Christophe Taveau
+ * Pauline Bock, Cyril Dourthe, Marie Econimides, Guillaume Sotton
  */
  
-
 'use strict';
 
+const Table = require('./Table');
 
-const {getSTAR} = require('./server/star.js');
-const {getPipeline} = require('./server/pipeline.js');
-const {init} = require('./server/init.js');
+/**
+ * @class Star
+ *
+ * @author Jean-Christophe Taveau
+ */
+module.exports = class Star {
 
+  /**
+   * @constructor
+   *
+   * @author Jean-Christophe Taveau
+   */
+  constructor(other) {
+    Object.assign(this, other);
+  }
+  
+  static create(other) {
+    return new Star(other);
+  }
+  
+  getTable(tablename) {
+    return new Table(this.tables.find( (table) => table.name === tablename));
+  }
 
-module.exports = {
-  getSTAR: getSTAR,
-  getPipeline: getPipeline,
-  init: init
+  getJob(jobID) {
+    return this.jobs.find( (job) => job.jobID === jobID) ;
+  }
+  
+  /**
+   * Get a job ID from the process name
+   *
+   * @author Jean-Christophe Taveau
+   */
+  static getJobID(process) {
+    return parseInt(process.match(/job(\d+)/)[1]);
+  }
+
 }
+
 

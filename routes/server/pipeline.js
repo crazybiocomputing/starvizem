@@ -27,6 +27,9 @@
 
 const fs = require('fs');
 const svzm = require('./star.js');
+const Star = require('./Star.js');
+const Table = require('./Table.js');
+const Job = require('./Job.js');
 
 /**
  * Parse RELION Pipeline Data
@@ -35,20 +38,7 @@ const svzm = require('./star.js');
  */
 const readPipeline = (starjson) => { 
 
-  const getTable = (tablename,starobj) => starobj.tables.find( (table) => table.name === tablename);
-
-  const getColumnIndex = (headername,table) => table.headers.findIndex( (head) => head === headername);
-
-  const getRow = (index,table) => table.data.reduce( (row,column) => [...row,column[index]], []); 
-
-  const getColumn = (headername,table) => (table.type === 1) ? table.data[getColumnIndex(headername,table)] : ['None'];
-  
-  const getValue = (headername,table) => (table.type === 0) ? table.data[getColumnIndex(headername,table)][0] : -1;
-
-  const getItem = (rowIndex,headername,table) => table.data[getColumnIndex(headername,table)][rowIndex];
-
-  const getJob = (jobID,starobj) => starobj.jobs.find( (job) => job.jobID === jobID) ;
-  
+  const getJob = (jobID,pipe_obj) => pipe_obj.jobs.find( (job) => job.jobID === jobID) ;
   
   const parsePipeline = (input) => {
     
@@ -63,28 +53,36 @@ const readPipeline = (starjson) => {
       jobs : []
     };   
     
-    // Get jobs number in table `PipeLineJobCounter`
-    pipe.jobsnumber = getValue('_rlnPipeLineJobCounter',getTable('pipeline_general',input));
+    let starobj = Star.create(input);
     
+    // Get jobs number in table `PipeLineJobCounter`
+    pipe.jobsnumber = starobj.getTable('pipeline_general').getValue('_rlnPipeLineJobCounter');
+    
+
     // Get jobs name + aliases
-    let table = getTable('pipeline_processes',input);
+    let table = starobj.getTable('pipeline_processes'); //getTable('pipeline_processes',input);
     Array.from({length: table.my}, (v,i) => i).forEach( (index) => {
-      let row = getRow(index,table);
+      let row = table.getRow(index);
       let words = row[0].split('/');
       let job = {
         id : index,
-        jobID : parseInt(row[0].match(/job(\d+)/)[1]),
+        jobID : Star.getJobID(row[0]),
         name: row[0],
         alias : row[1],
         path : row[0],
         process : processes[words[0]],
         params : [],
         targets: [],
+        inputs: [],
+        outputs: [],
         command : "None",
         error : "None"
       };
       
       // Get data in `run.job`
+      // HACK Must be done here ???
+      // TODO elsewhere
+/*
       try {
         fs.readFileSync('./' + job.path+'/run.job','utf-8')
           .split(/\n/)
@@ -96,20 +94,44 @@ const readPipeline = (starjson) => {
       catch (err) {
       
       };
-
+*/
       pipe.jobs.push(job);
     });
 
-  // Get Input Edges
-  // TODO
-    table = getTable('pipeline_input_edges',input);
+    // Get Input Edges
+    // TODO
+    table = starobj.getTable('pipeline_input_edges');
     Array.from({length: table.my}, (v,i) => i)
       .forEach( (index) => {
-        let jobid = parseInt(getItem(index,'_rlnPipeLineEdgeFromNode',table).match(/job(\d+)/)[1]);
-        let srcJob = getJob(jobid,pipe);
-        let targetJob = parseInt(getItem(index,'_rlnPipeLineEdgeProcess',table).match(/job(\d+)/)[1]);
-        srcJob.targets.push(targetJob);
+        let inputfile = table.getItem(index,'_rlnPipeLineEdgeFromNode');
+        let srcJob = getJob(Star.getJobID(inputfile),pipe);
+        let targetid = Star.getJobID(table.getItem(index,'_rlnPipeLineEdgeProcess'));
+        let targetJob = getJob(targetid,pipe);
+        srcJob.targets.push(targetid);
+        targetJob.inputs.push(inputfile);
       });
+
+  // Get Output Edges
+  // TODO
+
+    table = starobj.getTable('pipeline_output_edges');
+    Array.from({length: table.my}, (v,i) => i)
+      .forEach( (index) => {
+        try {
+          let srcid = Star.getJobID(table.getItem(index,'_rlnPipeLineEdgeProcess'));
+          let srcJob = getJob(srcid,pipe);
+          let outputfile = table.getItem(index,'_rlnPipeLineEdgeToNode');
+          let targetid = Star.getJobID(outputfile);
+          let targetJob = getJob(targetid,pipe);
+          // srcJob.targets.push(targetid);
+          srcJob.outputs.push(outputfile);
+        }
+        catch (err) {
+          console.log(index,err);
+        }
+      });
+
+
 /*
     for (let i in input.tables) {
       console.input.tables[i].
