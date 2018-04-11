@@ -30,7 +30,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-fs.readFileAsync = util.promisify(fs.readFile);
+fs.readFileAsync = util.promisify<(fs.readFile);
 
 /** src/server/starvizem.js **/
 const mkdirSync = (dirPath) => {
