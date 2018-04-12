@@ -69,6 +69,22 @@ d3.json("http://localhost:3000/pipeline", function(error, graph) {
         .enter().append("g")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
+        .on("click", function(d) {
+            if (d3.event.defaultPrevented) return;
+            // always select this node
+            d3.select(this).classed("selected", d.selected = !d.previouslySelected);
+            if (d.path == "Class2D/job006/"){
+                console.log("c'est une classe 2D");
+                let s = document.createElement('script');
+                s.type = "text/javascript";
+                s.setAttribute('src','../js/donut.js');
+                document.getElementById('root').appendChild(s);
+                let s2 = document.createElement('script');
+                s2.type = "text/javascript";
+                s2.setAttribute('src','../js/barChart.js');
+                document.getElementById('root').appendChild(s2);
+            }
+        });
 
     //Define circles
     let circles = node.append("circle")
