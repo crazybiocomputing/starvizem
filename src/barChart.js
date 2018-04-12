@@ -25,7 +25,7 @@
 
 'use strict';
 
-let data2 = d3.json("chart.json", function(error, graph) {
+let data2 = d3.json("http://localhost:3000/Class2D/job006", function(error, graph) {
 
     //Width and height variables
     let width = 525;
@@ -54,10 +54,10 @@ let data2 = d3.json("chart.json", function(error, graph) {
         .padding(0.1);
 
     let datas = graph.imagenbperclass;
-    datas.sort(function(a, b) { return a.nblong - b.nblong; });
+    datas.sort(function(a, b) { return a.totalnb - b.totalnb; });
 
-    x.domain([0, d3.max(datas, function(d) { return d.nblong })]);
-    y.domain(datas.map(function(d) { return d.id }));
+    x.domain([0, d3.max(datas, function(d) { return d.totalnb })]);
+    y.domain(datas.map(function(d) { return d.classID }));
 
 
     svg.selectAll(".bar")
@@ -66,8 +66,8 @@ let data2 = d3.json("chart.json", function(error, graph) {
         .attr("class", "bar")
         .attr("fill", function(d, i) { return color(i); })
         .attr("x", 40)
-        .attr("width", function(d) { return x(d.nblong); })
-        .attr("y", function(d) { return y(d.id); })
+        .attr("width", function(d) { return x(d.totalnb); })
+        .attr("y", function(d) { return y(d.classID); })
         .attr("height", y.bandwidth());
 
     svg.append("g")
