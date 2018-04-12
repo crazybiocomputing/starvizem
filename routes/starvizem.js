@@ -28,12 +28,14 @@
 
 const {getSTAR,readSTAR} = require('./server/stargate.js');
 const {getPipeline} = require('./server/pipeline.js');
+const {getClass2D} = require('./server/class2d.js');
 const {init} = require('./server/init.js');
 
 
 module.exports = {
   getSTAR: getSTAR,
   getPipeline: getPipeline,
+  getClass2D: getClass2D,
   init: init,
   readSTAR: readSTAR
 }
