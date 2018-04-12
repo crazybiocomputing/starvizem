@@ -61,7 +61,7 @@ let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
 
     let pie = d3.pie()
         .sort(null)
-        .value(function(d) { return d.nblong; });
+        .value(function(d) { return d.totalnb; });
 
     let g = svg.selectAll(".arc")
         .data(pie(graph.imagenbperclass))
@@ -77,7 +77,7 @@ let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
 
     g.append("text")
         .text(function(d) {
-            return d.data.nblong;
+            return d.data.totalnb;
         })
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
         .style("fill", "black")
