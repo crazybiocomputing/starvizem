@@ -28,7 +28,10 @@
 let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, graph) {
     let width = 520,
         height = 450,
-        radius = Math.min(width, height) / 2;
+        radius = Math.min(width, height) / 2,
+        innerRadius = radius * 0.5,
+        innerRadiusFinal = radius * .5,
+        innerRadiusZoom = radius * .45;
 
     let color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -46,7 +49,11 @@ let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
 
     let arc = d3.arc()
         .outerRadius(radius - 10)
-        .innerRadius(0);
+        .innerRadius(innerRadius);
+
+    let arcFinal = d3.arc().innerRadius(innerRadiusFinal).outerRadius(radius - 10);
+    let arcZoom = d3.arc().innerRadius(innerRadiusZoom).outerRadius(radius - 10);
+
 
     let labelArc = d3.arc()
         .outerRadius(radius - 40)
@@ -54,24 +61,45 @@ let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
 
     let pie = d3.pie()
         .sort(null)
-        .value(function(d) { return d.totalnb; });
+        .value(function(d) { return d.nblong; });
 
     let g = svg.selectAll(".arc")
         .data(pie(graph.imagenbperclass))
         .enter().append("g")
-        .attr("class", "arc");
+        .attr("class", "arc")
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout);
 
     g.append("path")
-        .attr("fill", function(d) { return color(d.imagenbperclass); })
+        .attr("fill", function(d, i) { return color(i); })
         .attr("d", arc)
         .attr("stroke", "#fff");
 
-
     g.append("text")
-        .text(function(d) { return d.totalnb; })
+        .text(function(d) {
+            return d.data.nblong;
+        })
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+        .style("fill", "black")
+        .style("font-size", "15px")
+        .style("font-family", "Arial");
+
+
+    svg.append("text")
         .attr("dy", ".35em")
-        .attr("font", "10px sans-serif")
-        .attr("text-anchor", "middle");
+        .attr("text-anchor", "middle")
+        .text("Class2D");
+
+    function mouseover() {
+        d3.select(this).select("path").transition()
+            .duration(750)
+            .attr("d", arcZoom);
+    }
+
+    function mouseout() {
+        d3.select(this).select("path").transition()
+            .duration(750)
+            .attr("d", arcFinal);
+    }
 
 });
