@@ -25,7 +25,7 @@
 
 'use strict';
 
-let data1 = d3.json("chart.json", function(error, graph) {
+let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, graph) {
     let width = 520,
         height = 450,
         radius = Math.min(width, height) / 2;
@@ -54,7 +54,7 @@ let data1 = d3.json("chart.json", function(error, graph) {
 
     let pie = d3.pie()
         .sort(null)
-        .value(function(d) { return d.nblong; });
+        .value(function(d) { return d.totalnb; });
 
     let g = svg.selectAll(".arc")
         .data(pie(graph.imagenbperclass))
@@ -68,7 +68,7 @@ let data1 = d3.json("chart.json", function(error, graph) {
 
 
     g.append("text")
-        .text(function(d) { return d.nblong; })
+        .text(function(d) { return d.totalnb; })
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
         .attr("dy", ".35em")
         .attr("font", "10px sans-serif")
