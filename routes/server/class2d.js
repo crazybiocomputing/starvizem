@@ -26,7 +26,7 @@
 'use strict';
 
 const fs = require('fs');
-const svzm = require('./star.js');
+const svzm = require('./stargate.js');
 const Star = require('./Star.js');
 const Table = require('./Table.js');
 const Job = require('./Job.js');
@@ -40,86 +40,66 @@ const Job = require('./Job.js');
  *
  * @author Pauline Bock
  */
-const readClass2D = (err,data) =>{ 
+const readClass2D = (json2d) =>{ 
 
   const parseClass2D = (input) => {
+
+
     //creation of variables and objects in the incoming json
+
+    let class2D = {
+      comment: 'Created by STARVIZEM',
+      classesnumber : -1,
+      imagenbperclass: []
+    };
+
     let dataclass = {
-      id : 0,
-      nblong : 0,
+      classID : 0,
+      totalnb : 0,
       nbHR: 0,
       nbMR : 0,
       nbLR : 0
-    }
+    };
 
-    let class2D = {
-      classesnumber : 0,
-      imagenbperclass: []
-    }
-    
-    //parsing
-    let jsondata = JSON.parse(input);  
-    let nbdatalines = jsondata.tables[0].my-1;
-    let classmax = 0;
-    
-    //get the right datacolumns : column 24 & 16
-    let col24 = jsondata.tables[0].data[23];
-    let col16 = jsondata.tables[0].data[15];
-    
-    //get the number of classes
-    for (let i = 0; i < col24.length; i++){
-      let classesnb = parseInt(col24[i]);
-      if (classesnb >= classmax){
-        classmax = classesnb;
-      }
-    }
+    let starobj = Star.create(input);
+
+    //Get classes number
+    let classes = starobj.getTable('None').getColumn('_rlnClassNumber');
+    let resolution = starobj.getTable('None').getColumn('_rlnCtfMaxResolution');
+    class2D.classesnumber = Math.max(...classes);
 
     //Initialize the structure of the JSON
-    for (let i = 0; i < classmax; i++){
+    for (let i = 0; i < class2D.classesnumber; i++){
       let datacopy = Object.assign({}, dataclass);
       class2D.imagenbperclass.push(datacopy);
-      class2D.imagenbperclass[i].id = i + 1;
+      class2D.imagenbperclass[i].classID = i + 1;
     }
 
     //get the data
-    for (let i = 0; i < col24.length; i++){
-      let classesnb = parseInt(col24[i]);
-      class2D.imagenbperclass[classesnb-1].nblong = class2D.imagenbperclass[classesnb-1].nblong +1;
-    }
+    classes.forEach( function(element){
+      class2D.imagenbperclass[element-1].totalnb++;
+    });
 
-    for (let i = 0; i < col16.length; i++){
-      let ctfres = parseFloat(col16[i]);
-      console.log(ctfres);
-      let classnb = parseInt(col24[i]-1);
+    for (let i = 0; i < resolution.length; i++){
+      let ctfres = resolution[i];
+      let classnb = classes[i];
       //LR:<8.0, MR:8.0<x<8.1, HR:>8.1
-      if (ctfres < 8.0){
-        class2D.imagenbperclass[classnb].nbLR = class2D.imagenbperclass[classnb].nbLR + 1;
-      }
-      if (ctfres < 8.1 && ctfres > 8.0){
-        class2D.imagenbperclass[classnb].nbMR = class2D.imagenbperclass[classnb].nbMR + 1;
-      }
-      if (ctfres > 8.1){
-        class2D.imagenbperclass[classnb].nbHR = class2D.imagenbperclass[classnb].nbHR + 1;
-      }
+      if (ctfres < 8.0){ class2D.imagenbperclass[classnb-1].nbLR++;}
+      if (ctfres < 8.1 && ctfres > 8.0){ class2D.imagenbperclass[classnb-1].nbMR++;}
+      if (ctfres > 8.1){ class2D.imagenbperclass[classnb-1].nbHR++;}
     }
 
-  class2D.classesnumber = classmax;
-    
   return class2D;
   };
 
-  //MAIN
-  if(err){throw err;}
-  
-  //Parse JSONFile
-  let json = parsemy(data);
-  if (json.error){
-    throw json.error
-  }
+ /***** MAIN *****/
 
-  let dataJSON = JSON.stringify(json);
-  console.log(dataJSON);
+  //Parse JSONFile
+  let jsonClass2D = parseClass2D(json2d);
+
+  let data2dJSON = JSON.stringify(jsonClass2D);
   
+  /*
       // Get data in `run.job`
       try {
         fs.readFileSync('./' + job.path+'/run.job','utf-8')
@@ -132,8 +112,9 @@ const readClass2D = (err,data) =>{
       catch (err) {
       
       };
+      */
   
-  return dataJSON;
+  return jsonClass2D;
 
 }
 
@@ -141,10 +122,8 @@ const readClass2D = (err,data) =>{
  * Get JSON file
  */
 
-exports.getJSON = (filename) => {
-  return fs.readFileAsync(filename, "utf-8").then(readData, (err) => console.log(err));
+exports.getClass2D = (filename) => {
+  return svzm.getSTAR(filename).then(readClass2D, (err) => console.log(err));
 };
-
-
 
 
