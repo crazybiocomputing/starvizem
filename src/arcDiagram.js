@@ -35,7 +35,7 @@ d3.json("http://localhost:3000/pipeline", function(error, graph) {
     let svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height)
-        .style("border", "1px solid black")
+        .style("border", "2px solid rgba(2, 0, 34, 0.897")
         .style("background-color", "rgb(161, 192, 228)")
         .style("opacity", "0.8")
         .style("position", "absolute")
@@ -76,9 +76,9 @@ d3.json("http://localhost:3000/pipeline", function(error, graph) {
         .attr("fill", function(d) { return color(d.process); })
 
     //Define text
-    let lables = node.append("text")
+    let labels = node.append("text")
         .text(function(d) {
-            return d.jobID;
+            return "job"+d.jobID;
         })
         .attr('x', -2)
         .attr('y', 8)

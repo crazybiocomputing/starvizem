@@ -4,6 +4,8 @@ body {
 
 h1 {
     text-align: center;
+    color: rgba(2, 0, 34, 0.897);
+    text-shadow: 2px 2px 2px rgba(156, 199, 219, 0.658);
 }
 
 .sidenav {
