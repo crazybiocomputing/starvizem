@@ -93,7 +93,7 @@ app.get('/Class2D/:job/', (req, res,next) => {
   console.log('Class2D');
   // TODO
   let id = parseInt(req.params.job.match(/\d+/g)[0]);
-  svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_data.star`).then( (data) => res.json(data), (err) => console.log(err));
+  svzm.getClass2D(`./Class2D/${req.params.job}/run_it025_data.star`).then( (data) => res.json(data), (err) => console.log(err));
 
   // res.send(json);
   // svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_model.star`).then( (data) => data, (err) => console.log(err));
