@@ -1,0 +1,10 @@
+job_type == 0
+is_continue == false
+Submit to queue? == No
+Input files: == Micrographs/*.mrcs
+Minimum dedicated cores per node: == 24
+Node type: == 2D micrograph movies (*.mrcs)
+Additional arguments: == 
+Queue submit command: == qsub
+Standard submission script: == /public/EM/RELION/relion/bin/relion_qsub.csh
+Queue name:  == openmpi

@@ -1,0 +1,399 @@
+
+Usage: MotionCor2 Tags
+-InMrc    
+  1. Input MRC file that stores dose fractionated stacks.
+  2. It can be a MRC file containing a single stack collected
+     in Leginon or multiple stacks collected in UcsfTomo.
+  3. It can also be the path of a folder containing multiple
+     MRC files when -Serial option is turned on.
+
+-InTiff   
+  1. Input TIFF file that stores a dose fractionated stack.
+-OutMrc   
+  1. Output MRC file that stores the frame sum.
+  2. It can be either a MRC file name or the prefix of a series
+     MRC files when -Serial option is turned on.
+
+-ArcDir   
+ 1. Path of the archive folder that holds the archived raw
+    stacks with each pixel packed into 4 bits.
+ 2. The archived stacks are saved in MRC file with the gain
+    reference saved in the extended header.
+ 3. The rotated and/or flipped gain reference will be saved
+    if -RotGain and or -FlipGain are enabled.
+
+-Serial   
+  1. Serial-processing all MRC files in a given folder whose
+     name should be specified following -InMrc.
+  2. The output MRC file name emplate should be provided
+     folllowing -OutMrc
+  3. 1 - serial processing, 0 - single processing, default.
+  4. This option is only for single-particle stack files.
+
+-Gain     
+   MRC file that stores the gain reference. If not
+   specified, MRC extended header will be visited
+   to look for gain reference.
+
+-TmpFile  
+   Temporary image file for debugging.
+
+-LogFile  
+   Log file storing alignment data.
+
+-Patch    
+   Number of patches to be used for patch based
+   alignment, default 0 0 corresponding full frame
+   alignment.
+
+-MaskCent 
+   Center of subarea that will be used for alignement,
+   default 0 0 corresponding to the frame center.
+
+-MaskSize 
+   The size of subarea that will be used for alignment,
+   default 1.0 1.0 corresponding full size.
+
+-Iter     
+   Maximum iterations for iterative alignment,
+   default 5 iterations.
+
+-Tol      
+   Tolerance for iterative alignment,
+   default 0.5 pixel.
+
+-Bft      
+   B-Factor for alignment, default 100.
+
+-StackZ   
+   Number of frames per stack. If not specified,
+   it will be loaded from MRC header.
+
+-FtBin    
+   Binning performed in Fourier space, default 1.0.
+
+-InitDose 
+   Initial dose received before stack is acquired
+
+-FmDose   
+   Frame dose in e/A^2. If not specified, dose
+   weighting will be skipped.
+
+-PixSize  
+   Pixel size in A of input stack in angstrom. If not
+   specified, dose weighting will be skipped.
+
+-kV       
+   High tension in kV needed for dose weighting.
+   Default is 300.
+
+-Align    
+   Generate aligned sum (1) or simple sum (0)
+
+-Throw    
+   Throw initial number of frames, default is 0
+
+-Trunc    
+   Truncate last number of frames, default is 0
+
+-Group    
+   Group every specified number of frames by adding
+   them together. The alignment is then performed
+   on the summed frames. By default, no grouping
+   is performed.
+
+-Crop     
+   1. Crop the loaded frames to the given size.
+   2. By default the original size is loaded.
+
+-FmRef    
+   Specify which frame to be the reference to which
+   all other frames are aligned. By default (-1) the
+   the central frame is chosen. The central frame is
+   at N/2 based upon zero indexing where N is the
+   number of frames that will be summed, i.e., not
+   including the frames thrown away.
+
+-Tilt     
+   Specify the starting angle and the step angle of tilt
+   series. They are required for dose weighting. If not
+   given, dose weighting will be disabled.
+
+-RotGain  
+   Rotate gain reference counter-clockwise.
+   0 - no rotation, default,
+   1 - rotate 90 degree,
+   2 - rotate 180 degree,
+   3 - rotate 270 degree.
+
+-FlipGain 
+   Flip gain reference after gain rotation.
+   0 - no flipping, default,
+   1 - flip upside down, 
+   2 - flip left right.
+
+-Mag      
+   1. Correct anisotropic magnification by stretching
+      image along the major axis, the axis where the
+      lower magificantion is detected.
+   2. Three inputs are needed including magnifications
+      along major and minor axes and the angle of the
+      major axis relative to the image x-axis in degree.
+   3. By default no correction is performed.
+
+-Gpu      
+   GPU IDs. Default 0.
+   For multiple GPUs, separate IDs by space.
+   For example, -Gpu 0 1 2 3 specifies 4 GPUs.
+
+
+MotionCor2: Build Nov. 14, 2016
+
+-InMrc      Micrographs/Falcon_2012_06_12-16_59_12_0_movie.mrcs
+-InTiff     
+-InSuffix   
+-OutMrc     MotionCorr/job002/Micrographs/Falcon_2012_06_12-16_59_12_0.mrc
+-ArcDir     
+-Gain       
+-TmpFile    
+-LogFile    
+-Serial     0
+-MaskCent   0.000000  0.000000
+-MaskSize   1.000000  1.000000
+-Patch      5  5
+-Iter       7
+-Tol        0.500000
+-Bft        150.000000
+-StackZ     0
+-FtBin      1.000000
+-InitDose   0.000000
+-FmDose     1.000000
+-PixSize    3.540000
+-kV         300
+-Throw      0
+-Trunc      0
+-Group      1
+-FmRef      -1
+-OutStack   1
+-RotGain    0
+-FlipGain   0
+-Align      1
+-Tilt       0.000000  0.000000
+-Mag        1.000000  1.000000  0.000000
+-Crop       0  0
+-Gpu        0
+
+GPU 0 memory: 8113 MB
+
+CLoadGain: load gain reference from header.
+Info: invalid gain reference from header.
+   Image size is 1950 x 1950, gain bytes must be 15210000, mismatching header gain bytes 0.
+
+Gain has not been found.
+
+Stack size: 1950  1950  16
+Stack mode: 2
+Stack 0001 has been loaded, 0 stacks left.
+
+
+Align thread has been started.
+
+Gain ref not found.
+Convert stack mode to float only.
+
+Start to detect bad and hot pixels.
+Sum frame    1 to   16 on GPU  0
+
+Calculate statistics.
+CC Mean Std: 1.817e-01  1.314e-01
+Number of defect patches: 0
+CC: >= 0.970
+
+Min Max Mean Std:    36472.10 58012.32 49034.68  1775.52
+Num Hot pixels:      0
+Hot pixel threshold: 59687.82
+
+Start to correct bad and hot pixels.
+...... correct bad pixels of frame 1 to 16
+
+Patch based alignment
+Fourier transform of entire stack, please wait.
+Fourier transform entire stack, done.
+
+Full-frame alignment has been started.
+Iteration ( 1) Error 0.359061
+Total Iterations: 1  Error: 0.359061
+
+Full-frame alignment shift
+...... Frame (  1) shift:     0.00      0.00
+...... Frame (  2) shift:     0.51      0.06
+...... Frame (  3) shift:     0.50     -0.10
+...... Frame (  4) shift:     0.36     -0.12
+...... Frame (  5) shift:     0.27     -0.09
+...... Frame (  6) shift:     0.41     -0.11
+...... Frame (  7) shift:     0.28     -0.13
+...... Frame (  8) shift:     0.33     -0.01
+...... Frame (  9) shift:     0.37     -0.16
+...... Frame ( 10) shift:     0.35     -0.05
+...... Frame ( 11) shift:     0.29     -0.26
+...... Frame ( 12) shift:     0.40     -0.22
+...... Frame ( 13) shift:     0.35     -0.25
+...... Frame ( 14) shift:     0.29     -0.23
+...... Frame ( 15) shift:     0.38     -0.14
+...... Frame ( 16) shift:     0.30     -0.16
+
+Full-frame shifts have been corrected.
+Start to align patches.
+
+Align patch 1, 24 left
+Iteration ( 1) Error 0.415033
+Total Iterations: 1  Error: 0.415033
+
+
+Align patch 2, 23 left
+Iteration ( 1) Error 0.512410
+Iteration ( 2) Error 0.075083
+Total Iterations: 2  Error: 0.075083
+
+
+Align patch 3, 22 left
+Iteration ( 1) Error 0.596418
+Iteration ( 2) Error 0.106998
+Total Iterations: 2  Error: 0.106998
+
+
+Align patch 4, 21 left
+Iteration ( 1) Error 0.539212
+Iteration ( 2) Error 0.081248
+Total Iterations: 2  Error: 0.081248
+
+
+Align patch 5, 20 left
+Iteration ( 1) Error 0.691331
+Iteration ( 2) Error 0.154206
+Total Iterations: 2  Error: 0.154206
+
+
+Align patch 6, 19 left
+Iteration ( 1) Error 0.676618
+Iteration ( 2) Error 0.080128
+Total Iterations: 2  Error: 0.080128
+
+
+Align patch 7, 18 left
+Iteration ( 1) Error 0.596976
+Iteration ( 2) Error 0.060813
+Total Iterations: 2  Error: 0.060813
+
+
+Align patch 8, 17 left
+Iteration ( 1) Error 0.451057
+Total Iterations: 1  Error: 0.451057
+
+
+Align patch 9, 16 left
+Iteration ( 1) Error 0.530406
+Iteration ( 2) Error 0.089345
+Total Iterations: 2  Error: 0.089345
+
+
+Align patch 10, 15 left
+Iteration ( 1) Error 0.915816
+Iteration ( 2) Error 0.066536
+Total Iterations: 2  Error: 0.066536
+
+
+Align patch 11, 14 left
+Iteration ( 1) Error 0.567250
+Iteration ( 2) Error 0.059483
+Total Iterations: 2  Error: 0.059483
+
+
+Align patch 12, 13 left
+Iteration ( 1) Error 0.702054
+Iteration ( 2) Error 0.058429
+Total Iterations: 2  Error: 0.058429
+
+
+Align patch 13, 12 left
+Iteration ( 1) Error 0.579713
+Iteration ( 2) Error 0.068333
+Total Iterations: 2  Error: 0.068333
+
+
+Align patch 14, 11 left
+Iteration ( 1) Error 0.498526
+Total Iterations: 1  Error: 0.498526
+
+
+Align patch 15, 10 left
+Iteration ( 1) Error 0.640373
+Iteration ( 2) Error 0.138770
+Total Iterations: 2  Error: 0.138770
+
+
+Align patch 16, 9 left
+Iteration ( 1) Error 0.453778
+Total Iterations: 1  Error: 0.453778
+
+
+Align patch 17, 8 left
+Iteration ( 1) Error 0.571966
+Iteration ( 2) Error 0.063426
+Total Iterations: 2  Error: 0.063426
+
+
+Align patch 18, 7 left
+Iteration ( 1) Error 0.530039
+Iteration ( 2) Error 0.134023
+Total Iterations: 2  Error: 0.134023
+
+
+Align patch 19, 6 left
+Iteration ( 1) Error 0.637596
+Iteration ( 2) Error 0.080325
+Total Iterations: 2  Error: 0.080325
+
+
+Align patch 20, 5 left
+Iteration ( 1) Error 0.649926
+Iteration ( 2) Error 0.067018
+Total Iterations: 2  Error: 0.067018
+
+
+Align patch 21, 4 left
+Iteration ( 1) Error 0.444234
+Total Iterations: 1  Error: 0.444234
+
+
+Align patch 22, 3 left
+Iteration ( 1) Error 0.630767
+Iteration ( 2) Error 0.126275
+Total Iterations: 2  Error: 0.126275
+
+
+Align patch 23, 2 left
+Iteration ( 1) Error 0.437814
+Total Iterations: 1  Error: 0.437814
+
+
+Align patch 24, 1 left
+Iteration ( 1) Error 0.520126
+Iteration ( 2) Error 0.089982
+Total Iterations: 2  Error: 0.089982
+
+
+Align patch 25, 0 left
+Iteration ( 1) Error 1.062897
+Iteration ( 2) Error 0.117609
+Total Iterations: 2  Error: 0.117609
+
+3D Fitting completed.
+
+Correct local motion, please wait.
+Local motion has been corrected.
+
+Process thread exits.
+
+Computational time: 19.631168 sec
+Total time: 20.684092 sec

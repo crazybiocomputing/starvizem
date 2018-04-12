@@ -1,0 +1,19 @@
+ Using MOTIONCOR2 executable in: /public/EM/MOTIONCOR2/MotionCor2
+ to correct beam-induced motion for the following micrographs: 
+  * Micrographs/Falcon_2012_06_12-14_33_35_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-14_57_34_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-15_14_01_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-15_41_22_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-15_53_09_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-15_56_10_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-16_26_22_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-16_44_07_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-16_55_40_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-16_59_12_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-17_02_43_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-17_14_17_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-17_17_05_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-17_23_32_0_movie.mrcs
+  * Micrographs/Falcon_2012_06_12-17_26_54_0_movie.mrcs
+ Correcting beam-induced motions using Shawn Zheng's MOTIONCOR2 ...
+000/??? sec ~~(,_,">                                                          [oo]0.32/4.75 min ...~~(,_,">0.67/5.00 min .......~~(,_,">1.03/5.17 min ...........~~(,_,">1.38/5.18 min ...............~~(,_,">1.75/5.25 min ...................~~(,_,">2.12/5.28 min .......................~~(,_,">2.50/5.35 min ...........................~~(,_,">2.85/5.33 min ...............................~~(,_,">3.20/5.33 min ....................................~~(,_,">3.55/5.32 min .......................................~~(,_,">3.90/5.32 min ............................................~~(,_,">4.27/5.33 min ................................................~~(,_,">4.63/5.33 min ....................................................~~(,_,">5.00/5.35 min ........................................................~~(,_,">5.35/5.35 min ............................................................~~(,_,">
