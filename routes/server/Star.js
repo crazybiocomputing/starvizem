@@ -75,6 +75,15 @@ module.exports = class Star {
     return words.slice(start,start + 3);
   }
 
+  /**
+   * Get a job ID from the process name
+   *
+   * @author Jean-Christophe Taveau
+   */
+  static getExtension(filename) {
+    return filename.split('.').pop();
+  }
+
 }
 
 
