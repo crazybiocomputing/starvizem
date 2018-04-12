@@ -44,7 +44,6 @@ const readClass2D = (json2d) =>{
 
   const parseClass2D = (input) => {
 
-
     //creation of variables and objects in the incoming json
 
     let class2D = {
@@ -100,6 +99,7 @@ const readClass2D = (json2d) =>{
   let data2dJSON = JSON.stringify(jsonClass2D);
   
   /*
+    // TODO??
       // Get data in `run.job`
       try {
         fs.readFileSync('./' + job.path+'/run.job','utf-8')

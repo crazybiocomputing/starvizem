@@ -62,162 +62,150 @@ const processes = {
  */
 const readPipeline = (filestats) => (starjson) => { 
 
-/* 
- * Get job in pipeline object
- *
- * @author Jean-Christophe Taveau
- */
-const getJob = (jobID,pipe_obj) => pipe_obj.jobs.find( (job) => job.jobID === jobID) ;
+  /* 
+   * Get job in pipeline object
+   *
+   * @author Jean-Christophe Taveau
+   */
+  const getJob = (jobID,pipe_obj) => pipe_obj.jobs.find( (job) => job.jobID === jobID) ;
 
-/*
- * Get number of particles/micrographs/movies in STAR `fullpathfilename`
- *
- * @params {string} fullpathfilename - STAR filename
- *
- * @author Jean-Christophe Taveau
- */
-const getNumRaster = (pipejob) => {
-  // TODO WIP
-  // let process,job,filename;
-  // [process,job,filename] = Star.splitPath(pipejob.outputs[0].file);
+  /*
+   * Get number of particles/micrographs/movies in RELION job
+   *
+   * @params {string} fullpathfilename - STAR filename
+   *
+   * @author Jean-Christophe Taveau
+   */
+  const getNumRaster = (pipejob) => {
+    // TODO WIP
 
-  // NODE_MOVIES      - 2D micrograph movie(s), e.g. Falcon001_movie.mrcs or micrograph_movies.star
-  // NODE_MICS        - 2D micrograph(s), possibly with CTF information as well, e.g. Falcon001.mrc or micrographs.star
-  // NODE_MIC_COORDS  - Suffix for particle coordinates in micrographs (e.g. autopick.star or .box)
-  // NODE_PART_DATA   - A metadata (STAR) file with particles (e.g. particles.star or run1_data.star)
-  // NODE_MOVIE_DATA  - A metadata (STAR) file with particle movie-frames (e.g. particles_movie.star or run1_ct27_data.star)
-  // NODE_2DREFS      - A STAR file with one or multiple 2D references, e.g. autopick_references.star
-  
-  // console.log(process,job,filename);
-  let num = -1;
-  pipejob.outputs.forEach( (node) => {
-    if (node.type === svzm.NODE_MOVIES 
-      || node.type === svzm.NODE_MICS 
-      || node.type === svzm.NODE_PART_DATA 
-      || node.type === svzm.NODE_MOVIES 
-      || node.type === svzm.NODE_MOVIE_DATA) {
-      try {
-        // Get file stats
-        let stats = fs.statSync('./'+node.file);
-        node.mtime = stats.mtime;
-        // Read... and Parse
-        num = svzm.readSTARHeader(stats)(fs.readFileSync('./'+node.file,'utf-8')).tables[0].my;
-        node.numRasters = num;
+    // NODE_MOVIES      - 2D micrograph movie(s), e.g. Falcon001_movie.mrcs or micrograph_movies.star
+    // NODE_MICS        - 2D micrograph(s), possibly with CTF information as well, e.g. Falcon001.mrc or micrographs.star
+    // NODE_MIC_COORDS  - Suffix for particle coordinates in micrographs (e.g. autopick.star or .box)
+    // NODE_PART_DATA   - A metadata (STAR) file with particles (e.g. particles.star or run1_data.star)
+    // NODE_MOVIE_DATA  - A metadata (STAR) file with particle movie-frames (e.g. particles_movie.star or run1_ct27_data.star)
+    // NODE_2DREFS      - A STAR file with one or multiple 2D references, e.g. autopick_references.star
+    
+    let num = -1;
+    pipejob.outputs.forEach( (node) => {
+      if (node.type === svzm.NODE_MOVIES 
+        || node.type === svzm.NODE_MICS 
+        || node.type === svzm.NODE_PART_DATA 
+        || node.type === svzm.NODE_MOVIES 
+        || node.type === svzm.NODE_MOVIE_DATA) {
+        try {
+          // Get file stats
+          let stats = fs.statSync('./'+node.file);
+          node.mtime = stats.mtime;
+          // Read... and Parse
+          num = svzm.readSTARHeader(stats)(fs.readFileSync('./'+node.file,'utf-8')).tables[0].my;
+          node.numRasters = num;
+        }
+        catch (err) {
+          console.log(err);
+        };
       }
-      catch (err) {
-        console.log(err);
-      };
-    }
-  });
-  
-  return num;
-};
-  
-
-
-const parsePipeline = (input) => {
-
-  let starobj = Star.create(input);
-  
-  // Pipeline data structure
-  let pipe = {
-    comment : 'Created by STARVIZEM',
-    date: (new Date()).toString().split(' ').splice(1,4).join('/'),
-    mtime: filestats.mtime,
-    jobsnumber: -1,
-    jobs : []
+    });
+    
+    return num;
   };
   
-  // DEPRECATED
-  // Get jobs number in table `PipeLineJobCounter`
-  // pipe.jobsnumber = starobj.getTable('pipeline_general').getValue('_rlnPipeLineJobCounter') - 1;
 
-  // Get jobs name + aliases
-  let table = starobj.getTable('pipeline_processes'); //getTable('pipeline_processes',input);
-  Array.from({length: table.my}, (v,i) => i).forEach( (index) => {
-    let row = table.getRow(index);
-    let words = row[0].split('/');
-    let job = {
-      id : index,
-      jobID : Star.getJobID(row[0]),
-      name: row[0],                     // _rlnPipeLineProcessName
-      alias : row[1],                   // _rlnPipeLineProcessAlias
-      path : row[0],
-      process : row[2],                 // _rlnPipeLineProcessType
-      params : [],
-      sources: [],
-      targets: [],
-      inputs: [],
-      outputs: []
+  /*
+   * Parse the RELION `default_pipeline.star`
+   *
+   * @params {object} input - STAR Object
+   * @return {object} - Graph Object suitable for `D3.js` diagrams
+   *
+   * @author Jean-Christophe Taveau
+   */
+  const parsePipeline = (input) => {
+
+    let starobj = Star.create(input);
+    
+    // Pipeline data structure
+    let pipe = {
+      comment : 'Created by STARVIZEM',
+      date: (new Date()).toString().split(' ').splice(1,4).join('/'),
+      mtime: filestats.mtime,
+      jobsnumber: -1,
+      jobs : []
     };
     
-    pipe.jobs.push(job);
-  });
+    // DEPRECATED
+    // Get jobs number in table `PipeLineJobCounter`
+    // pipe.jobsnumber = starobj.getTable('pipeline_general').getValue('_rlnPipeLineJobCounter') - 1;
 
-  // Get Node types
-  let nodeTypes = starobj.getTable('pipeline_nodes');
-    
-  // Get Input Edges
-  table = starobj.getTable('pipeline_input_edges');
-  Array.from({length: table.my}, (v,i) => i)
-    .forEach( (index) => {
-      // Get source(s) and target(s)
-      let inputfile = table.getItem(index,'_rlnPipeLineEdgeFromNode').replace(/^\.\//,'');
-      let srcJob = getJob(Star.getJobID(inputfile),pipe);
-      let targetid = Star.getJobID(table.getItem(index,'_rlnPipeLineEdgeProcess'));
-      let targetJob = getJob(targetid,pipe);
-      // HACK Expressed in `id` or `jobid` ???
-      targetJob.sources.push(srcJob.jobID);
-      srcJob.targets.push(targetid);
-      // Add input
-      let j = nodeTypes.getColumn('_rlnPipeLineNodeName').indexOf(inputfile);
-      targetJob.inputs.push({file: inputfile, type: nodeTypes.getItem(j,'_rlnPipeLineNodeType')});
+    // Get jobs name + aliases
+    let table = starobj.getTable('pipeline_processes');
+    Array.from({length: table.my}, (v,i) => i).forEach( (index) => {
+      let row = table.getRow(index);
+      let words = row[0].split('/');
+      let job = {
+        id : index,
+        jobID : Star.getJobID(row[0]),
+        name: row[0],                     // _rlnPipeLineProcessName
+        alias : row[1],                   // _rlnPipeLineProcessAlias
+        path : row[0],
+        process : row[2],                 // _rlnPipeLineProcessType
+        params : [],
+        sources: [],
+        targets: [],
+        inputs: [],
+        outputs: []
+      };
+      
+      pipe.jobs.push(job);
     });
 
-  // Get Output Edges
-  table = starobj.getTable('pipeline_output_edges');
-  Array.from({length: table.my}, (v,i) => i)
-    .forEach( (index) => {
-      try {
-        let srcid = Star.getJobID(table.getItem(index,'_rlnPipeLineEdgeProcess'));
-        let srcJob = getJob(srcid,pipe);
-        let outputfile = table.getItem(index,'_rlnPipeLineEdgeToNode').replace(/^\.\//,'');
-        let targetid = Star.getJobID(outputfile);
+    // Get Node types
+    let nodeTypes = starobj.getTable('pipeline_nodes');
+      
+    // Get Input Edges
+    table = starobj.getTable('pipeline_input_edges');
+    Array.from({length: table.my}, (v,i) => i)
+      .forEach( (index) => {
+        // Get source(s) and target(s)
+        let inputfile = table.getItem(index,'_rlnPipeLineEdgeFromNode').replace(/^\.\//,'');
+        let srcJob = getJob(Star.getJobID(inputfile),pipe);
+        let targetid = Star.getJobID(table.getItem(index,'_rlnPipeLineEdgeProcess'));
         let targetJob = getJob(targetid,pipe);
-        // Only add if unique
-        if (srcJob.outputs.find( (out) => outputfile === out.file) === undefined) {
-          let j = nodeTypes.getColumn('_rlnPipeLineNodeName').indexOf(outputfile);
-          srcJob.outputs.push({file: outputfile, type: nodeTypes.getItem(j,'_rlnPipeLineNodeType')});
+        // HACK Expressed in `id` or `jobid` ???
+        targetJob.sources.push(srcJob.jobID);
+        srcJob.targets.push(targetid);
+        // Add input
+        let j = nodeTypes.getColumn('_rlnPipeLineNodeName').indexOf(inputfile);
+        targetJob.inputs.push({file: inputfile, type: nodeTypes.getItem(j,'_rlnPipeLineNodeType')});
+      });
+
+    // Get Output Edges
+    table = starobj.getTable('pipeline_output_edges');
+    Array.from({length: table.my}, (v,i) => i)
+      .forEach( (index) => {
+        try {
+          let srcid = Star.getJobID(table.getItem(index,'_rlnPipeLineEdgeProcess'));
+          let srcJob = getJob(srcid,pipe);
+          let outputfile = table.getItem(index,'_rlnPipeLineEdgeToNode').replace(/^\.\//,'');
+          let targetid = Star.getJobID(outputfile);
+          let targetJob = getJob(targetid,pipe);
+          // Only add if unique
+          if (srcJob.outputs.find( (out) => outputfile === out.file) === undefined) {
+            let j = nodeTypes.getColumn('_rlnPipeLineNodeName').indexOf(outputfile);
+            srcJob.outputs.push({file: outputfile, type: nodeTypes.getItem(j,'_rlnPipeLineNodeType')});
+          }
         }
-      }
-      catch (err) {
-        console.log(index,err);
-      }
-    });
-
-  // Get Raster (aka Micrographs, Movies or Particles) Number
-  table = starobj.getTable('pipeline_nodes');
-  pipe.jobs.forEach( (job) => {
-    job.numRasters = getNumRaster(job);
-    console.log(job.numRasters);
-  } );
-
-    
-    /* error test
-    for(let jb = 0; jb < joblist.length; jb++){
-      let jobpath = joblist[jb].path;
-      let jobid = joblist[jb].id;
-      console.log(jobpath + ' ' + jobid);
-      fs.readFile('./Class2D/job006/'+'run.err', 'utf8', function (err, data){
-        if (data != ''){
-          joblist[jb].error = data;
+        catch (err) {
+          console.log(index,err);
         }
       });
 
-    
-    };
-      */
-      
+    // Get Raster (aka Micrographs, Movies or Particles) Number
+    table = starobj.getTable('pipeline_nodes');
+    pipe.jobs.forEach( (job) => {
+      job.numRasters = getNumRaster(job);
+      console.log(job.numRasters);
+    } );
+
     // Update jobs number
     pipe.jobsnumber = pipe.jobs.length;
     return pipe;
@@ -227,7 +215,7 @@ const parsePipeline = (input) => {
 
   return parsePipeline(starjson);
 
-}
+};
 
 /**
  * Get RELION Pipeline
