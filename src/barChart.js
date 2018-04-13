@@ -24,7 +24,7 @@
 
 
 'use strict';
-
+const createBar = (data) => {
 let data2 = d3.json("http://localhost:3000/Class2D/job006", function(error, graph) {
 
     //Width and height variables
@@ -78,3 +78,4 @@ let data2 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
         .attr("transform", "translate(40, 400)")
         .call(d3.axisBottom(x));
 });
+}
