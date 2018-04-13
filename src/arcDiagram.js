@@ -25,6 +25,20 @@
 
 'use strict';
 
+
+/**
+ * Create Arc Diagram
+ *
+ * @author TODO
+ */
+const createArcDiagram = (data,width,height) = {
+  let svg = d3.create("svg");
+  // TODO
+  
+  return svg;
+};
+
+
 d3.json("http://localhost:3000/pipeline", function(error, graph) {
 
     //Width and height variables
@@ -143,3 +157,5 @@ d3.json("http://localhost:3000/pipeline", function(error, graph) {
 
 
 });
+
+

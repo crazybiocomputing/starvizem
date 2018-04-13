@@ -11,12 +11,18 @@
 
   <script type="text/javascript">
   
-  const createGraph = () => {
+  const createGraph = (rootID) => {
     // Get JSON data from web service
     d3.json('/pipeline')
       .then( (graph) => {
+      /*
+        let svg = createArcDiagram(graph);
         // Create a minimal dashboard :-D
-        let root = document.getElementById('root');
+        let root = document.getElementById(rootID);
+        // Attach element to DOM.
+        d3.select(root)
+          .append(() => svg.node());
+      */
         let list = document.createElement('ul');
         root.appendChild(list);
         graph.jobs.forEach( (job) => {
@@ -30,8 +36,11 @@
   </script>
 
   </head>
-  <body onload="createGraph();">
+  <body onload="createGraph('root');">
     <h1>Tests of StarVizEM - Arc Diagram</h1>
+    <ul>
+    <li><a href="javascript:void" onclick="create('/Class2D/job006/run_it025_data.star')">job006</a></li>
+    </ul>
     
     <content id="root"></content>
     
