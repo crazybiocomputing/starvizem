@@ -24,17 +24,31 @@
 
 
 'use strict';
+/**
+ * Create a Donut in svg and returns it
+ *
+ *
+ * @return svg
+ *
+ * @author Pauline Bock
+ */
+const createDonut = (data) => {
+    let svg = createSVG(data);
+    return svg;
+}
 
-let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, graph) {
+const createSVG = (data) => {
+    console.log(data);
     let width = 520,
-        height = 450,
-        radius = Math.min(width, height) / 2,
-        innerRadius = radius * 0.5,
-        innerRadiusFinal = radius * .5,
-        innerRadiusZoom = radius * .45;
+    height = 450,
+    radius = Math.min(width, height) / 2,
+    innerRadius = radius * 0.5,
+    innerRadiusFinal = radius * .5,
+    innerRadiusZoom = radius * .45;
 
     let color = d3.scaleOrdinal(d3.schemeCategory20);
 
+    //need to see how to construct a svg without appending it yet
     let svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height)
@@ -64,7 +78,7 @@ let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
         .value(function(d) { return d.totalnb; });
 
     let g = svg.selectAll(".arc")
-        .data(pie(graph.imagenbperclass))
+        .data(pie(data.imagenbperclass))
         .enter().append("g")
         .attr("class", "arc")
         .on("mouseover", mouseover)
@@ -101,5 +115,7 @@ let data1 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
             .duration(750)
             .attr("d", arcFinal);
     }
+    //return svg;
 
-});
+}
+
