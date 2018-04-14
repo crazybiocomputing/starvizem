@@ -41,6 +41,36 @@ function createStackedBarChart(data, width, height) {
         .range([90 * height / 100, 40])
         .padding(0.1);
 
+    let datas = data.imagenbperclass;
+    datas.sort(function(a, b) { return a.totalnb - b.totalnb; });
+
+    let stack = d3.stack()
+          .keys(datas)
+          .offset(d3.stackOffsetNone);
+
+    let layers = stack(datas);
+          y.domain(datas.map(function(d) { return d.classID }));
+          x.domain([0,d3.max(layers[layers.length-1], function(d) {return d[0] + d[1] })]);
+
+    svg.selectAll(".bar")
+          .data(datas)
+          .enter().append("rect")
+          .attr("class", "bar")
+          .attr("fill", function(d, i) { return color(i); })
+          .attr("x", 7 * width / 100)
+          .attr("width", function(d) { return x(d[1]) - x(d[0]) })
+          .attr("y", function(d) { return y(d.classID); })
+          .attr("height", y.bandwidth());
+
+    svg.append("g")
+          .attr("transform", "translate(" + 5 * width / 100 + ",0)")
+          .call(d3.axisLeft(y));
+
+    svg.append("g")
+          .attr("transform", "translate(" + 7 * width / 100 + ", " + 90 * height / 100 + ")")
+          .call(d3.axisBottom(x));
+
+
 
 
     return svg.node();
