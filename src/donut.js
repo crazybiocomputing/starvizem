@@ -27,39 +27,23 @@
 /**
  * Create a Donut in svg and returns it
  *
- *
- * @return svg
- *
- * @author Pauline Bock
+ * @author Marie
+ * 
+ * TODO : add interactive labels, virer les classes trop petites ou les zoomer ... 
  */
-const createDonut = (data) => {
-    let svg = createSVG(data);
-    return svg;
-}
 
-const createSVG = (data) => {
-    console.log(data);
-    let width = 520,
-    height = 450,
-    radius = Math.min(width, height) / 2,
-    innerRadius = radius * 0.5,
-    innerRadiusFinal = radius * .5,
-    innerRadiusZoom = radius * .45;
-
-    let color = d3.scaleOrdinal(d3.schemeCategory20);
-
-    //need to see how to construct a svg without appending it yet
-    let svg = d3.select("body").append("svg")
+function createDonut(data, width, height) {
+    let svg = d3.create("svg")
         .attr("width", width)
         .attr("height", height)
-        .style("border", "1px solid black")
-        .style("background-color", "rgb(180, 188, 215)")
-        .style("position", "absolute")
-        .style("top", "53%")
-        .style("left", "10%")
-        .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
+    let radius = Math.min(width, height) / 2,
+        innerRadius = radius * 0.5,
+        innerRadiusFinal = radius * .5,
+        innerRadiusZoom = radius * .45;
+
+    let color = d3.scaleOrdinal(d3.schemeAccent);
 
     let arc = d3.arc()
         .outerRadius(radius - 10)
@@ -74,13 +58,14 @@ const createSVG = (data) => {
         .innerRadius(radius - 40);
 
     let pie = d3.pie()
-        .sort(null)
         .value(function(d) { return d.totalnb; });
 
-    let g = svg.selectAll(".arc")
+    let g = svg.append("g")
+        .attr("class", "arc")
+        .selectAll("g")
         .data(pie(data.imagenbperclass))
         .enter().append("g")
-        .attr("class", "arc")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout);
 
@@ -89,25 +74,10 @@ const createSVG = (data) => {
         .attr("d", arc)
         .attr("stroke", "#fff");
 
-    g.append("text")
-        .text(function(d) {
-            return d.data.totalnb;
-        })
-        .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
-        .style("fill", "black")
-        .style("font-size", "15px")
-        .style("font-family", "Arial");
-
-
-    svg.append("text")
-        .attr("dy", ".35em")
-        .attr("text-anchor", "middle")
-        .text("Class2D");
-
     function mouseover() {
         d3.select(this).select("path").transition()
             .duration(750)
-            .attr("d", arcZoom);
+            .attr("d", arcZoom)
     }
 
     function mouseout() {
@@ -115,7 +85,6 @@ const createSVG = (data) => {
             .duration(750)
             .attr("d", arcFinal);
     }
-    //return svg;
-
+    return svg.node();
 }
 
