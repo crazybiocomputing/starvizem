@@ -1,48 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf8">
     <title>Test Arc Diagram</title>
-    <script src="../javascripts/d3.js"></script>
+    <script src="http://d3js.org/d3.v5.js"></script>
     <script src="../js/common.js"></script>
     <script src="../js/arcDiagram.js"></script>
     <script src="../js/barChart.js"></script>
     <script src="../js/donut.js"></script>
 
-  <script type="text/javascript">
-  
-  const createGraph = (rootID) => {
-    // Get JSON data from web service
-    d3.json('/pipeline')
-      .then( (graph) => {
-      /*
-        let svg = createArcDiagram(graph);
-        // Create a minimal dashboard :-D
-        let root = document.getElementById(rootID);
-        // Attach element to DOM.
-        d3.select(root)
-          .append(() => svg.node());
-      */
-        let list = document.createElement('ul');
-        root.appendChild(list);
-        graph.jobs.forEach( (job) => {
-          let item = document.createElement('li');
-          item.innerHTML = `<strong>JobID</strong>: ${job.jobID}, <strong>Alias</strong>: ${job.alias}, <strong>Path</strong>: ${job.path}`;
-          list.appendChild(item);
-        });
-      });
-  };
+    <script type="text/javascript">
+        const createGraph = (rootID) => {
+            // Get JSON data from web service
+            d3.json('/pipeline').then(function(graph) {
+                let width = 1600;
+                let height = 400;
 
-  </script>
+                document.body.appendChild(createArcDiagram(graph, width, height));
 
-  </head>
-  <body onload="createGraph('root');">
+            });
+
+        };
+    </script>
+
+</head>
+
+<body onload="createGraph('root');">
     <h1>Tests of StarVizEM - Arc Diagram</h1>
-    <ul>
-    <li><a href="javascript:void" onclick="create('/Class2D/job006/run_it025_data.star')">job006</a></li>
-    </ul>
-    
+
     <content id="root"></content>
-    
-  </body>
+
+</body>
+
 </html>
