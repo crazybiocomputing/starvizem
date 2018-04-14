@@ -1,47 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf8">
     <title>Test Donut</title>
-    <script src="../javascripts/d3.js"></script>
-    <script src="http://d3js.org/d3.v4.js"></script>
+    <script src="http://d3js.org/d3.v5.js"></script>
     <script src="../js/common.js"></script>
     <script src="../js/arcDiagram.js"></script>
     <script src="../js/barChart.js"></script>
     <script src="../js/donut.js"></script>
 
-  <script type="text/javascript">
-  
-  const createGraph = (rootID, job) => {
-    // Get JSON data from web service
-    //let data = create(job);
-    //console.log("apres create dans creategraph"+data);
-    d3.json("http://localhost:3000"+job, function(error, graph) { 
-      console.log(graph);
-        let svg = createDonut(graph);
-        // Create a minimal dashboard :-D
-        //let root = document.getElementById(rootID);
-        //root.appendChild(svg);
-        // Attach element to DOM.
-        d3.select(root)
-          .append(() => svg.node());
 
-        if (error){ throw error;}
-      });
-  };
+    <script type="text/javascript">
+        const createGraph = (rootID, job) => {
+            // Get JSON data from web service
+            d3.json(job).then(function(graph) {
+                let width = 600;
+                let height = 600;
 
+                document.body.appendChild(createDonut(graph, width, height));
 
-  </script>
+            });
 
-  </head>
-  <body>
+        };
+    </script>
+
+</head>
+
+<body>
     <h1>Tests of StarVizEM - Donut</h1>
     <ul>
-      <li><a href="javascript:void" onclick="createGraph('root', '/Class2D/job006/')">job006</a></li>
-      <li><a href="javascript:void" onclick="createGraph('root', '/Class2D/job014/')">job0014</a></li>
-      </ul>
-
+        <li><a href="javascript:void" onclick="createGraph('root', '/Class2D/job006/')">job006</a></li>
+        <li><a href="javascript:void" onclick="createGraph('root', '/Class2D/job014/')">job0014</a></li>
+    </ul>
     <content id="root"></content>
-    
-  </body>
+
+</body>
+
 </html>
