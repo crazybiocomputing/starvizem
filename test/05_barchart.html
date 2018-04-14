@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf8">
+    <title>Test Donut</title>
+    <script src="http://d3js.org/d3.v5.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/arcDiagram.js"></script>
+    <script src="../js/barChart.js"></script>
+    <script src="../js/donut.js"></script>
+
+
+    <script type="text/javascript">
+        const createGraph = (rootID, job) => {
+            // Get JSON data from web service
+            d3.json(job).then(function(graph) {
+                let width = 600;
+                let height = 600;
+
+                document.body.appendChild(createBarChart(graph, width, height));
+
+            });
+
+        };
+    </script>
+
+</head>
+
+<body>
+    <h1>Tests of StarVizEM - Donut</h1>
+    <ul>
+        <li><a href="javascript:void" onclick="createGraph('root', '/Class2D/job006/')">job006</a></li>
+        <li><a href="javascript:void" onclick="createGraph('root', '/Class2D/job014/')">job0014</a></li>
+    </ul>
+    <content id="root"></content>
+
+</body>
+
+</html>
