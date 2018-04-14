@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Test Plot</title>
+    <script src="../javascripts/d3.js"></script>
+    <script src="http://d3js.org/d3.v5.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/plot.js"></script>
+
+  <script type="text/javascript">
+  
+  const createGraph = () => {
+    // Get JSON data from web service
+    //let data = create(job);
+    //console.log("apres create dans creategraph"+data);
+    d3.json("http://localhost:3000"+job).then(function(data) { 
+      console.log(data);
+        let svg = createPlot(data);
+        // Create a minimal dashboard :-D
+        //let root = document.getElementById(rootID);
+        //root.appendChild(svg);
+        // Attach element to DOM.
+        d3.select(root)
+          .append(() => svg.node());
+        if (error){ throw error;}
+      });
+  };
+  </script>
+
+  </head>
+  <body>
+    <h1>Tests of StarVizEM - Plot</h1>
+    <ul>
+      <li><a href="javascript:void" onclick="createPlot('root', '/Class2D/job006/')">job006</a></li>
+      <li><a href="javascript:void" onclick="createPlot('root', '/Class2D/job014/')">job0014</a></li>
+      </ul>
+
+    <content id="root"></content>
+    
+  </body>
+</html>
