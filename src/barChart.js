@@ -24,36 +24,24 @@
 
 
 'use strict';
-const createBar = (data) => {
-let data2 = d3.json("http://localhost:3000/Class2D/job006", function(error, graph) {
 
-    //Width and height variables
-    let width = 525;
-    let height = 450;
-
-    //Create SVG
-    let svg = d3.select("body").append("svg")
+function createBarChart(data, width, height) {
+    let svg = d3.create("svg")
         .attr("width", width)
         .attr("height", height)
-        .style("border", "1px solid black")
-        .style("background-color", "rgb(180, 188, 215)")
-        .style("position", "absolute")
-        .style("top", "53%")
-        .style("left", "40%")
-        .append("g");
+        .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
-    //Color
-    let color = d3.scaleOrdinal(d3.schemeCategory20);
+    let color = d3.scaleOrdinal(d3.schemeAccent);
 
     //axis
     let x = d3.scaleLinear()
-        .range([0, width - 50]);
+        .range([0, 90 * width / 100]);
 
     let y = d3.scaleBand()
-        .range([height - 50, 40])
+        .range([90 * height / 100, 40])
         .padding(0.1);
 
-    let datas = graph.imagenbperclass;
+    let datas = data.imagenbperclass;
     datas.sort(function(a, b) { return a.totalnb - b.totalnb; });
 
     x.domain([0, d3.max(datas, function(d) { return d.totalnb })]);
@@ -65,17 +53,18 @@ let data2 = d3.json("http://localhost:3000/Class2D/job006", function(error, grap
         .enter().append("rect")
         .attr("class", "bar")
         .attr("fill", function(d, i) { return color(i); })
-        .attr("x", 40)
+        .attr("x", 7 * width / 100)
         .attr("width", function(d) { return x(d.totalnb); })
         .attr("y", function(d) { return y(d.classID); })
         .attr("height", y.bandwidth());
 
     svg.append("g")
-        .attr("transform", "translate(30,0)")
+        .attr("transform", "translate(" + 5 * width / 100 + ",0)")
         .call(d3.axisLeft(y));
 
     svg.append("g")
-        .attr("transform", "translate(40, 400)")
+        .attr("transform", "translate(" + 7 * width / 100 + ", " + 90 * height / 100 + ")")
         .call(d3.axisBottom(x));
-});
+
+    return svg.node();
 }
