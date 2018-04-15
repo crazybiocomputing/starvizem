@@ -41,29 +41,28 @@ function createBarChart(data, width, height) {
         .range([90 * height / 100, 40])
         .padding(0.1);
 
-    let datas = data.imagenbperclass;
-    datas.sort(function(a, b) { return a.totalnb - b.totalnb; });
+    data.sort(function(a, b) { return a.nb - b.nb; });
 
-    x.domain([0, d3.max(datas, function(d) { return d.totalnb })]);
-    y.domain(datas.map(function(d) { return d.classID }));
+    x.domain([0, d3.max(data, function(d) { return d.nb })]);
+    y.domain(data.map(function(d) { return d.labels }));
 
 
     svg.selectAll(".bar")
-        .data(datas)
+        .data(data)
         .enter().append("rect")
         .attr("class", "bar")
         .attr("fill", function(d, i) { return color(i); })
-        .attr("x", 7 * width / 100)
-        .attr("width", function(d) { return x(d.totalnb); })
-        .attr("y", function(d) { return y(d.classID); })
+        .attr("x", 9 * width / 100)
+        .attr("width", function(d) { return x(d.nb); })
+        .attr("y", function(d) { return y(d.labels); })
         .attr("height", y.bandwidth());
 
     svg.append("g")
-        .attr("transform", "translate(" + 5 * width / 100 + ",0)")
+        .attr("transform", "translate(" + 9 * width / 100 + ",0)")
         .call(d3.axisLeft(y));
 
     svg.append("g")
-        .attr("transform", "translate(" + 7 * width / 100 + ", " + 90 * height / 100 + ")")
+        .attr("transform", "translate(" + 9 * width / 100 + ", " + 90 * height / 100 + ")")
         .call(d3.axisBottom(x));
 
     return svg.node();
