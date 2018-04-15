@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf8">
-    <title>Test Plot</title>
+    <title>Test Plot XY</title>
     <script src="../javascripts/d3.js"></script>
     <script src="http://d3js.org/d3.v5.min.js"></script>
     <script src="../js/common.js"></script>
@@ -22,16 +22,26 @@
                     temp["x"] = d.classID;
                     temp["y"] = d.nbHR;
                     data.push(temp);
-
                 });
              
                 document.body.appendChild(createPlot(data, width, height));
-
             });
-
         };
     </script>
 
+<style>    
+div.tooltip {
+  position: absolute;
+  width: 40px;
+  height: 30px;
+  padding: 5px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+}
+
+</style>
 </head>
 
 <body>
