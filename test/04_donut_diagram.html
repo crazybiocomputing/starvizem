@@ -15,10 +15,18 @@
         const createGraph = (rootID, job) => {
             // Get JSON data from web service
             d3.json(job).then(function(graph) {
+                console.log(graph)
                 let width = 600;
                 let height = 600;
-
-                document.body.appendChild(createDonut(graph, width, height));
+                let datas = graph.imagenbperclass;
+                let data = [];
+                datas.forEach(function(d) {
+                    let temp = {};
+                    temp["labels"] = d.classID;
+                    temp["nb"] = d.totalnb;
+                    data.push(temp);
+                });
+                document.body.appendChild(createDonut(data, width, height));
 
             });
 
