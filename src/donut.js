@@ -34,10 +34,6 @@
 
 function createDonut(data, width, height) {
     
-    let values = [];
-    data.forEach(function(elements) { values.push(elements.nb);});
-    let maxvalue = Math.max(...values);
-    
     let svg = d3.create("svg")
         .attr("width", width)
         .attr("height", height)
@@ -74,7 +70,7 @@ function createDonut(data, width, height) {
     
     let pie = d3.pie()
         .sort(function(a,b){return d3.descending(a.nb, b.nb);})
-        .value(function(d) { if (d.nb> (10*maxvalue/100)) { return d.nb;} });
+        .value(function(d) { if (d.nb> (10*d3.max(data, function(d) { return d.nb; })/100)) { return d.nb;} });
 
     let g = svg.append("g")
         .attr("class", "arc")
