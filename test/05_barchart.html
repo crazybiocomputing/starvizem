@@ -17,8 +17,15 @@
             d3.json(job).then(function(graph) {
                 let width = 600;
                 let height = 600;
-
-                document.body.appendChild(createBarChart(graph, width, height));
+                let datas = graph.imagenbperclass;
+                let data = [];
+                datas.forEach(function(d) {
+                    let temp = {};
+                    temp["labels"] = "class" + d.classID;
+                    temp["nb"] = d.totalnb;
+                    data.push(temp);
+                });
+                document.body.appendChild(createBarChart(data, width, height));
 
             });
 
