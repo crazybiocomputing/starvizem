@@ -58,12 +58,12 @@ function createDonut(data, width, height) {
         .innerRadius(radius - 40);
 
     let pie = d3.pie()
-        .value(function(d) { return d.totalnb; });
+        .value(function(d) { return d.nb; });
 
     let g = svg.append("g")
         .attr("class", "arc")
         .selectAll("g")
-        .data(pie(data.imagenbperclass))
+        .data(pie(data))
         .enter().append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
         .on("mouseover", mouseover)
