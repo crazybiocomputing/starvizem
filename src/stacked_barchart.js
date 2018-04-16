@@ -46,6 +46,51 @@ function createStackedBarChart(data, width, height) {
     let datas = data.imagenbperclass;
 
 
+    datas.forEach(function(d) {
+      var x0 = 0;
+      d.ages = [];
+
+      d3.keys(d).filter(function(key) {return !((key == "classID") || (key == "totalnb") || (key == "ages"));}).forEach(function(name){
+        d.ages.push({name: name , x0: x0 , x1: x0 += +d[name]});
+    });
+
+    //d.ages.forEach(function(a) {a.x0 /= x0 ,a.x1 /= x0;});
+    console.log(d.ages);
+});
+    svg.append("g")
+      .attr("class" , "axis")
+      .attr("transform", "translate(" + 5 * width / 100 + ",0)")
+      .call(d3.axisLeft(y))
+    /*.selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.6em")
+      .attr("transform", "rotate(-45)");*/
+
+    svg.append("g")
+      .attr("class" , "axis")
+      .attr("transform", "translate(" + 7 * width / 100 + ", " + 90 * height / 100 + ")")
+      .call(d3.axisBottom(x));
+
+    var classID = svg.selectAll(".classID")
+      .data(datas)
+      .enter().append("g")
+      .attr("class", "classID")
+      .attr("transform", function(d) { return "translate(" + (x(d.classID)) + ")"; });
+      //.attr("transform", "translate(" + 5 * width / 100 + ",0)")
+      //.style("fill", function(d, i) { return color(i); });
+
+    classID.selectAll("rect")
+      .data(function(d) { return d.ages; })
+      .enter().append("rect")
+      .attr("height"  , y.bandwidth())
+      .attr("y"      , function(d) { return y(d.x1); })
+      .attr("width" , function(d) { return x(d.x1) - x(d.x0); })
+      .style("fill" , function(d) { return color(d.name); });
+
+
+
+/*
     let stack = d3.stack()
           .keys(["nbHR","nbMR","nbLR"])
           .offset(d3.stackOffsetNone);
@@ -73,7 +118,7 @@ function createStackedBarChart(data, width, height) {
     svg.append("g")
           .attr("transform", "translate(" + 7 * width / 100 + ", " + 90 * height / 100 + ")")
           .call(d3.axisBottom(x));
-
+*/
 
 
 
