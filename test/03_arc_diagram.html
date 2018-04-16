@@ -15,43 +15,30 @@
     // Get JSON data from web service
     d3.json('/pipeline')
       .then(function(graph) {
-        let datas = graph.jobs;
-        console.log(datas);
-        let data = {};
-        let data_node = [];
-        let data_link = [];
-        datas.forEach( (d) => {
-          let temp_node = {
+        let data_nodes = [];
+        let data_links = [];
+        graph.jobs.forEach( (d) => {
+          data_nodes.push({
             id: d.jobID,
             process: d.process,
             value: d.targets.length
-          };
-          data_node.push(temp_node);
+          });
           if (d.targets.length !== 0) {
             d.targets.forEach( (t) => {
-              let val;
-              let temp_link = {
+              data_links.push({
                 source: d.jobID,
                 value: d.targets.length,
                 target: t
-              };
-/*
-              if (d.targets != []) {
-                  val = t;
-              } else {
-                  val = d.jobID;
-              }
-              temp_link["target"] = val;
-              */
-              data_link.push(temp_link);
+              });
             });
           }
         });
 
-        data["node"] = data_node;
-        data["links"] = data_link;
-        console.log(data);
-        document.body.appendChild(createArcDiagram(data, width, height));
+
+        console.log('DATA');
+        console.log(data_nodes);
+        console.log(data_links);
+        document.body.appendChild(createArcDiagram({nodes: data_nodes,links: data_links}, width, height));
       });
 
   };
