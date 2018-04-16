@@ -57,9 +57,7 @@ function createPlot(data, width, height) {
 
 
   x.domain([0,d3.max(data,function(d)  { return d.x; })]);
-
-  //x.domain(data.map(function(d){return d.x;}));
-  y.domain([0,d3.max(data, function(d) { return d.y; })]);
+  y.domain([d3.max(data, function(d) { return d.y; }),0]);
 
   svg.append("path")
       .attr("class", "line")
@@ -85,19 +83,49 @@ function createPlot(data, width, height) {
             .duration(200)
             .style("opacity", .9);
           div .html(
-            "<strong>"+"Y: "+"</strong>"+d.y + "</br>"+            
-            "<strong>"+"X: "+"</strong>"+d.x)     
+            "<strong>"+"X: "+"</strong>"+d.x + "</br>"+            
+            "<strong>"+"Y: "+"</strong>"+d.y)     
             .style("left", (d3.event.pageX) + "px")             
             .style("top", (d3.event.pageY ) + "px");
           });
    
   svg.append("g")
-      .attr("transform", "translate(" + 5 * width / 100 + ",0)")
+      .attr("transform", "translate(" + 30 + "," + 0 * width / 100 +")")
       .call(d3.axisLeft(y));
 
   svg.append("g")
-      .attr("transform", "translate(" + 0 + ", " + 90 * height / 100 + ")")
-      .call(d3.axisBottom(x));
+      .attr("transform", "translate(" + 0 +   "," + 30 +")")
+      .call(d3.axisTop(x));
+
+
+  svg.append("g")			
+      .attr("class", "grid")
+      .call(make_y_gridlines()
+          .tickSize(-width)
+          .tickFormat("")
+      )
+      .attr("transform", "translate(" + 30 + "," + 0 * width / 100 +")")
+      .style("opacity","0.2")
+
+
+  svg.append("g")			
+      .attr("class", "grid")
+      .attr("transform", "translate("+0+ "," +30 + ")")
+      .call(make_x_gridlines()
+          .tickSize(-height)
+          .tickFormat("")
+      )   
+      .style("opacity","0.2")
+      
+  function make_x_gridlines() {		
+        return d3.axisTop(x)
+            .ticks(5)
+    }   
+
+  function make_y_gridlines() {		
+        return d3.axisLeft(y)
+            .ticks(5)
+    }    
 
   return svg.node();
 }
