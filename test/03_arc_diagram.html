@@ -14,29 +14,32 @@
         const createGraph = (rootID) => {
             // Get JSON data from web service
             d3.json('/pipeline').then(function(graph) {
-                let width = 1600;
-                let height = 400;
+                let width = 1600; //à mettre en arguments
+                let height = 400; //argument
                 let datas = graph.jobs;
                 console.log(datas);
                 let data = {};
                 let data_node = [];
                 let data_link = [];
                 datas.forEach(function(d) {
-                    let targ = d.targets;
-                    targ.forEach(function(t) {
-                        let val;
-                        let temp_link = {};
-                        temp_link["source"] = d.jobID;
+                    if (d.targets !== undefined) {
+                        let targ = d.targets;
+                        targ.forEach(function(t) {
+                            let val;
+                            let temp_link = {};
+                            temp_link["source"] = d.jobID;
 
-                        temp_link["value"] = d.targets.length;
-                        if (d.targets != []) {
-                            val = t;
-                        } else {
-                            val = d.jobID;
-                        }
-                        temp_link["target"] = val;
-                        data_link.push(temp_link);
-                    })
+                            temp_link["value"] = d.targets.length;
+                            if (d.targets != []) {
+                                val = t;
+                            } else {
+                                val = d.jobID;
+                            }
+                            temp_link["target"] = val;
+                            data_link.push(temp_link);
+                        })
+                    }
+
 
                 });
 
