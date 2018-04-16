@@ -26,11 +26,52 @@
                     temp["nb"] = d.totalnb;
                     data.push(temp);
                 });
-                document.body.appendChild(createDonut(data, width, height));
+		dataR = regroupLowData(data);
+                document.body.appendChild(createDonut(dataR, width, height));
 
             });
 
         };
+	    
+	function regroupLowData(data){
+        let values = [];
+        let deletevalues = [];
+        data.forEach(function(e){ return values.push(e.nb); });
+        let maxvalue = Math.max(...values);
+        values.sort(function(a,b){ return a-b;});
+        let threshval = 5*maxvalue/100;
+        let somme = 0;
+        let bool = false;
+        
+        for (let i = 0; i < values.length; i++){
+            somme = somme + values[i];
+            if (somme >= threshval){
+                let index = i-1;
+                somme = somme - values[i];
+                for(let j = 0; j < index; j++){
+                    deletevalues.push(values.shift());
+                    bool = true;
+                }
+                if (bool == true){
+                    values.push(somme);
+                }
+            break;
+            }
+        }
+        for (let i = 0; i < data.length; i++){
+            if (deletevalues.includes(data[i].nb)){
+                data = data.filter(function (item) {
+                    return item.nb !== deletevalues[i] ;
+                });
+            }
+        }
+        console.log(deletevalues + "lenght: " + deletevalues.length);
+        if (deletevalues.length != 0){
+            data.push({labels: "Other", nb: somme });
+        }
+        return data;
+    }
+	    
     </script>
     
         <style>
