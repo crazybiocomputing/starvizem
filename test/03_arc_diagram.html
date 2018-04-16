@@ -39,18 +39,15 @@
                             data_link.push(temp_link);
                         })
                     }
-
-
-                });
-
-                datas.forEach(function(d) {
                     let temp_node = {};
                     temp_node["id"] = d.jobID;
                     temp_node["process"] = d.process;
                     temp_node["value"] = d.targets.length;
                     data_node.push(temp_node);
 
+
                 });
+
 
                 data["node"] = data_node;
                 data["links"] = data_link;
