@@ -37,9 +37,9 @@
         let values = [];
         let deletevalues = [];
         data.forEach(function(e){ return values.push(e.nb); });
-        let maxvalue = Math.max(...values);
+        let totalvalues = values.reduce((a, b) => a + b, 0);
         values.sort(function(a,b){ return a-b;});
-        let threshval = 5*maxvalue/100;
+        let threshval = 5*totalvalues/100;
         let somme = 0;
         let bool = false;
         
@@ -59,13 +59,14 @@
             }
         }
         for (let i = 0; i < data.length; i++){
-            if (deletevalues.includes(data[i].nb)){
-                data = data.filter(function (item) {
-                    return item.nb !== deletevalues[i] ;
-                });
+            for (let j = 0; j < deletevalues.length; j++){
+                if (deletevalues[j]){
+                    data = data.filter(function (item){
+                        return item.nb !== deletevalues[j]
+                    });
+                }
             }
         }
-        console.log(deletevalues + "lenght: " + deletevalues.length);
         if (deletevalues.length != 0){
             data.push({labels: "Other", nb: somme });
         }
