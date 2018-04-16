@@ -27,20 +27,22 @@
             value: d.targets.length
           };
           data_node.push(temp_node);
-          if (d.targets !== undefined) {
-            let targ = d.targets;
-            targ.forEach(function(t) {
+          if (d.targets.length !== 0) {
+            d.targets.forEach( (t) => {
               let val;
-              let temp_link = {};
-              temp_link["source"] = d.jobID;
-
-              temp_link["value"] = d.targets.length;
+              let temp_link = {
+                source: d.jobID,
+                value: d.targets.length,
+                target: t
+              };
+/*
               if (d.targets != []) {
                   val = t;
               } else {
                   val = d.jobID;
               }
               temp_link["target"] = val;
+              */
               data_link.push(temp_link);
             });
           }
