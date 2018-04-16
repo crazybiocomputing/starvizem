@@ -2,62 +2,58 @@
 <html>
 
 <head>
-    <meta charset="utf8">
-    <title>Test Arc Diagram</title>
-    <script src="http://d3js.org/d3.v5.js"></script>
-    <script src="../js/common.js"></script>
-    <script src="../js/arcDiagram.js"></script>
-    <script src="../js/barChart.js"></script>
-    <script src="../js/donut.js"></script>
+  <meta charset="utf8">
+  <title>Test Arc Diagram</title>
+  <script src="http://d3js.org/d3.v5.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/arcDiagram.js"></script>
+  <script src="../js/barChart.js"></script>
+  <script src="../js/donut.js"></script>
 
-    <script type="text/javascript">
-        const createGraph = (rootID, width, height) => {
-            // Get JSON data from web service
-            d3.json('/pipeline').then(function(graph) {
+  <script type="text/javascript">
+  const createGraph = (rootID, width, height) => {
+    // Get JSON data from web service
+    d3.json('/pipeline')
+      .then(function(graph) {
+        let datas = graph.jobs;
+        console.log(datas);
+        let data = {};
+        let data_node = [];
+        let data_link = [];
+        datas.forEach( function(d) {
+          let temp_node = {};
+          temp_node["id"] = d.jobID;
+          temp_node["process"] = d.process;
+          temp_node["value"] = d.targets.length;
+          data_node.push(temp_node);
+          if (d.targets !== undefined) {
+            let targ = d.targets;
+            targ.forEach(function(t) {
+              let val;
+              let temp_link = {};
+              temp_link["source"] = d.jobID;
 
-                let datas = graph.jobs;
-                console.log(datas);
-                let data = {};
-                let data_node = [];
-                let data_link = [];
-                datas.forEach(function(d) {
-                    if (d.targets !== undefined) {
-                        let targ = d.targets;
-                        targ.forEach(function(t) {
-                            let val;
-                            let temp_link = {};
-                            temp_link["source"] = d.jobID;
-
-                            temp_link["value"] = d.targets.length;
-                            if (d.targets != []) {
-                                val = t;
-                            } else {
-                                val = d.jobID;
-                            }
-                            temp_link["target"] = val;
-                            data_link.push(temp_link);
-                        })
-                    }
-                    let temp_node = {};
-                    temp_node["id"] = d.jobID;
-                    temp_node["process"] = d.process;
-                    temp_node["value"] = d.targets.length;
-                    data_node.push(temp_node);
-
-
-                });
-
-
-                data["node"] = data_node;
-                data["links"] = data_link;
-                console.log(data);
-                document.body.appendChild(createArcDiagram(data, width, height));
-
-
+              temp_link["value"] = d.targets.length;
+              if (d.targets != []) {
+                  val = t;
+              } else {
+                  val = d.jobID;
+              }
+              temp_link["target"] = val;
+              data_link.push(temp_link);
             });
+          }
+        });
 
-        };
-    </script>
+        data["node"] = data_node;
+        data["links"] = data_link;
+        console.log(data);
+        document.body.appendChild(createArcDiagram(data, width, height));
+
+    });
+
+  };
+  </script>
 </head>
 
 <body onload="createGraph('root',1600,400);">
