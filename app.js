@@ -27,11 +27,16 @@
 
 const http = require('http');
 const express = require('express');
+const bodyParser = require('body-parser');
+const multer = require('multer');
+
 const fs = require('fs');
 const path = require('path');
 const svzm = require('./routes/starvizem.js');
 
+
 const port = 3000;
+const upload = multer();
 const app = express();
 
 
@@ -46,6 +51,16 @@ svzm.init();
   
   // https://stackoverflow.com/questions/5778245/expressjs-how-to-structure-an-application
   // https://spinspire.com/article/creating-expressjs-environment-webpack-react-and-babel-configurations
+
+// for parsing application/json
+app.use(bodyParser.json()); 
+
+// for parsing application/xwww-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true })); 
+
+// for parsing multipart/form-data
+app.use(upload.array()); 
+
 
 // Static
 console.log('dir ' + __dirname);
@@ -75,8 +90,11 @@ app.get('/pipeline', (req, res,next) => {
 });
 
 app.post('/star', (req, res,next) => {
-  console.log(`${req.body.run}/${req.body.job}/${req.body.file}`);
-  svzm.getSTAR(`./${req.query.run}/${req.query.job}/${req.query.file}`).then( (data) => res.json(data), (err) => console.log(err));
+  console.log('body: ');
+  console.log(req.body);
+  let fullpath = `${svzm.processes(req.body.process)}/job${req.body.job.toString().padStart(3,"0")}/${req.body.starfile}`;
+  svzm.getSTAR(fullpath).then( (data) => res.json(data), (err) => console.log(err));
+  // res.json({data:'cool', length: 22});
 });
 
 app.get('/test', (req, res,next) => {

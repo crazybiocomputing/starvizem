@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Test XY Plot</title>
+    <script src="../javascripts/d3.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/arcDiagram.js"></script>
+    <script src="../js/barChart.js"></script>
+    <script src="../js/donut.js"></script>
+  </head>
+  <body onload="createForm()">
+    <h1>Tests of StarVizEM - XY Plot</h1>
+    <!-- aside style="float:left">
+    <ul>
+    <li> Table #0 - model_class_1</li>
+      <ul>
+      <li>Row</li>
+      <li>_rlnSpectralIndex</li>
+      <li>_rlnResolution</li>
+      <li>_rlnAngstromResolution</li>
+      <li>_rlnSsnrMap</li>
+      <li>_rlnGoldStandardFsc</li>
+      <li>_rlnFourierCompleteness</li>
+      <li>_rlnReferenceSigma2</li>
+      <li>_rlnReferenceTau2</li>
+      <li>_rlnSpectralOrientabilityContribution</li>
+      </ul>
+    </ul>
+    </aside -->
+    <header>
+    <h2>STAR File</h2>
+    <form id="getstar" action="/star" method="post">
+    <select id="process" name="process" onchange="changeProcessHandler(event)">
+    <option>----</option>
+    </select>
+    <select id="job" name="job" onchange="changeJobHandler(event)">
+    <option>----</option>
+    </select>
+    <select id="starfile" name="starfile">
+    <option>----</option>
+    </select>
+    <button type="submit">Get STAR</button>
+    </form>
+    <br />
+    <h2>Table</h2>
+    <form id="getPlot" action="" method="post">
+    <select id="table" name="table" onchange="changeTableHandler(event)">
+    <option>----</option>
+    </select>
+    <select id="colX" name="colX">
+    <option>----</option>
+    <option value="_svzRowNumber">_svzRowNumber</option>
+    </select>
+    <select id="colY" name="colY">
+    <option>----</option>
+    </select>
+    <button type="submit">Draw Plot</button>
+    </form>
+    <form id="keywords">
+    </form>
+    </header>
+    <content id="d3"></content>
+    
+  <script type="text/javascript">
+  // Global variable
+  let workflow;
+  let starobj;
+
+  let mainForm = document.getElementById("getstar");
+   mainForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    getSTARFile();
+  });
+
+  let plotForm = document.getElementById("getPlot");
+   plotForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    drawPlot();
+  });
+
+
+  
+  // Onload get default_pipeline.star and create form items
+  const createForm = () => {
+    console.log('createForm');
+    d3.json('/pipeline')
+      .then( (graph) => {
+        workflow = graph;
+        
+        let set = new Set();
+        graph.jobs.forEach( (job)=> {
+          set.add(job.process);
+        });
+        console.log(set);
+        let select = document.getElementById('process');
+        for (p of set) {
+          let opt = document.createElement('option');
+          opt.value = p;
+          opt.text = getProcessName(p);
+          select.appendChild(opt);
+        }
+      });
+  };
+
+  // Onload get default_pipeline.star and create form items
+  const createXYForm = (obj) => {
+    console.log('createXYForm');
+    
+    let set = new Set();
+    obj.tables.forEach( (table)=> {
+      set.add(table.name);
+    });
+    console.log(set);
+    let select = document.getElementById('table');
+    for (p of set) {
+      let opt = document.createElement('option');
+      opt.value = p;
+      opt.text = p;
+      select.appendChild(opt);
+    }
+  };
+
+  const drawPlot = () => {
+    console.log('Draw Plot');
+    let formData = new FormData(document.getElementById('getPlot'));
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+      console.log(starobj.tables[0].data[2]);
+    }
+  }
+  
+  
+  // Events
+  const changeProcessHandler = (event) => {
+    let selectedJobs = workflow.jobs.filter( (job) => job.process === parseInt(event.target.value));
+    let select = document.getElementById('job');
+    for (j of selectedJobs) {
+      let opt = document.createElement('option');
+      opt.value = j.jobID;
+      opt.text = j.name.split('/')[1];
+      select.appendChild(opt);
+    }
+  };
+
+  const changeJobHandler = (event) => {
+    let job = workflow.jobs.find( (j) => j.jobID === parseInt(event.target.value));
+    let select = document.getElementById('starfile');
+    for (k in job.outputs) {
+      let filename = job.outputs[k].file.split('/')[2];
+      let opt = document.createElement('option');
+      opt.value = filename;
+      opt.text = filename;
+      select.appendChild(opt);
+    }
+  };
+
+  const changeTableHandler = (event) => {
+    let table = starobj.tables.find( (table) => table.name === event.target.value);
+    let selectX = document.getElementById('colX');
+    for (head of table.headers) {
+      let opt = document.createElement('option');
+      opt.value = head;
+      opt.text = head;
+      selectX.appendChild(opt);
+    }
+    let selectY = document.getElementById('colY');
+    for (head of table.headers) {
+      let opt = document.createElement('option');
+      opt.value = head;
+      opt.text = head;
+      selectY.appendChild(opt);
+    }
+  };
+
+
+  // Get the STAR File
+  const getSTARFile = () => {
+    console.log('getSTARFile');
+    // Get JSON data
+    let formData = new FormData(document.getElementById('getstar'));
+    let jsonFormData = {};
+    for (let pair of formData.entries()) {
+      jsonFormData[pair[0]] = pair[1];
+    }
+
+    fetch('/star',{
+      headers: new Headers({'Content-Type': 'application/json'}),
+      method: "POST",
+      mode: 'cors',
+      body: JSON.stringify(jsonFormData) // formData
+    })
+      .then ( (response) => response.json() )
+      .then ( (data) => {
+        console.log(data);
+        starobj = data;
+        createXYForm(data);
+    });
+    
+
+
+  };
+
+
+  </script>
+  </body>
+</html>

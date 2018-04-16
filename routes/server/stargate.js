@@ -242,7 +242,32 @@ exports.NODE_FINALMAP     = 11; // Sharpened final map from post-processing (can
 exports.NODE_RESMAP       = 12; // Resmap with local resolution (cannot be used as input)
 exports.NODE_PDF_LOGFILE  = 13; //PDF logfile
 
+const _processes = [  
+  'Import', 
+  'MotionCorr', 
+  'CtfFind', 
+  'ManualPick',
+  'Autopick',  
+  'Extract',
+  'Sort', 
+  'Select', 
+  'Class2D', 
+  'Class3D', 
+  'Refine3D', 
+  'Polish',
+  'MaskCreate', 
+  'JoinSTAR', 
+  'Subtract', 
+  'PostProcess', 
+  'LocalRes', 
+  'MovieRefine', 
+  'InitialModel'
+];
 
+exports.processes = (index) => { 
+  return _processes[index];
+
+};
 /*
  * The Node class represents data and metadata that are either input to or output from Processes
  * Nodes are connected to each by Edges:
