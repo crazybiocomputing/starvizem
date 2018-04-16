@@ -84,8 +84,8 @@ function createPlot(data, width, height) {
               .duration(200)
               .style("opacity", .9);
             div .html(
-              "<strong>"+"Y: "+"</strong>"+d.y + "</br>"+            
-              "<strong>"+"X: "+"</strong>"+d.x)     
+              "<strong>"+"X: "+"</strong>"+d.x + "</br>"+            
+              "<strong>"+"Y: "+"</strong>"+d.y)     
               .style("left", (d3.event.pageX) + "px")             
               .style("top", (d3.event.pageY - 28) + "px");
             });
