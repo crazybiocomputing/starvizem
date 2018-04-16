@@ -42,34 +42,45 @@ function createArcDiagram(data, width, height) {
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
     let color = d3.scaleOrdinal(d3.schemeAccent);
-    let datanode = data.node;
+    let datanode = data.nodes;
     let datalink = data.links;
 
     let pad = 30 * height / 100; // actual padding amount
     let radius = 10; // fixed node radius
     let yfixed = pad + radius; // y position for all nodes
 
-    // fix graph links to map to objects instead of indices
-    datalink.forEach(function(d, i) {
-        d.source = isNaN(d.source) ? d.source : datanode[d.source];
-        d.target = isNaN(d.target) ? d.target : datanode[d.target];
-    });
-
-    datanode.sort(function(a, b) {
-        return a.id - b.id;
-    });
-
-    let x = d3.scaleLinear().range([0, 90 * width / 100]);
+    let x = d3.scaleLinear().range([5 * width / 100, 90 * width / 100]);
     x.domain([0, d3.max(datanode, function(d) { return d.id; }) - 1]);
 
     // calculate pixel location for each node
-    datanode.forEach(function(d, i) {
-        d.x = x(i);
-        d.y = yfixed;
+    let svgnode = datanode.map(function(d, i) {
+        let out = {
+            x: x(i),
+            y: yfixed,
+            value: d.value,
+            id: d.id,
+            process: d.process
+        }
+        return out;
     });
 
+    let svglink = datalink.map(function(d) {
+        let out = {
+            source: d.source,
+            xsource: svgnode[d.source - 1].x,
+            target: d.target,
+            xtarget: svgnode[d.target - 1].x,
+            y: yfixed,
+            value: d.value
+        }
+        return out;
+    })
+    console.log(svgnode[2].x);
+    console.log("svglink", svglink);
+    console.log("svgnode", svgnode);
+
     let nodeRadius = d3.scaleSqrt().range([5, 20]);
-    let linkWidth = d3.scaleLinear().range([1.5, 2 * nodeRadius.range()[0]]);
+    let linkWidth = d3.scaleLinear().range([0.5, 1.5 * nodeRadius.range()[0]]);
 
     nodeRadius.domain(d3.extent(datanode, function(d) {
         return d.value;
@@ -82,27 +93,27 @@ function createArcDiagram(data, width, height) {
     let node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
-        .data(datanode)
+        .data(svgnode)
         .enter().append("circle")
         .attr("r", function(d) {
             return nodeRadius(d.value)
         })
         .attr("cx", function(d) {
-            return x(d.id)
+            return d.x
         })
-        .attr("cy", 300)
+        .attr("cy", 2.4 * yfixed)
         .attr("fill", function(d) { return color(d.process); });
 
     let labels = svg.append("g")
         .attr("class", "text")
         .selectAll("text")
-        .data(datanode)
+        .data(svgnode)
         .enter().append("text")
         .text(function(d) {
             return "job" + d.id;
         })
         .attr('x', function(d) {
-            return x(d.id)
+            return d.x
         })
         .attr('y', 2.5 * yfixed + 10)
         .style("writing-mode", "vertical-rl")
@@ -111,28 +122,29 @@ function createArcDiagram(data, width, height) {
         .style("font-size", "14px")
         .style("font-family", "Arial");
 
-    /*
+
     // scale to generate radians (just for lower-half of circle)
     let radians = d3.scaleLinear()
-        .range([Math.PI / 2, 3 * Math.PI / 2]);
+        .range([-Math.PI / 2, Math.PI / 2]);
 
     // path generator for arcs (uses polar coordinates)
     let arc = d3.radialLine()
         .angle(function(d) { return radians(d); });
 
-    let links = svg.append("g").selectAll("link")
-        .data(datalink)
+    let link = svg.append("g").selectAll("link")
+        .data(svglink)
         .enter()
         .append("path")
         .attr("class", "link")
         .attr("transform", function(d, i) {
-            let xshift = d.source.x + (d.target.x - d.source.x) / 2;
-            let yshift = yfixed;
+            let xshift = d.xsource + (d.xtarget - d.xsource) / 2;
+            let yshift = 2.2 * yfixed;
             return "translate(" + xshift + ", " + yshift + ")";
         })
         .attr("d", function(d, i) {
             // get x distance between source and target
-            let xdist = Math.abs(d.source.x - d.target.x);
+            let xdist = Math.abs(d.xsource - d.xtarget);
+
             // set arc radius based on x distance
             arc.radius(xdist / 2);
             // want to generate 1/3 as many points per pixel in x direction
@@ -140,15 +152,25 @@ function createArcDiagram(data, width, height) {
             // set radian scale domain
             radians.domain([0, points.length - 1]);
             return arc(points);
+
         })
-        .style("fill", color)
-        .style("stroke", color);
-*/
-
-
+        .style("fill", 'none')
+        .style("stroke", 'black')
+        .attr('stroke-width', function(d) {
+            return linkWidth(d.value);
+        })
+        .on('mouseover', function(d) {
+            link.style('stroke', 'black');
+            d3.select(this).style('stroke', '#d62333');
+            node.style('fill', function(node_d) {
+                return node_d === d.source || node_d === d.target ? 'black' : null;
+            });
+        })
+        .on('mouseout', function(d) {
+            link.style('stroke', 'black');
+            node.style('fill', null);
+        });
 
     return svg.node();
 
 }
-
-
