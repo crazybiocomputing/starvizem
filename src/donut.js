@@ -34,6 +34,8 @@
 
 function createDonut(data, width, height) {
     
+    let listValues = regroupLowData(data);
+    
     let svg = d3.create("svg")
         .attr("width", width)
         .attr("height", height)
@@ -127,6 +129,40 @@ function createDonut(data, width, height) {
             .duration(750)
             .attr("d", arcFinal);
     }
+    
+        function regroupLowData(data){
+        let values = [];
+        data.forEach(function(e){ return values.push(e.nb); });
+        let maxvalue = Math.max(...values);
+        values.sort(function(a,b){ return a-b;});
+        let threshval = 5*maxvalue/100;
+        let somme = 0;
+        let bool = false;
+        
+        for (let i = 0; i < values.length; i++){
+            somme = somme + values[i];
+            if (somme >= threshval){
+                let index = i-1;
+                somme = somme - values[i];
+                for(let j = 0; j < index; j++){
+                    values.shift();
+                    bool = true;
+                }
+                if (bool == true){
+                    values.push(somme);
+                }
+            break;
+            }
+        }
+        data.forEach(function (e){
+            if (!values.includes(e.nb)){
+                //try to remove the objects that belong to others
+                data.remove(e);
+            }
+        });
+        data.push({labels: "Other", nb: somme });
+    }
+
     return svg.node();
 }
 
