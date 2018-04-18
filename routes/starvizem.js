@@ -26,7 +26,7 @@
 'use strict';
 
 
-const {getSTAR,readSTAR} = require('./server/stargate.js');
+const {getSTAR,readSTAR,processes} = require('./server/stargate.js');
 const {getPipeline} = require('./server/pipeline.js');
 const {getClass2D} = require('./server/class2d.js');
 const {init} = require('./server/init.js');
@@ -37,6 +37,7 @@ module.exports = {
   getPipeline: getPipeline,
   getClass2D: getClass2D,
   init: init,
+  processes: processes,
   readSTAR: readSTAR
 }
 
