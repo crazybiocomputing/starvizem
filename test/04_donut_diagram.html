@@ -18,15 +18,15 @@
                 console.log(graph)
                 let width = 600;
                 let height = 600;
-                let datas = graph.imagenbperclass;
-                let data = [];
-                datas.forEach(function(d) {
-                    let temp = {};
-                    temp["labels"] = d.classID;
-                    temp["nb"] = d.totalnb;
-                    data.push(temp);
-                });
-		dataR = regroupLowData(data);
+                let starobj = Star.create(graph);
+                let tableStat = starobj.getTable('statistics');
+                let tableHisto = starobj.getTable('histogram_resolution');
+                let start = tableStat.getColumnIndex('_svzNumberPerClass001');
+                let datas = tableHisto.data.map ( (d,i) => ({
+                nb: tableStat.data[start + i],
+                labels: tableStat.headers[start + i].slice(13)
+                }));
+                dataR = regroupLowData(datas);
                 document.body.appendChild(createDonut(dataR, width, height));
 
             });
