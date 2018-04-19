@@ -71,14 +71,13 @@ const processes = [
 const getProcessName = (index) => processes[index];
 
 
-const Table = require('./Table');
 
 /**
  * @class Star
  *
  * @author Jean-Christophe Taveau
  */
-module.exports = class Star {
+class Star {
 
   /**
    * @constructor
