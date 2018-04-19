@@ -71,3 +71,100 @@ const processes = [
 const getProcessName = (index) => processes[index];
 
 
+const Table = require('./Table');
+
+/**
+ * @class Star
+ *
+ * @author Jean-Christophe Taveau
+ */
+module.exports = class Star {
+
+  /**
+   * @constructor
+   *
+   * @author Jean-Christophe Taveau
+   */
+  constructor(other) {
+    Object.assign(this, other);
+  }
+  
+  static create(other) {
+    return new Star(other);
+  }
+  
+  getTable(tablename) {
+    return new Table(this.tables.find( (table) => table.name === tablename));
+  }
+
+  getJob(jobID) {
+    return this.jobs.find( (job) => job.jobID === jobID) ;
+  }
+  
+  /**
+   * Get a job ID from the process name
+   *
+   * @author Jean-Christophe Taveau
+   */
+  static getJobID(process) {
+    return parseInt(process.match(/job(\d+)/)[1]);
+  }
+  
+  /**
+   * Get a job ID from the process name
+   *
+   * @author Jean-Christophe Taveau
+   */
+  static splitPath(filename) {
+    let words = filename.split('/');
+    let start = (words[0] === '.') ? 1 : 0;
+    return words.slice(start,start + 3);
+  }
+
+  /**
+   * Get a job ID from the process name
+   *
+   * @author Jean-Christophe Taveau
+   */
+  static getExtension(filename) {
+    return filename.split('.').pop();
+  }
+
+}
+
+
+class Table {
+
+  constructor(other) {
+    Object.assign(this, other);
+  }
+  
+  static create(other) {
+    return new Table(other);
+  }
+  
+  getColumnIndex(headername) {
+    return this.headers.findIndex( (head) => head === headername);
+  }
+
+  getRow(index) {
+    return this.data.reduce( (row,column) => [...row,column[index]], []); 
+  } 
+
+  getColumn(headername) {
+    return (this.type === 1) ? this.data[this.getColumnIndex(headername)] : ['None'];
+  } 
+  
+  getValue(columnHeader) {
+    return (this.type === 0) ? this.data[this.getColumnIndex(columnHeader)][0] : -1;
+  } 
+
+  getItem(rowIndex,headername) {
+    return this.data[this.getColumnIndex(headername)][rowIndex];
+  } 
+
+
+}
+
+
+
