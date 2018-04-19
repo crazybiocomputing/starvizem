@@ -30,97 +30,52 @@ function createStackedBarChart(data, width, height) {
         .attr("width", width)
         .attr("height", height)
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
-
-    let color = d3.scaleOrdinal(d3.schemeAccent);
-
+    let g = svg.append("g");
 
     //axis
     let x = d3.scaleLinear()
-        .range([0, 90 * width / 100]);
+        .rangeRound([height,0]);
 
     let y = d3.scaleBand()
-        .range([90 * height / 100, 40])
-        .padding(0.1);
+        .rangeRound([0,width])
+        .paddingInner(0.2);
 
+    let z = d3.scaleOrdinal()
+        .range([" #FF5733 ", " #FFC300 ", " #DAF7A6 "]);
 
     let datas = data.imagenbperclass;
 
+    let keys = ["nbHR","nbMR","nbLR"];
 
-    datas.forEach(function(d) {
-      var x0 = 0;
-      d.ages = [];
+    datas.sort(function(a, b) { return b.totalnb - a.totalnb; });
+    y.domain(datas.map(function(d) { return d.classID }));
+    x.domain([0,d3.max(datas,  function(d) {return d.totalnb })]);
+    z.domain(keys);
 
-      d3.keys(d).filter(function(key) {return !((key == "classID") || (key == "totalnb") || (key == "ages"));}).forEach(function(name){
-        d.ages.push({name: name , x0: x0 , x1: x0 += +d[name]});
-    });
-
-    //d.ages.forEach(function(a) {a.x0 /= x0 ,a.x1 /= x0;});
-    console.log(d.ages);
-});
-    svg.append("g")
-      .attr("class" , "axis")
-      .attr("transform", "translate(" + 5 * width / 100 + ",0)")
-      .call(d3.axisLeft(y))
-    /*.selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-.8em")
-      .attr("dy", "-.6em")
-      .attr("transform", "rotate(-45)");*/
-
-    svg.append("g")
-      .attr("class" , "axis")
-      .attr("transform", "translate(" + 7 * width / 100 + ", " + 90 * height / 100 + ")")
-      .call(d3.axisBottom(x));
-
-    var classID = svg.selectAll(".classID")
-      .data(datas)
-      .enter().append("g")
-      .attr("class", "classID")
-      .attr("transform", function(d) { return "translate(" + (x(d.classID)) + ")"; });
-      //.attr("transform", "translate(" + 5 * width / 100 + ",0)")
-      //.style("fill", function(d, i) { return color(i); });
-
-    classID.selectAll("rect")
-      .data(function(d) { return d.ages; })
-      .enter().append("rect")
-      .attr("height"  , y.bandwidth())
-      .attr("y"      , function(d) { return y(d.x1); })
-      .attr("width" , function(d) { return x(d.x1) - x(d.x0); })
-      .style("fill" , function(d) { return color(d.name); });
+    g.append("g")
+    .selectAll("g")
+    .data(d3.stack().keys(keys)(datas))
+    .enter().append("g")
+      .attr("fill", function(d) { return z(d.key); })
+    .selectAll("rect")
+    .data(function(d) { return d; })
+    .enter().append("rect")
+      .attr("y", function(d) { return y(d.data.classID); })
+      .attr("x", function(d) { return x(d[1]); })
+      .attr("width", function(d) { return x(d[0]) - x(d[1]); })
+      .attr("height", y.bandwidth());
 
 
+    g.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0,"+ 1* height /100 + ",0)")
+        .call(d3.axisBottom(x));
 
-/*
-    let stack = d3.stack()
-          .keys(["nbHR","nbMR","nbLR"])
-          .offset(d3.stackOffsetNone);
+    g.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," +  9*width/100 + ")")
+        .call(d3.axisLeft(y));
 
-
-    let layers = stack(datas);
-          datas.sort(function(a, b) { return a.totalnb - b.totalnb; });
-          y.domain(datas.map(function(d) { return d.classID }));
-          x.domain([0,d3.max(layers[layers.length-1],  function(d) {return d[0] + d[1] })]);
-
-    svg.selectAll(".bar")
-          .data(datas)
-          .enter().append("rect")
-          .attr("class", "bar")
-          .attr("fill", function(d, i) { return color(i); })
-          .attr("x", function(d) {return d[0]; })
-          .attr("width", function(d) { return d[1] - x(d[0]) })
-          .attr("y", function(d) { return y(d.classID); })
-          .attr("height", y.bandwidth());
-
-    svg.append("g")
-          .attr("transform", "translate(" + 5 * width / 100 + ",0)")
-          .call(d3.axisLeft(y));
-
-    svg.append("g")
-          .attr("transform", "translate(" + 7 * width / 100 + ", " + 90 * height / 100 + ")")
-          .call(d3.axisBottom(x));
-*/
-
-
-
+    d3.select("body").append( () => svg.node());
     return svg.node();
 }
