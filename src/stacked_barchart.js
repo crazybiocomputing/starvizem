@@ -26,32 +26,42 @@
 'use strict';
 
 function createStackedBarChart(data, width, height) {
+    //create svg
     let svg = d3.create("svg")
         .attr("width", width)
         .attr("height", height)
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
+
+    //create g
     let g = svg.append("g");
 
     //axis
-    let x = d3.scaleLinear()
-        .rangeRound([height,0]);
+    let y = d3.scaleLinear()
+        .rangeRound([90* height/100,10*height/100]);
 
-    let y = d3.scaleBand()
-        .rangeRound([0,width])
+    let x = d3.scaleBand()
+        .rangeRound([10*height/100,90*width/100])
         .paddingInner(0.2);
 
+    //color
     let z = d3.scaleOrdinal()
         .range([" #FF5733 ", " #FFC300 ", " #DAF7A6 "]);
 
-    let datas = data.imagenbperclass;
 
+    //datas
+    let datas = data.imagenbperclass;
+    console.log(datas);
+
+    //keys
     let keys = ["nbHR","nbMR","nbLR"];
 
+    //domains for each axis
     datas.sort(function(a, b) { return b.totalnb - a.totalnb; });
-    y.domain(datas.map(function(d) { return d.classID }));
-    x.domain([0,d3.max(datas,  function(d) {return d.totalnb })]);
+    x.domain(datas.map(function(d) { return d.classID }));
+    y.domain([0,d3.max(datas,  function(d) {return d.totalnb })]);
     z.domain(keys);
 
+    //create each rect in g
     g.append("g")
     .selectAll("g")
     .data(d3.stack().keys(keys)(datas))
@@ -60,21 +70,76 @@ function createStackedBarChart(data, width, height) {
     .selectAll("rect")
     .data(function(d) { return d; })
     .enter().append("rect")
-      .attr("y", function(d) { return y(d.data.classID); })
-      .attr("x", function(d) { return x(d[1]); })
-      .attr("width", function(d) { return x(d[0]) - x(d[1]); })
-      .attr("height", y.bandwidth());
+      .attr("x", function(d) { return x(d.data.classID); })
+      .attr("y", function(d) { return y(d[1]); })
+      .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+      .attr("width", x.bandwidth())
+      .on("mouseover", function() { tooltip.style("display", null); })
+      .on("mouseout", function() { tooltip.style("display", "none"); })
+      .on("mousemove", function(d) {
+        var xPosition = d3.mouse(this)[0] - 15;
+        var yPosition = d3.mouse(this)[1] - 25;
+        tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+        tooltip.select("text").text((d[1]) - (d[0]));
+      });
 
-
+    //create x axis
     g.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0,"+ 1* height /100 + ",0)")
+        .attr("transform", "translate(0," + 90 * height / 100 + ")")
         .call(d3.axisBottom(x));
 
+    //create y axis
     g.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," +  9*width/100 + ")")
+        .attr("transform", "translate(" + 10 * width / 100 + ",0)")
         .call(d3.axisLeft(y));
+
+    //tooltip
+    var tooltip = svg.append("g")
+      .attr("class", "tooltip")
+      .style("display", "none");
+
+    tooltip.append("rect")
+      .attr("width", 30) // set the height and width of the tooltip
+      .attr("height", 20)
+      .attr("fill", "white")
+      .style("opacity", 0.5);
+
+    tooltip.append("text")
+      .attr("x", 15) // position of the text in the tooltip
+      .attr("dy", "1.2em")
+      .style("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .attr("font-weight", "bold");
+
+    //legend
+    var legend = g.append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 10)
+      .attr("text-anchor", "end")
+      .selectAll("g")
+      .data(keys.slice().reverse())
+      .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+      .attr("x", width - 20)// position of each square
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", z);
+
+    legend.append("text")
+      .attr("x", width - 25)// position of the text corresponding to squares
+      .attr("y", 10)
+      .attr("dy", "0.32em")
+      .text(function(d) { return d; });
+
+
+
+
+
+
 
     d3.select("body").append( () => svg.node());
     return svg.node();
