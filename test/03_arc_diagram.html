@@ -2,50 +2,54 @@
 <html>
 
 <head>
-  <meta charset="utf8">
-  <title>Test Arc Diagram</title>
-  <script src="http://d3js.org/d3.v5.js"></script>
-  <script src="../js/common.js"></script>
-  <script src="../js/arcDiagram.js"></script>
-  <script src="../js/barChart.js"></script>
-  <script src="../js/donut.js"></script>
+    <meta charset="utf8">
+    <title>Test Arc Diagram</title>
+    <script src="http://d3js.org/d3.v5.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/arcDiagram.js"></script>
+    <script src="../js/barChart.js"></script>
+    <script src="../js/donut.js"></script>
 
-  <script type="text/javascript">
-  const createGraph = (rootID, width, height) => {
-    // Get JSON data from web service
-    d3.json('/pipeline')
-      .then(function(graph) {
-        let data_nodes = [];
-        let data_links = [];
-        graph.jobs.forEach( (d) => {
-          data_nodes.push({
-            id: d.jobID,
-            process: d.process,
-            value: d.targets.length
-          });
-          if (d.targets.length !== 0) {
-            d.targets.forEach( (t) => {
-              data_links.push({
-                source: d.jobID,
-                value: d.targets.length,
-                target: t
-              });
-            });
-          }
-        });
+    <script type="text/javascript">
+        const createGraph = (rootID, width, height) => {
+            // Get JSON data from web service
+            d3.json('/pipeline')
+                .then(function(graph) {
+                    let data_nodes = [];
+                    let data_links = [];
+                    graph.jobs.forEach((d) => {
+                        data_nodes.push({
+                            id: d.jobID,
+                            process: d.process,
+                            value: d.targets.length,
+                            name: d.name
+                        });
+                        if (d.targets.length !== 0) {
+                            d.targets.forEach((t) => {
+                                data_links.push({
+                                    source: d.jobID,
+                                    value: d.targets.length,
+                                    target: t
+                                });
+                            });
+                        }
+                    });
 
 
-        // console.log('DATA');
-        // console.log(data_nodes);
-        // console.log(data_links);
-        document.body.appendChild(createArcDiagram({nodes: data_nodes,links: data_links}, width, height));
-      });
+                    console.log(graph);
+                    // console.log(data_nodes);
+                    // console.log(data_links);
+                    document.body.appendChild(createArcDiagram({
+                        nodes: data_nodes,
+                        links: data_links
+                    }, width, height));
+                });
 
-  };
-  </script>
+        };
+    </script>
 </head>
 
-<body onload="createGraph('root',1600,400);">
+<body onload="createGraph('root',1600,500);">
     <h1>Tests of StarVizEM - Arc Diagram</h1>
 
     <content id="root"></content>
