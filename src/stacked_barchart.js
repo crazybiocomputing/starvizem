@@ -26,6 +26,9 @@
 'use strict';
 
 function createStackedBarChart(data, width, height) {
+    let starobj = Star.create(data);
+    let tableStat = starobj.getTable('statistics');
+    let tableHisto = starobj.getTable('histogram_resolution');
     //create svg
     let svg = d3.create("svg")
         .attr("width", width)
@@ -45,20 +48,28 @@ function createStackedBarChart(data, width, height) {
 
     //color
     let z = d3.scaleOrdinal()
-        .range([" #FF5733 ", " #FFC300 ", " #DAF7A6 "]);
+        .range([" #FF5733 ", " #FFC300 ", " #DAF7A6 ", " #FFC300 ",  " #DAF7A6 "]);
 
 
     //datas
-    let datas = data.imagenbperclass;
-    console.log(datas);
+    //let datas = data.imagenbperclass;
+    //console.log(datas);
 
     //keys
-    let keys = ["nbHR","nbMR","nbLR"];
+    let keys = tableStat.headers.filter( (h) => h.search(/_svzBin\d+/) !== -1);
+    console.log(keys);
+    let start = tableStat.getColumnIndex('_svzNumberPerClass001');
+    let datas = tableHisto.data.map ( (d,i) => ({
+      total: tableStat.data[start + i],
+      name: tableStat.headers[start + i].slice(13),
+      values: d
+    }));
+    console.log(datas);
 
     //domains for each axis
-    datas.sort(function(a, b) { return b.totalnb - a.totalnb; });
-    x.domain(datas.map(function(d) { return d.classID }));
-    y.domain([0,d3.max(datas,  function(d) {return d.totalnb })]);
+    datas.sort(function(a, b) { return b.total - a.total; });
+    x.domain(datas.map(function(d,i) { return d.name }));
+    y.domain([0,d3.max(datas,  function(d) {return d.total })]);
     z.domain(keys);
 
     //create each rect in g
@@ -70,9 +81,9 @@ function createStackedBarChart(data, width, height) {
     .selectAll("rect")
     .data(function(d) { return d; })
     .enter().append("rect")
-      .attr("x", function(d) { return x(d.data.classID); })
-      .attr("y", function(d) { return y(d[1]); })
-      .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+      .attr("x", function(d) { return x(d.name); })
+      .attr("y", function(d) { return y(d[0]); })
+      .attr("height", function(d) { return y(d.data.total); })
       .attr("width", x.bandwidth())
       .on("mouseover", function() { tooltip.style("display", null); })
       .on("mouseout", function() { tooltip.style("display", "none"); })
