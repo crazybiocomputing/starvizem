@@ -44,6 +44,29 @@ const readClass2D = (json2d) =>{
 
   const parseClass2D = (input) => {
 
+    const setCategories = (nbCat) => {
+      let range = resmax - resmin;
+      let part = range / nbCat;
+      for (let i = 0; i < nbCat; i++){
+        dataclass.headers.push("cat"+nbCat);
+      }
+      console.log("max"+ resmin + " part" + part + (resmin + part) );
+      for (let i = 0; i < resolution.length; i++){
+        let ctfres = resolution[i];
+        let classnb = classes[i];
+        console.log(classnb);
+        console.log(ctfres + "1:" +(resmin + part) + "3 :" + (resmax - part) );
+        /*
+        if (ctfres < (resmin + part)){ class2D.imagenbperclass[classnb-1].nbLR++;}
+        if (ctfres < (resmax - part) && ctfres > (resmin + part)){ class2D.imagenbperclass[classnb-1].nbMR++;}
+        if (ctfres > (resmax - part) ){ class2D.imagenbperclass[classnb-1].nbHR++;}
+      *//*
+       if (ctfres < (resmin + part)){ class2D.imagenbperclass[classnb-1].resolution[0].cat0.push(ctfres);}
+        if (ctfres < (resmax - part) && ctfres > (resmin + part)){ console.log(ctfres);}
+        if (ctfres > (resmax - part) ){ console.log(ctfres);}*/
+      }
+    }
+
     //creation of variables and objects in the incoming json
 
     let class2D = {
@@ -55,9 +78,8 @@ const readClass2D = (json2d) =>{
     let dataclass = {
       classID : 0,
       totalnb : 0,
-      nbHR: 0,
-      nbMR : 0,
-      nbLR : 0
+      headers : [],
+      resolution : []
     };
 
     let starobj = Star.create(input);
@@ -66,6 +88,8 @@ const readClass2D = (json2d) =>{
     let classes = starobj.getTable('None').getColumn('_rlnClassNumber');
     let resolution = starobj.getTable('None').getColumn('_rlnCtfMaxResolution');
     class2D.classesnumber = Math.max(...classes);
+    let resmax = Math.max(...resolution);
+    let resmin = Math.min(...resolution);
 
     //Initialize the structure of the JSON
     for (let i = 0; i < class2D.classesnumber; i++){
@@ -79,15 +103,10 @@ const readClass2D = (json2d) =>{
       class2D.imagenbperclass[element-1].totalnb++;
     });
 
-    for (let i = 0; i < resolution.length; i++){
-      let ctfres = resolution[i];
-      let classnb = classes[i];
-      //LR:<8.0, MR:8.0<x<8.1, HR:>8.1
-      if (ctfres < 8.0){ class2D.imagenbperclass[classnb-1].nbLR++;}
-      if (ctfres < 8.1 && ctfres > 8.0){ class2D.imagenbperclass[classnb-1].nbMR++;}
-      if (ctfres > 8.1){ class2D.imagenbperclass[classnb-1].nbHR++;}
-    }
-
+    let nbCategory = 3;
+    setCategories(nbCategory);
+  
+    console.log(class2D);
   return class2D;
   };
 
