@@ -40,74 +40,80 @@ const Job = require('./Job.js');
  *
  * @author Pauline Bock
  */
-const readClass2D = (json2d) =>{ 
+const readClass2D = (classNum,binNum) => (json2d) =>{ 
 
   const parseClass2D = (input) => {
 
-    const setCategories = (nbCat) => {
-      let range = resmax - resmin;
-      let part = range / nbCat;
-      for (let i = 0; i < nbCat; i++){
-        dataclass.headers.push("cat"+nbCat);
-      }
-      console.log("max"+ resmin + " part" + part + (resmin + part) );
-      for (let i = 0; i < resolution.length; i++){
-        let ctfres = resolution[i];
-        let classnb = classes[i];
-        console.log(classnb);
-        console.log(ctfres + "1:" +(resmin + part) + "3 :" + (resmax - part) );
-        /*
-        if (ctfres < (resmin + part)){ class2D.imagenbperclass[classnb-1].nbLR++;}
-        if (ctfres < (resmax - part) && ctfres > (resmin + part)){ class2D.imagenbperclass[classnb-1].nbMR++;}
-        if (ctfres > (resmax - part) ){ class2D.imagenbperclass[classnb-1].nbHR++;}
-      *//*
-       if (ctfres < (resmin + part)){ class2D.imagenbperclass[classnb-1].resolution[0].cat0.push(ctfres);}
-        if (ctfres < (resmax - part) && ctfres > (resmin + part)){ console.log(ctfres);}
-        if (ctfres > (resmax - part) ){ console.log(ctfres);}*/
-      }
-    }
-
     //creation of variables and objects in the incoming json
 
-    let class2D = {
-      comment: 'Created by STARVIZEM',
-      classesnumber : -1,
-      imagenbperclass: []
-    };
-
-    let dataclass = {
-      classID : 0,
-      totalnb : 0,
-      headers : [],
-      resolution : []
-    };
-
     let starobj = Star.create(input);
+    
+    //Get columns _rlnClassNumber and _rlnCtfMaxResolution for statistics
+    let table = starobj.getTable('None');
+    let classID = table.getColumn('_rlnClassNumber');
+    let resolution = table.getColumn('_rlnCtfMaxResolution');
 
-    //Get classes number
-    let classes = starobj.getTable('None').getColumn('_rlnClassNumber');
-    let resolution = starobj.getTable('None').getColumn('_rlnCtfMaxResolution');
-    class2D.classesnumber = Math.max(...classes);
     let resmax = Math.max(...resolution);
     let resmin = Math.min(...resolution);
 
-    //Initialize the structure of the JSON
-    for (let i = 0; i < class2D.classesnumber; i++){
-      let datacopy = Object.assign({}, dataclass);
-      class2D.imagenbperclass.push(datacopy);
-      class2D.imagenbperclass[i].classID = i + 1;
+    let bandwidth = (resmax - resmin ) / (binNum - 1);
+    
+    let stats = classID.reduce( (accu,id,index) => {
+      let hindex = Math.trunc((resolution[index] - resmin)/bandwidth);
+      console.log(hindex);
+      accu.h[hindex]++;
+      accu.num[id]++;
+      accu.res[id][hindex]++;
+      return accu;
+    },
+      {
+        h: new Array(binNum).fill(0), 
+        num: new Array(classNum+1).fill(0),
+        res: Array.from({length: classNum+1}, (v) => new Array(binNum).fill(0))
+      }
+    );
+    // Remove class #0 because RELION starts at 1
+    stats.num = stats.num.slice(1);
+    stats.res = stats.res.slice(1);
+    console.log(stats);
+
+    let statistics = {
+      name: 'statistics',
+      type: 0,
+      mx: 1,
+      my: 1,
+      headers : [
+        '_svzMinResolution',
+        '_svzMaxResolution',
+        '_svzBinNumber',
+        '_svzBandwidth'
+      ],
+      data : [
+        resmin,
+        resmax,
+        binNum,
+        bandwidth,
+        ...stats.h,
+        ...stats.num
+      ]
     }
-
-    //get the data
-    classes.forEach( function(element){
-      class2D.imagenbperclass[element-1].totalnb++;
+    statistics.headers = [
+      ... statistics.headers, 
+      ...stats.h.map( (v,i) => `_svzBin${i.toString().padStart(3,'0')}`),
+      ...stats.num.map( (v,i) => `_svzNumberPerClass${(i+1).toString().padStart(3,'0')}`) 
+    ];
+    starobj.tables.push(statistics);
+    starobj.tables.push({
+      name: 'histogram_resolution',
+      type: 1,
+      mx: binNum,
+      my: classNum,
+      headers : stats.h.map( (v,i) => `_svzBin${i.toString().padStart(3,'0')}`),
+      data : stats.res.slice(1)
     });
-
-    let nbCategory = 3;
-    setCategories(nbCategory);
-  
-    console.log(class2D);
-  return class2D;
+    
+    console.log(starobj);
+    return starobj;
   };
 
  /***** MAIN *****/
@@ -141,8 +147,17 @@ const readClass2D = (json2d) =>{
  * Get JSON file
  */
 
-exports.getClass2D = (filename) => {
-  return svzm.getSTAR(filename).then(readClass2D, (err) => console.log(err));
+exports.getClass2D = (binNum) => (filename) => {
+  // Read run_it???_model.star
+  let words = Star.splitPath(filename);
+  let iteration = words[2].match(/\d+/)[0];
+  let modelfile = `./${words[0]}/${words[1]}/run_it${iteration.padStart(3,'0')}_model.star`
+  console.log(iteration, modelfile);
+  let stats = fs.statSync(modelfile);
+  let modelstar = svzm.readSTAR(stats)(fs.readFileSync('./'+modelfile,'utf-8'));
+  let classnum = Star.create(modelstar).getTable('model_general').getValue('_rlnNrClasses');
+  console.log(classnum);
+  return svzm.getSTAR(filename).then(readClass2D(classnum, binNum), (err) => console.log(err));
 };
 
 
