@@ -31,7 +31,7 @@
  *
  * @author Marie
  * 
- * TODO : ordre des noeuds, flèches, taille circle, clic nodes => en cours de modif 
+ * 
  */
 
 function createArcDiagram(data, width, height) {
@@ -41,7 +41,11 @@ function createArcDiagram(data, width, height) {
         .attr("height", height)
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
-    let color = d3.scaleOrdinal(d3.schemeAccent);
+    let color = d3.scaleLinear().domain([1, 17])
+        .interpolate(d3.interpolateHcl)
+        .range([d3.rgb("#FE9C03"), d3.rgb('#4D006C')]);
+
+    //let color = d3.scaleOrdinal(d3.schemeAccent);
     let datanode = data.nodes;
     let datalink = data.links;
 
@@ -59,7 +63,8 @@ function createArcDiagram(data, width, height) {
             y: yfixed,
             value: d.value,
             id: d.id,
-            process: d.process
+            process: d.process,
+            name: d.name
         }
         return out;
     });
@@ -70,17 +75,16 @@ function createArcDiagram(data, width, height) {
             xsource: svgnode[d.source - 1].x,
             target: d.target,
             xtarget: svgnode[d.target - 1].x,
-            y: yfixed,
+            y: 2.2 * yfixed,
             value: d.value
         }
         return out;
     })
-    console.log(svgnode[2].x);
     console.log("svglink", svglink);
     console.log("svgnode", svgnode);
 
     let nodeRadius = d3.scaleSqrt().range([5, 20]);
-    let linkWidth = d3.scaleLinear().range([0.5, 1.5 * nodeRadius.range()[0]]);
+    let linkWidth = d3.scaleLinear().range([0.5, 1.2 * nodeRadius.range()[0]]);
 
     nodeRadius.domain(d3.extent(datanode, function(d) {
         return d.value;
@@ -89,6 +93,7 @@ function createArcDiagram(data, width, height) {
     linkWidth.domain(d3.extent(datalink, function(d) {
         return d.value;
     }));
+
 
     let node = svg.append("g")
         .attr("class", "nodes")
@@ -102,7 +107,28 @@ function createArcDiagram(data, width, height) {
             return d.x
         })
         .attr("cy", 2.4 * yfixed)
-        .attr("fill", function(d) { return color(d.process); });
+        .attr("fill", function(d) { return color(d.process); })
+        .on('mouseover', function(d) {
+            node.style('fill', null);
+            d3.select(this).style('fill', 'green');
+            let linkToHighlight = svglink.map(function(e) {
+                if (e.xsource === d.x) {
+                    return { xsource: e.xsource, xtarget: e.xtarget };
+                }
+                if (e.xtarget === d.x) { return { xsource: e.xsource, xtarget: e.xtarget } } else { return 0 };
+            });
+            console.log("linktothighlight", linkToHighlight);
+            linkToHighlight.forEach(link_h => {
+                if (link_h !== 0) {
+                    link.style('stroke', function(high) { return high.xsource === link_h.source | high.target === link_h.target ? 'black' : 'red' })
+                }
+
+            });
+        })
+        .on('mouseout', function(d) {
+            node.style('fill', null);
+            link.style('stroke', null);
+        });
 
     let labels = svg.append("g")
         .attr("class", "text")
@@ -110,54 +136,35 @@ function createArcDiagram(data, width, height) {
         .data(svgnode)
         .enter().append("text")
         .text(function(d) {
-            return "job" + d.id;
+            let job = d.name;
+            return job.substr(-7, 7);
         })
         .attr('x', function(d) {
             return d.x
         })
         .attr('y', 2.5 * yfixed + 10)
-        .style("writing-mode", "vertical-rl")
+        .style("writing-mode", "sideways-lr")
         .style("text-orientation", "sideways")
         .style("fill", "black")
         .style("font-size", "14px")
         .style("font-family", "Arial");
 
-
-    // scale to generate radians (just for lower-half of circle)
-    let radians = d3.scaleLinear()
-        .range([-Math.PI / 2, Math.PI / 2]);
-
-    // path generator for arcs (uses polar coordinates)
-    let arc = d3.radialLine()
-        .angle(function(d) { return radians(d); });
-
     let link = svg.append("g").selectAll("link")
         .data(svglink)
         .enter()
         .append("path")
-        .attr("class", "link")
-        .attr("transform", function(d, i) {
-            let xshift = d.xsource + (d.xtarget - d.xsource) / 2;
-            let yshift = 2.2 * yfixed;
-            return "translate(" + xshift + ", " + yshift + ")";
-        })
-        .attr("d", function(d, i) {
-            // get x distance between source and target
-            let xdist = Math.abs(d.xsource - d.xtarget);
-
-            // set arc radius based on x distance
-            arc.radius(xdist / 2);
-            // want to generate 1/3 as many points per pixel in x direction
-            let points = d3.range(0, Math.ceil(xdist / 3));
-            // set radian scale domain
-            radians.domain([0, points.length - 1]);
-            return arc(points);
-
-        })
-        .style("fill", 'none')
-        .style("stroke", 'black')
+        .attr("fill", "none")
+        .attr("stroke", "black")
         .attr('stroke-width', function(d) {
             return linkWidth(d.value);
+        })
+        .attr("d", function(d) {
+            return ['M', d.xsource, (d.y),
+                    'A', (d.xtarget - d.xsource) / 2, ',',
+                    (d.xtarget - d.xsource) / 5, 0, 1, ',',
+                    1, d.xtarget, ',', d.y
+                ]
+                .join(' ');
         })
         .on('mouseover', function(d) {
             link.style('stroke', 'black');
