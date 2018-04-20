@@ -27,6 +27,7 @@
 
 
 const fs = require('fs');
+const Star = require('./Star');
 
 /**
  * Read and Parse STAR data headers
@@ -45,13 +46,8 @@ const readSTARHeader = (filestats) => (data) => {
     let block;
     let status = 0;
     
-    // Default parameter
-    let star = {
-      comment : "Created by StarVizEM",
-      date: (new Date()).toString().split(' ').splice(1,4).join('/'),
-      mtime: filestats.mtime,
-      tables : []
-    };
+    // Initialize STAR object
+    let star = Star.init(filestats.filename,new Date(filestats.mtime).getTime());
 
     // Cleanup: Deleting spaces
     let lines = input.replace(/^\s*\n/gm, "").split('\n');
@@ -64,7 +60,7 @@ const readSTARHeader = (filestats) => (data) => {
       if (words[0].substr(0,5) === 'data_'){
         // Create a new data block structure 
         block = {
-          name : words[0].substr(5,words[0].length) || 'None', // ??
+          name : words[0].substr(5,words[0].length) || 'default', // ??
           headers : [],
           mx : 0,
           my : 0,
@@ -118,13 +114,8 @@ const readSTAR = (filestats) => (data) => {
     // Init variables
     let block;
     
-    // Default parameters
-    let star = {
-      comment : "Created by StarVizEM",
-      date: (new Date()).toString().split(' ').splice(1,4).join('/'),
-      mtime: filestats.mtime,
-      tables : []
-    };
+    // Initialize STAR object
+    let star = Star.init(filestats.filename,new Date(filestats.mtime).getTime());
 
     // Get rows/lines
     let lines = input.split('\n');
@@ -139,7 +130,7 @@ const readSTAR = (filestats) => (data) => {
         if (words[0].substr(0,5) === 'data_'){
           // Create a new data block structure 
           block = {
-            name : words[0].substr(5,words[0].length) || 'None', // ??
+            name : words[0].substr(5,words[0].length) || 'default', // ??
             headers : [],
             data : [],
             mx : 0,
@@ -196,6 +187,7 @@ exports.getSTAR = (filename) => {
   console.log(filename);
   // Get file stats
   let stats = fs.statSync(filename);
+  stats.filename = filename;
   return fs.readFileAsync(filename, "utf-8").then(readSTAR(stats), (err) => console.log(err));
 };
 

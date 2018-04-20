@@ -49,7 +49,7 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
     let starobj = Star.create(input);
     
     //Get columns _rlnClassNumber and _rlnCtfMaxResolution for statistics
-    let table = starobj.getTable('None');
+    let table = starobj.getTable('default');
     let classID = table.getColumn('_rlnClassNumber');
     let resolution = table.getColumn('_rlnCtfMaxResolution');
 
@@ -60,7 +60,6 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
     
     let stats = classID.reduce( (accu,id,index) => {
       let hindex = Math.trunc((resolution[index] - resmin)/bandwidth);
-      console.log(hindex);
       accu.h[hindex]++;
       accu.num[id]++;
       accu.res[id][hindex]++;
@@ -120,8 +119,6 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
 
   //Parse JSONFile
   let jsonClass2D = parseClass2D(json2d);
-
-  let data2dJSON = JSON.stringify(jsonClass2D);
   
   /*
     // TODO??
@@ -148,7 +145,7 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
  */
 
 exports.getClass2D = (binNum) => (filename) => {
-  // Read run_it???_model.star
+  // Step #1 - Read and Parse run_it???_model.star
   let words = Star.splitPath(filename);
   let iteration = words[2].match(/\d+/)[0];
   let modelfile = `./${words[0]}/${words[1]}/run_it${iteration.padStart(3,'0')}_model.star`
@@ -156,8 +153,17 @@ exports.getClass2D = (binNum) => (filename) => {
   let stats = fs.statSync(modelfile);
   let modelstar = svzm.readSTAR(stats)(fs.readFileSync('./'+modelfile,'utf-8'));
   let classnum = Star.create(modelstar).getTable('model_general').getValue('_rlnNrClasses');
-  console.log(classnum);
-  return svzm.getSTAR(filename).then(readClass2D(classnum, binNum), (err) => console.log(err));
+  
+  //  Step #2 - Read and parse run_it???_data.star
+  return svzm.getSTAR(filename)
+    .then( (inData) => {
+      let starobj = readClass2D(classnum, binNum)(inData);
+      starobj.files.push({
+        filename : modelfile,
+        timestamp: new Date(stats.mtime).getTime()
+      });
+      return starobj;
+    }, (err) => console.log(err));
 };
 
 

@@ -124,10 +124,16 @@ const readPipeline = (filestats) => (starjson) => {
     let starobj = Star.create(input);
     
     // Pipeline data structure
+
     let pipe = {
-      comment : 'Created by STARVIZEM',
-      date: (new Date()).toString().split(' ').splice(1,4).join('/'),
-      mtime: filestats.mtime,
+      comment : 'Created by StarVizEM',
+      date: new Date(Date.now()).toString().split(' ').splice(1,4).join('/'),
+      files: [
+        {
+          filename: 'default_pipeline.star',
+          timestamp: new Date(filestats.mtime).getTime()
+        }
+      ],
       jobsnumber: -1,
       jobs : []
     };

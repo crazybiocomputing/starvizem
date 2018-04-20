@@ -47,6 +47,20 @@ module.exports = class Star {
     return new Star(other);
   }
   
+  static init(filename,timestamp) {
+    return new Star( {
+      comment : "Created by StarVizEM",
+      date: new Date(Date.now()).toString().split(' ').splice(1,4).join('/'),
+      files: [
+        {
+          filename : filename,
+          timestamp: timestamp
+        }
+      ],
+      tables : []
+    });
+  }
+  
   getTable(tablename) {
     return new Table(this.tables.find( (table) => table.name === tablename));
   }
