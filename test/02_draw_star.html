@@ -4,10 +4,13 @@
     <meta charset="utf8">
     <title>Test XY Plot</title>
     <script src="../javascripts/d3.js"></script>
+    <script src="http://d3js.org/d3.v5.min.js"></script>
     <script src="../js/common.js"></script>
     <script src="../js/arcDiagram.js"></script>
     <script src="../js/barChart.js"></script>
     <script src="../js/donut.js"></script>
+    <script src="../js/plot1D.js"></script>
+    <script src="../js/plot2D.js"></script>
   </head>
   <body onload="createForm()">
     <h1>Tests of StarVizEM - XY Plot</h1>
@@ -124,10 +127,23 @@
   const drawPlot = () => {
     console.log('Draw Plot');
     let formData = new FormData(document.getElementById('getPlot'));
+    let cols = [];
+    let table;
     for (let pair of formData.entries()) {
       console.log(pair[0] + ', ' + pair[1]);
-      console.log(starobj.tables[0].data[2]);
+      if (pair[0] !== "table") {cols.push(pair[1]);}
+      if (pair[0] == "table") {table = pair[1]};
     }
+    let starclass = Star.create(starobj);
+    let dataTable = starclass.getTable(table);
+    let data = cols.map( (d,i) => {
+      let v = {
+        d : dataTable.getColumn(d)
+      };
+      return v;
+    });
+    console.log(data);
+    createGraph('d3', data);
   }
   
   
@@ -196,10 +212,27 @@
         starobj = data;
         createXYForm(data);
     });
-    
-
 
   };
+    
+  const createGraph = (rootID, datas) => {
+  // Get JSON data from web service
+    let width = 600;
+    let height = 600;
+    let data = [];
+    for (let i = 0; i < datas[0].d.length; i++){
+      let temp = {};
+      temp["x"] = datas[0].d[i];
+      temp["y"] = datas[1].d[i];
+      console.log(temp);
+      data.push(temp);
+    }
+    console.log(data);
+  
+    document.body.appendChild(createPlot(data, width, height));
+    document.body.appendChild(createCurvePlot(data, width, height));
+  };  
+    
 
 
   </script>
