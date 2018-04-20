@@ -41,15 +41,11 @@ function createArcDiagram(data, width, height) {
         .attr("height", height)
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
-    let color = d3.scaleLinear().domain([1, 17])
-        .interpolate(d3.interpolateHcl)
-        .range([d3.rgb("#FE9C03"), d3.rgb('#4D006C')]);
 
-    //let color = d3.scaleOrdinal(d3.schemeAccent);
     let datanode = data.nodes;
     let datalink = data.links;
 
-    let pad = 30 * height / 100; // actual padding amount
+    let pad = 33 * height / 100; // actual padding amount
     let radius = 10; // fixed node radius
     let yfixed = pad + radius; // y position for all nodes
 
@@ -64,7 +60,8 @@ function createArcDiagram(data, width, height) {
             value: d.value,
             id: d.id,
             process: d.process,
-            name: d.name
+            name: d.name,
+            alias: d.alias
         }
         return out;
     });
@@ -84,16 +81,31 @@ function createArcDiagram(data, width, height) {
     console.log("svgnode", svgnode);
 
     let nodeRadius = d3.scaleSqrt().range([5, 20]);
-    let linkWidth = d3.scaleLinear().range([0.5, 1.2 * nodeRadius.range()[0]]);
-
     nodeRadius.domain(d3.extent(datanode, function(d) {
         return d.value;
     }));
 
-    linkWidth.domain(d3.extent(datalink, function(d) {
-        return d.value;
-    }));
+    // Generates a tooltip for a SVG circle element based on its ID
+    function addTooltip(circle) {
+        let x = parseFloat(circle.attr("cx"));
+        let y = parseFloat(circle.attr("cy"));
+        let r = parseFloat(circle.attr("r"));
+        let text = circle.attr("id");
 
+        let tooltip = d3.select("svg")
+            .append("text")
+            .text(text)
+            .attr("x", x)
+            .attr("y", y + 20)
+            .attr("dy", r * 2)
+            .attr("id", "tooltip");
+
+        let offset = tooltip.node().getBBox().width / 2;
+
+        tooltip.attr("text-anchor", "middle");
+        tooltip.attr("dx", 0);
+
+    }
 
     let node = svg.append("g")
         .attr("class", "nodes")
@@ -107,47 +119,22 @@ function createArcDiagram(data, width, height) {
             return d.x
         })
         .attr("cy", 2.4 * yfixed)
-        .attr("fill", function(d) { return color(d.process); })
+        .attr("id", function(d, i) {
+            if (d.alias !== "None") {
+                return d.alias.substr(0, d.alias.length - 1)
+            } else {
+                let job = d.name;
+                return job.substr(-7, 6);
+            }
+        })
+        .attr("fill", function(d) { return d3.interpolateRainbow(d.process / 20) })
         .on('mouseover', function(d) {
-            node.style('fill', null);
-            d3.select(this).style('fill', 'green');
-            let linkToHighlight = svglink.map(function(e) {
-                if (e.xsource === d.x) {
-                    return { xsource: e.xsource, xtarget: e.xtarget };
-                }
-                if (e.xtarget === d.x) { return { xsource: e.xsource, xtarget: e.xtarget } } else { return 0 };
-            });
-            console.log("linktothighlight", linkToHighlight);
-            linkToHighlight.forEach(link_h => {
-                if (link_h !== 0) {
-                    link.style('stroke', function(high) { return high.xsource === link_h.source | high.target === link_h.target ? 'black' : 'red' })
-                }
-
-            });
+            addTooltip(d3.select(this));
         })
         .on('mouseout', function(d) {
-            node.style('fill', null);
+            d3.select("#tooltip").remove();
             link.style('stroke', null);
         });
-
-    let labels = svg.append("g")
-        .attr("class", "text")
-        .selectAll("text")
-        .data(svgnode)
-        .enter().append("text")
-        .text(function(d) {
-            let job = d.name;
-            return job.substr(-7, 7);
-        })
-        .attr('x', function(d) {
-            return d.x
-        })
-        .attr('y', 2.5 * yfixed + 10)
-        .style("writing-mode", "sideways-lr")
-        .style("text-orientation", "sideways")
-        .style("fill", "black")
-        .style("font-size", "14px")
-        .style("font-family", "Arial");
 
     let link = svg.append("g").selectAll("link")
         .data(svglink)
@@ -155,9 +142,7 @@ function createArcDiagram(data, width, height) {
         .append("path")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr('stroke-width', function(d) {
-            return linkWidth(d.value);
-        })
+        .attr("stroke-width", 3)
         .attr("d", function(d) {
             return ['M', d.xsource, (d.y),
                     'A', (d.xtarget - d.xsource) / 2, ',',
