@@ -109,7 +109,7 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
       mx: binNum,
       my: classNum,
       headers : stats.h.map( (v,i) => `_svzBin${i.toString().padStart(3,'0')}`),
-      data : stats.res.slice(1)
+      data : stats.res
     });
     
     console.log(starobj);

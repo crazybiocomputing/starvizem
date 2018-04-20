@@ -48,7 +48,9 @@ function createStackedBarChart(data, width, height) {
 
     //color
     let z = d3.scaleOrdinal()
-        .range([" #FF5733 ", " #FFC300 ", " #DAF7A6 ", " #FFC300 ",  " #DAF7A6 "]);
+    .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    //let z = d3.scaleOrdinal()
+    //    .range([" #FF5733 ", " #FFC300 ", " #DAF7A6 ", " #FFC300 ",  " #DAF7A6 "]);
 
 
     //datas
@@ -59,17 +61,22 @@ function createStackedBarChart(data, width, height) {
     let keys = tableStat.headers.filter( (h) => h.search(/_svzBin\d+/) !== -1);
     console.log(keys);
     let start = tableStat.getColumnIndex('_svzNumberPerClass001');
-    let datas = tableHisto.data.map ( (d,i) => ({
-      total: tableStat.data[start + i],
-      name: tableStat.headers[start + i].slice(13),
-      values: d
-    }));
-    console.log(datas);
+    let datas = tableHisto.data.map ( (d,j) => {
+      let v = {
+        total: tableStat.data[start + j],
+        name: tableStat.headers[start + j].slice(13)
+      };
+      keys.map( (key,i) => v[key]= d[i]);
+      return v;
+    });
 
+    console.log(datas);
+    console.log(d3.stack().keys(keys)(datas));
+    
     //domains for each axis
-    datas.sort(function(a, b) { return b.total - a.total; });
-    x.domain(datas.map(function(d,i) { return d.name }));
-    y.domain([0,d3.max(datas,  function(d) {return d.total })]);
+    datas.sort( (a, b) => b.total - a.total);
+    x.domain(datas.map( (d) => d.name));
+    y.domain([0,d3.max(datas, (d) => d.total)]);
     z.domain(keys);
 
     //create each rect in g
@@ -81,9 +88,9 @@ function createStackedBarChart(data, width, height) {
     .selectAll("rect")
     .data(function(d) { return d; })
     .enter().append("rect")
-      .attr("x", function(d) { return x(d.name); })
-      .attr("y", function(d) { return y(d[0]); })
-      .attr("height", function(d) { return y(d.data.total); })
+      .attr("x", function(d) { return x(d.data.name); })
+      .attr("y", function(d) { return y(d[1]); })
+      .attr("height", function(d) { return y(d[0]) - y(d[1]) })
       .attr("width", x.bandwidth())
       .on("mouseover", function() { tooltip.style("display", null); })
       .on("mouseout", function() { tooltip.style("display", "none"); })

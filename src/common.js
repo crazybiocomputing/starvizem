@@ -132,6 +132,12 @@ class Star {
 }
 
 
+
+/**
+ * @class Star
+ *
+ * @author Jean-Christophe Taveau
+ */
 class Table {
 
   constructor(other) {
