@@ -16,15 +16,17 @@
             d3.json(job).then(function(graph) {
                 let width = 600;
                 let height = 600;
-                let datas = graph.imagenbperclass;
-                let data = [];
-                datas.forEach(function(d) {
-                    let temp = {};
-                    temp["x"] = d.classID;
-                    temp["y"] = d.nbHR;
-                    data.push(temp);
+                let starobj = Star.create(graph);
+                let tableStat = starobj.getTable('statistics');
+                let tableHisto = starobj.getTable('histogram_resolution');
+                let start = tableStat.getColumnIndex('_svzNumberPerClass001');
+                let data = tableHisto.data.map ( (d,j) => {
+                let v = {
+                    y: d[d.length-1],
+                    x: parseInt(tableStat.headers[start + j].slice(18))
+                };
+                return v;
                 });
-             
                 document.body.appendChild(createPlot(data, width, height));
                 document.body.appendChild(createCurvePlot(data, width, height));
             });
