@@ -74,7 +74,6 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
     // Remove class #0 because RELION starts at 1
     stats.num = stats.num.slice(1);
     stats.res = stats.res.slice(1);
-    console.log(stats);
 
     let statistics = {
       name: 'statistics',
@@ -111,14 +110,13 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
       data : stats.res
     });
     
-    console.log(starobj);
     return starobj;
   };
 
  /***** MAIN *****/
 
   //Parse JSONFile
-  let jsonClass2D = parseClass2D(json2d);
+  return parseClass2D(json2d);
   
   /*
     // TODO??
@@ -135,8 +133,6 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
       
       };
       */
-  
-  return jsonClass2D;
 
 }
 
@@ -144,24 +140,55 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
  * Get JSON file
  */
 
-exports.getClass2D = (binNum) => (filename) => {
-  // Step #1 - Read and Parse run_it???_model.star
-  let words = Star.splitPath(filename);
+exports.getClass2D = (binNum) => (datafile) => {
+  // Step #1 - Read and parse run_it???_data.star and run_it???_model.star
+  let words = Star.splitPath(datafile);
   let iteration = words[2].match(/\d+/)[0];
-  let modelfile = `./${words[0]}/${words[1]}/run_it${iteration.padStart(3,'0')}_model.star`
+  let modelfile = `./${words[0]}/${words[1]}/run_it${iteration.padStart(3,'0')}_model.star`;
+
+  let rlnfiles = [
+    datafile,  // run_it???_data.star
+    modelfile // run_it???_model.star
+  ];
+  let starfiles = rlnfiles.map( (fname) => ({
+    file: fname, 
+    timestamp: new Date(fs.statSync(fname).mtime).getTime()
+  }));
+  
+  // Step #2 - Check if StarVizEM json file already exists
+  let filenamejson = Star.splitPath(datafile).slice(0,-1).join('__').concat('__svzClass2D.json');
+  console.log(filenamejson);
+  if (fs.existsSync(`./StarVizEM/${filenamejson}`) ) {
+    // Read JSON
+    let starjson = JSON.parse(fs.readFileSync(`./StarVizEM/${filenamejson}`,'utf-8'));
+
+    //Check timestamp if file modified
+    // TODO - WARNING - Assume files are stored in the same way
+    let isModified = (starfiles.filter( (file,i) => starjson.files[i].timestamp !== file.timestamp) === undefined);
+    console.log('isModified ',isModified);
+    if ( !isModified) {
+      console.log(filenamejson + ' already exists')
+      return new Promise( (resolve, reject) => resolve(starjson));
+    }
+  }
+  
+  // Step #3 - Read and Parse run_it???_model.star
   console.log(iteration, modelfile);
   let stats = fs.statSync(modelfile);
   let modelstar = svzm.readSTAR(stats)(fs.readFileSync('./'+modelfile,'utf-8'));
   let classnum = Star.create(modelstar).getTable('model_general').getValue('_rlnNrClasses');
   
-  //  Step #2 - Read and parse run_it???_data.star
-  return svzm.getSTAR(filename)
+  //  Step #4 - Read and parse run_it???_data.star
+  return svzm.getSTAR(datafile)
     .then( (inData) => {
       let starobj = readClass2D(classnum, binNum)(inData);
       starobj.files.push({
         filename : modelfile,
         timestamp: new Date(stats.mtime).getTime()
       });
+      // Save in cache (aka StarVizEM directory)
+      fs.writeFile(`./StarVizEM/${filenamejson}`, JSON.stringify(starobj), (err) => console.log(err)); 
+
       return starobj;
     }, (err) => console.log(err));
 };

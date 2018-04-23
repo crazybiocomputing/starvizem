@@ -228,9 +228,27 @@ const readPipeline = (filestats) => (starjson) => {
  */
 exports.getPipeline = (filename) => {
   console.log(filename);
+  if (fs.existsSync('./StarVizEM/pipeline.json') ) {
+    //Check timestamp if file modified
+    let timestamp = new Date(fs.statSync(filename).mtime).getTime();
+    // Read JSON
+    let starjson = JSON.parse(fs.readFileSync('./StarVizEM/pipeline.json','utf-8'));
+    if ( starjson.files[0].timestamp === timestamp) {
+      console.log(filename + ' already exists')
+      return new Promise( (resolve, reject) => resolve(starjson));
+    }
+  }
+  // If not, re-read `default_pipeline.star`
   // Get file stats
   let stats = fs.statSync(filename);
-  return svzm.getSTAR(filename).then(readPipeline(stats), (err) => console.log(err));
+  return svzm.getSTAR(filename).then( (inData) => {
+    let pipeline = readPipeline(stats)(inData);
+    fs.writeFile("./StarVizEM/pipeline.json", JSON.stringify(pipeline), (err) => console.log(err)); 
+    return pipeline;
+  }, 
+    (err) => console.log(err)
+  );
+
 };
 
 
