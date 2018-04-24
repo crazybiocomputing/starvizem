@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Test MRC Stack</title>
+    <script src="../javascripts/d3.js"></script>
+    <script src="../js/raster.js"></script>
+    
+    <script type="text/javascript">
+      function loadFile() {
+        var input, file, fr;
+
+        if (typeof window.FileReader !== 'function') {
+            appendImage("p", "The file API isn't supported on this browser yet.");
+            return;
+        }
+
+        input = document.getElementById('fileinput');
+        if (!input) {
+            appendText("p", "Um, couldn't find the fileinput element.");
+        }
+        else if (!input.files) {
+            appendText("p", "This browser doesn't seem to support the `files` property of file inputs.");
+        }
+        else if (!input.files[0]) {
+            appendText("p", "Please select a file before clicking 'Load'");
+        }
+        else {
+            file = input.files[0];
+            fr = new FileReader();
+            fr.readAsArrayBuffer(file);
+            fr.onload = readStack;
+        }
+
+        function readStack() {
+          if ( (childnode = document.querySelector('figure')) !== null) {
+            childnode.remove();
+          }
+          let raster = Raster.create(readMRC(fr));
+          document.body.appendChild(raster.montage());
+        }
+      }
+      
+      function appendText(tagName, innerHTML) {
+        var elm;
+        elm = document.createElement(tagName);
+        elm.innerHTML = innerHTML;
+        document.body.appendChild(elm);
+      }
+    </script>
+    
+    <style>
+    .montage {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .zoom {
+      padding: 1px;
+      transition: transform .2s; /* Animation */
+      margin: 1px;
+    }
+
+    .zoom:hover {
+      border: 1px solid black;
+      transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+    }
+    
+    </style>
+  </head>
+  <body>
+    <h1>Tests of StarVizEM - Load MRC Stack</h1>
+
+    <form action='#' onsubmit="return false;">
+    <input type='file' id='fileinput' ><br/>
+    <input type='button' id='btnLoad' value='Load' onclick='loadFile();'>
+    </form>
+
+  </body>
+</html>

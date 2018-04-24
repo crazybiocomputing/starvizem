@@ -25,6 +25,99 @@
 
 'use strict';
 
+class Raster {
+  constructor(other) {
+    Object.assign(this,other);
+  }
+
+  static create(other) {
+    return new Raster(other);
+  }
+  
+  /**
+   * Get Uint8Array image buffer
+   *
+   * @param {number} index - If this Raster is a stack, choose an index between `0` and `nSlices - 1`
+   * @return {Uint8Array} copy - Useless. Just here for compatibility with other process/render functions.
+   *
+   * @author Jean-Christophe Taveau
+  */
+  getBuffer(index = 0) {
+    // Tutorial: https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+    let offset = this.width * this.height * index;
+    // New RGBA image buffer
+    let buf = new ArrayBuffer(this.width * this.height * 4);
+    let buf32 = new Uint32Array(buf);
+    let buf8 = new Uint8Array(buf);
+    // Fill with ABGR color values
+    let delta = 255.0 / (this.statistics[index].max - this.statistics[index].min) ;
+    buf32.forEach( (px,i,arr) => {
+      let pix = Math.floor((this.pixelData[offset + i] - this.statistics[index].min) * delta );
+      arr[i] = 255 << 24 | pix << 16 | pix<< 8 | pix;
+    });
+    return buf8;
+  }
+
+  /**
+   * Display float32 image
+   *
+   * @param {number} index - If this Raster is a stack, choose an index between `0` and `nSlices - 1`
+   * @returns {canvas} - Return a HTML5 Canvas
+   *
+   * @author Jean-Christophe Taveau
+  */
+  display(index = 0) {
+    // Tutorial: https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+    let canvas = document.createElement('canvas');
+    canvas.width = this.width;
+    canvas.height = this.height;
+    
+    let ctx = canvas.getContext('2d');
+    let imgdata = ctx.createImageData(this.width, this.height);
+    let offset = this.width * this.height * index;
+    // New RGBA image buffer
+    let buf = new ArrayBuffer(this.width * this.height * 4);
+    let buf32 = new Uint32Array(buf);
+    let buf8 = new Uint8Array(buf);
+    // Fill with ABGR color values
+    let delta = 255.0 / (this.statistics[index].max - this.statistics[index].min) ;
+    buf32.forEach( (px,i,arr) => {
+      let pix = Math.floor((this.pixelData[offset + i] - this.statistics[index].min) * delta );
+      arr[i] = 255 << 24 | pix << 16 | pix<< 8 | pix;
+    });
+
+    imgdata.data.set(buf8);
+    ctx.putImageData(imgdata, 0, 0);
+    
+    // Flip Y-axis
+    ctx.scale(1,-1);
+    ctx.drawImage(canvas,0,-this.height);
+    return canvas;
+  }
+
+  /**
+   * Compute a montage of all the slices of a stack
+   *
+   * @returns {canvas} - Return a HTML5 `figure` containing `canvas`
+   *
+   * @author Jean-Christophe Taveau
+  */
+  montage() {
+    let montage = document.createElement('figure');
+    montage.className = 'montage';
+    montage.id = 'fig001';
+    
+    Array.from({length: this.nSlices}, (v,i)=> i).map( (index) => {
+      let elm = this.display(index);
+      elm.className = 'zoom';
+      
+      montage.appendChild(elm);
+    });
+    return montage;
+  }
+}
+
+
 /**
  * Read MRC File
  *
@@ -105,7 +198,7 @@ const readMRC = (fr) => {
     char labels[800];    // 56-255       10 80-character labels
   */
   
-  console.log(header);
+  // console.log(header);
   let arraybuffer = new Uint8Array(fr.result);
   let view = new DataView(fr.result);
   
@@ -163,19 +256,21 @@ const readMRC = (fr) => {
     header.labels.push(label.substr(1,label.length));
   }
 
-  console.log(`${endianness}\n ${header}`);
+  // console.log(`${endianness}\n ${header}`);
   
-  // Read pixels and compute statistics
-  let stats = {min: 1000.0, max: 0.0};
-  
+  // Read pixels 
   let pixels = new Float32Array(header.nx * header.ny * header.nz);
   for (let i=0, off=256*4; i< pixels.length; i++, off+=4) {
     pixels[i] = view.getFloat32(off,endianness);
-    stats.max = (stats.max < pixels[i]) ? pixels[i] : stats.max;
-    stats.min = (stats.min > pixels[i]) ? pixels[i] : stats.min;
   }
-  
-  // console.log(pixels[50 * 100 + 50]);
+
+  // Compute statistics per slice
+  let size = header.nx * header.ny;
+  let stats = Array.from( {length: header.nz}, (v,i) => i)
+    .map( (index) => {
+      let sli = pixels.slice(index * size, (index + 1) * size);
+      return {min: Math.min(...sli), max: Math.max(...sli)};
+   });
   
   // Return raster
   return {
@@ -186,54 +281,7 @@ const readMRC = (fr) => {
     pixelData: pixels,
     statistics: stats
   };
-};
-
-
-/**
- * Display raster in a HTML5 Canvas
- *
- * @params {filereader} fr - 
- *
- * @author Jean-Christophe Taveau
- */
-const display = (raster) => {
-  let canvas = document.createElement('canvas');
   
-  return canvas;
 };
-
-
-
-function loadFile() {
-  var input, file, fr;
-
-  if (typeof window.FileReader !== 'function') {
-      bodyAppend("p", "The file API isn't supported on this browser yet.");
-      return;
-  }
-
-  input = document.getElementById('fileinput');
-  if (!input) {
-      bodyAppend("p", "Um, couldn't find the fileinput element.");
-  }
-  else if (!input.files) {
-      bodyAppend("p", "This browser doesn't seem to support the `files` property of file inputs.");
-  }
-  else if (!input.files[0]) {
-      bodyAppend("p", "Please select a file before clicking 'Load'");
-  }
-  else {
-      file = input.files[0];
-      fr = new FileReader();
-      fr.readAsArrayBuffer(file);
-      fr.onload = readImage;
-
-  }
-  
-  function readImage() {
-    readMRC(fr);
-  }
-}
-
 
 

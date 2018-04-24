@@ -2,11 +2,39 @@
 <html>
   <head>
     <meta charset="utf8">
-    <title>Test Class2D</title>
-    <script src="../javascripts/d3.js"></script>
+    <title>Test MRC Single Image</title>
     <script src="../js/raster.js"></script>
-    
+  </head>
+  <body>
+    <h1>Tests of StarVizEM - Load MRC Image</h1>
+
+    <form action='#' onsubmit="return false;">
+    <input type='file' id='fileinput' ><br/>
+    <input type='button' id='btnLoad' value='Load' onclick='loadFile();'>
+    </form>
+
+      
     <script type="text/javascript">
+    
+      function loadMRC(file) {
+        return new Promise((resolve, reject) => {
+          let fr = new FileReader();  
+          fr.onload = () => {
+            resolve(fr)
+          };
+          fr.readAsArrayBuffer(file);
+        });
+      }
+
+      function getMRCFile() {
+        let input = document.getElementById('fileinput');
+        loadMRC(input.files[0]).then ( (fr) => {
+          let raster = 
+          let elm = Raster.create(readMRC(fr)).display(5);
+          document.body.appendChild(elm);
+        });
+      }
+      
       function loadFile() {
         var input, file, fr;
 
@@ -29,48 +57,25 @@
             file = input.files[0];
             fr = new FileReader();
             fr.readAsArrayBuffer(file);
-            fr.onload = readImage;
+            fr.onload = readRaster;
+        }
+
+        function readRaster() {
+          let raster = new Raster(readMRC(fr));
+          console.log(raster);
+          let elm = document.createElement('canvas');
+          elm.width = raster.width;
+          elm.height = raster.height;
+          raster.display(elm,5);
+          document.body.appendChild(elm);
         }
         
-        /**
-         * Display float32 image
-         *
-         * @param {TWindow} win - Window used to display the image in the HTML5 page
-         * @param {TImage} uint8 - Image containing uint8 pixels data
-         * @param {boolean} copy - Useless. Just here for compatibility with other process/render functions.
-         *
-         * @author Jean-Christophe Taveau
-         */
-        const renderFloat32 = (canvas) => (imgf32) => {
-          // Tutorial: https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
-          let ctx = canvas.getContext('2d');
-          let imgdata = ctx.createImageData(imgf32.width, imgf32.height);
-          
-          // New RGBA image buffer
-          let buf = new ArrayBuffer(imgf32.width * imgf32.height * 4);
-          let buf32 = new Uint32Array(buf);
-          let buf8 = new Uint8Array(buf);
-          // Fill with ABGR color values
-          let delta = 255.0 / (imgf32.statistics.max - imgf32.statistics.min) ;
-          buf32.forEach( (px,i,arr) => {
-            let pix = Math.floor((imgf32.pixelData[i] - imgf32.statistics.min) * delta );
-            arr[i] = 255 << 24| pix << 16 | pix<< 8 | pix;
-          });
-
-          imgdata.data.set(buf8);
-          ctx.putImageData(imgdata, 0, 0);
-          
-          // Flip Y-axis
-          ctx.scale(1,-1);
-          ctx.drawImage(canvas,0,-imgf32.height);
-        };
-        
         function readImage() {
-          let raster = readMRC(fr);
+          let raster = Raster.create(readMRC(fr));
           let elm = document.querySelector('canvas') || document.createElement('canvas');
           elm.width = raster.width;
           elm.height = raster.height;
-          renderFloat32(elm)(raster);
+          renderFloat32(elm,raster,5);
           document.body.appendChild(elm);
         }
       }
@@ -82,16 +87,5 @@
         document.body.appendChild(elm);
       }
     </script>
-  </head>
-  <body>
-    <h1>Tests of StarVizEM - Load MRC Image</h1>
-
-    <form action='#' onsubmit="return false;">
-    <input type='file' id='fileinput' ><br/>
-    <input type='button' id='btnLoad' value='Load' onclick='loadFile();'>
-    </form>
-
-      
-      <content id="root"></content>
   </body>
 </html>
