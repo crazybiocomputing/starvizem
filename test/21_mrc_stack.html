@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf8">
     <title>Test MRC Stack</title>
-    <script src="../javascripts/d3.js"></script>
+    <script src="../js/mrc.js"></script>
     <script src="../js/raster.js"></script>
     
     <script type="text/javascript">
@@ -33,7 +33,7 @@
         }
 
         function readStack() {
-          if ( (childnode = document.querySelector('figure')) !== null) {
+          if ( (childnode = document.querySelector('section')) !== null) {
             childnode.remove();
           }
           let raster = Raster.create(readMRC(fr));
@@ -63,10 +63,22 @@
     }
 
     .zoom:hover {
-      border: 1px solid black;
       transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
     }
     
+    figure canvas {
+      border: 1px solid black;
+    }
+    
+/*
+    figure span {
+      position: relative;
+      top: -4px;
+      left: 50%;
+      color: white;
+    }
+*/
+
     </style>
   </head>
   <body>

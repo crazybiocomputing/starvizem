@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf8">
     <title>Test MRC Single Image</title>
+    <script src="../js/mrc.js"></script>
     <script src="../js/raster.js"></script>
   </head>
   <body>
@@ -29,7 +30,6 @@
       function getMRCFile() {
         let input = document.getElementById('fileinput');
         loadMRC(input.files[0]).then ( (fr) => {
-          let raster = 
           let elm = Raster.create(readMRC(fr)).display(5);
           document.body.appendChild(elm);
         });
@@ -63,10 +63,7 @@
         function readRaster() {
           let raster = new Raster(readMRC(fr));
           console.log(raster);
-          let elm = document.createElement('canvas');
-          elm.width = raster.width;
-          elm.height = raster.height;
-          raster.display(elm,5);
+          let elm = raster.display(5);
           document.body.appendChild(elm);
         }
         
