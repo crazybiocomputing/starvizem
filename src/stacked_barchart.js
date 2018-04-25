@@ -33,6 +33,8 @@ function createStackedBarChart(data, width, height) {
     let svg = d3.create("svg")
         .attr("width", width)
         .attr("height", height)
+        .call(d3.zoom().scaleExtent([1,6])
+        .on("zoom",zoom))
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
     //create g
@@ -44,13 +46,11 @@ function createStackedBarChart(data, width, height) {
 
     let x = d3.scaleBand()
         .rangeRound([10*height/100,90*width/100])
-        .paddingInner(0.2);
+        .paddingInner(0.8)
 
     //color
     let z = d3.scaleOrdinal()
     .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-    //let z = d3.scaleOrdinal()
-    //    .range([" #FF5733 ", " #FFC300 ", " #DAF7A6 ", " #FFC300 ",  " #DAF7A6 "]);
 
 
     //datas
@@ -59,7 +59,7 @@ function createStackedBarChart(data, width, height) {
 
     //keys
     let keys = tableStat.headers.filter( (h) => h.search(/_svzBin\d+/) !== -1);
-    console.log(keys);
+    //console.log(keys);
     let start = tableStat.getColumnIndex('_svzNumberPerClass001');
     let datas = tableHisto.data.map ( (d,j) => {
       let v = {
@@ -70,9 +70,9 @@ function createStackedBarChart(data, width, height) {
       return v;
     });
 
-    console.log(datas);
-    console.log(d3.stack().keys(keys)(datas));
-    
+    //console.log(datas);
+    //console.log(d3.stack().keys(keys)(datas));
+
     //domains for each axis
     datas.sort( (a, b) => b.total - a.total);
     x.domain(datas.map( (d) => d.name));
@@ -153,6 +153,9 @@ function createStackedBarChart(data, width, height) {
       .attr("dy", "0.32em")
       .text(function(d) { return d; });
 
+      function zoom() {
+        g.attr("transform", d3.event.transform);
+      }
 
 
 
