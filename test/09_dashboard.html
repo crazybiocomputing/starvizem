@@ -202,7 +202,7 @@
     for (let pair of formData.entries()) {
       jsonFormData[pair[0]] = pair[1];
     }
-    let processName = getProcessName(jsonFormData.process);
+    let processName = getProcessName(jsonFormData.process).replace(/\s/g,"");
     let jobnb = "job"+jsonFormData.job.toString().padStart(3,'0');
     console.log(processName+"/"+jobnb+"/");
 
