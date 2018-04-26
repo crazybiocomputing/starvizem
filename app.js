@@ -117,6 +117,17 @@ app.get('/Class2D/:job/', (req, res,next) => {
   // svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_model.star`).then( (data) => data, (err) => console.log(err));
 });
 
+app.get('/Class3D/:job/', (req, res,next) => {
+  console.log('Class3D');
+  // TODO
+  let id = parseInt(req.params.job.match(/\d+/g)[0]);
+  svzm.getClass2D(5)(`./Class3D/${req.params.job}/run_it025_data.star`).then( (data) => res.json(data), (err) => console.log(err));
+
+  // res.send(json);
+  // svzm.getSTAR(`./Class2D/${req.params.job}/run_it025_model.star`).then( (data) => data, (err) => console.log(err));
+});
+
+
 app.get('/MotionCorr/:job', (req, res,next) => {
   // TODO
   let id = parseInt(req.params.job.match(/\d+/g)[0]);
