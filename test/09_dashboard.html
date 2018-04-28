@@ -12,6 +12,8 @@
     <script src="../js/donut.js"></script>
     <script src="../js/plot1D.js"></script>
     <script src="../js/plot2D.js"></script>
+    <script src="../js/mrc.js"></script>
+    <script src="../js/raster.js"></script>
   </head>
   <body onload="createForm()">
     <h1>Tests Dashboard</h1>
@@ -45,10 +47,15 @@
     <option>----</option>
     </select>
     <button type="submit">Get STAR</button>
+    <h3 style="display: inline">Show Images</h3>
+    <input type='file' id='fileinput' ><br/>
+    <input style="display: inline" type='button' id='btnLoad' value='Load' onclick='loadFile();'>
     </form>
     <br />
     <section>
-      <content id="root"></content>
+      <aside>
+        <content id="graphs"></content>
+      </aside>
     </section>
     <h2>Table</h2>
     <form id="getPlot" action="" method="post">
@@ -204,7 +211,7 @@
     }
     let processName = getProcessName(jsonFormData.process).replace(/\s/g,"");
     let jobnb = "job"+jsonFormData.job.toString().padStart(3,'0');
-    console.log(processName+"/"+jobnb+"/");
+    let path = "/"+processName+"/"+jobnb+"/";
 
     fetch('/star',{
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -217,8 +224,8 @@
         console.log(data);
         starobj = data;
         createXYForm(data);
-        console.log("done");
-        createGraph("root","/"+processName+"/"+jobnb+"/");
+        createGraph("graphs",path);
+        //loadFile(path);
 
     });
   };
@@ -266,9 +273,10 @@
       data.push(temp);
     }
     console.log(data);
-  
-    document.body.appendChild(createPlot(data, width, height));
-    document.body.appendChild(createCurvePlot(data, width, height));
+    
+    let plotplace = document.getElementById(rootID);
+    plotplace.appendChild(createPlot(data, width, height));
+    plotplace.appendChild(createCurvePlot(data, width, height));
 
   };  
   
@@ -312,6 +320,71 @@
         return data;
     }
     
+    function loadFile() {
+        var input, file, fr;
+
+        if (typeof window.FileReader !== 'function') {
+            appendImage("p", "The file API isn't supported on this browser yet.");
+            return;
+        }
+
+        input = document.getElementById('fileinput');
+        if (!input) {
+            appendText("p", "Um, couldn't find the fileinput element.");
+        }
+        else if (!input.files) {
+            appendText("p", "This browser doesn't seem to support the `files` property of file inputs.");
+        }
+        else if (!input.files[0]) {
+            appendText("p", "Please select a file before clicking 'Load'");
+        }
+        else {
+            file = input.files[0];
+            fr = new FileReader();
+            fr.readAsArrayBuffer(file);
+            fr.onload = readStack;
+        }
+
+        function readStack() {
+          /*if ( (childnode = document.querySelector('section')) !== null) {
+            childnode.remove();
+          }*/
+          let raster = Raster.create(readMRC(fr));
+          let montage = raster.montage();
+          montage.style = "width: 600px; height: 600px; border: 2px solid rgba(2, 0, 34, 0.897);  float: right; overflow-y: scroll;";
+          document.getElementById("graphs").appendChild(montage);
+        }
+      }
+      
+    function appendText(tagName, innerHTML) {
+      var elm;
+      elm = document.createElement(tagName);
+      elm.innerHTML = innerHTML;
+      document.getElementById("graphs").appendChild(elm);
+    }
+    </script>
+    
+    <style>
+    .montage {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .zoom {
+      padding: 1px;
+      transition: transform .2s; /* Animation */
+      margin: 1px;
+    }
+
+    .zoom:hover {
+      transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+    }
+    
+    figure canvas {
+      border: 1px solid black;
+    }
+    </style>
   </script>
   </body>
 </html>
