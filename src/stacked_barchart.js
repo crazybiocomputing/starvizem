@@ -46,13 +46,15 @@ function createStackedBarChart(data, width, height) {
 
     let x = d3.scaleBand()
         .rangeRound([10*height/100,90*width/100])
-        .paddingInner(0.8)
+        .paddingInner(0.8);
 
     //color
     let z = d3.scaleOrdinal()
-    .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+        .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
+    let xAxis = d3.axisBottom(x);
 
+    let yAxis = d3.axisLeft(y);
     //datas
     //let datas = data.imagenbperclass;
     //console.log(datas);
@@ -70,7 +72,7 @@ function createStackedBarChart(data, width, height) {
       return v;
     });
 
-    //console.log(datas);
+    //console.log(datas)
     //console.log(d3.stack().keys(keys)(datas));
 
     //domains for each axis
@@ -105,13 +107,13 @@ function createStackedBarChart(data, width, height) {
     g.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + 90 * height / 100 + ")")
-        .call(d3.axisBottom(x));
+        .call(xAxis);
 
     //create y axis
     g.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(" + 10 * width / 100 + ",0)")
-        .call(d3.axisLeft(y));
+        .call(yAxis);
 
     //tooltip
     var tooltip = svg.append("g")
@@ -156,11 +158,6 @@ function createStackedBarChart(data, width, height) {
       function zoom() {
         g.attr("transform", d3.event.transform);
       }
-
-
-
-
-
 
     d3.select("body").append( () => svg.node());
     return svg.node();
