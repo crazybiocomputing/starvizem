@@ -45,10 +45,10 @@ function createCurvePlot(data, width, height) {
 
   //axis
   let x = d3.scaleLinear()
-      .range([5 * width / 100, 90 * width / 100]);
+      .range([10 * width / 100, 90 * width / 100]);
 
   let y = d3.scaleLinear()
-      .range([90 * height / 100, 5 * height / 100 ]);
+      .range([90 * height / 100, 10 * height / 100 ]);
 
     data.sort(function(a, b) {
         return a.x - b.y;
@@ -60,8 +60,8 @@ function createCurvePlot(data, width, height) {
       .curve(d3.curveCardinal);
 
 
-  x.domain([0,d3.max(data,function(d)  { return d.x; })]);
-  y.domain([d3.max(data, function(d) { return d.y; }),0]);
+  x.domain([d3.min(data,function(d)  { return d.x; }),d3.max(data,function(d)  { return d.x; })]);
+  y.domain([d3.max(data, function(d) { return d.y; }),d3.min(data,function(d)  { return d.y; })]);
 
   svg.append("path")
       .attr("class", "line")
@@ -87,18 +87,18 @@ function createCurvePlot(data, width, height) {
             .duration(200)
             .style("opacity", .9);
           div .html(
-            "<strong>"+"Y: "+"</strong>"+d.y + "</br>"+            
-            "<strong>"+"X: "+"</strong>"+d.x)     
+            "<strong>"+"X: "+"</strong>"+d.x + "</br>"+            
+            "<strong>"+"Y: "+"</strong>"+d.y)     
             .style("left", (d3.event.pageX) + "px")             
             .style("top", (d3.event.pageY ) + "px");
           });
   
   svg.append("g")
-      .attr("transform", "translate(" + 30 + "," + 0 * width / 100 +")")
+      .attr("transform", "translate(" + 10 * width / 100 + ",0)")
       .call(d3.axisLeft(y));
 
   svg.append("g")
-      .attr("transform", "translate(" + 0 +   "," + 30 +")")
+      .attr("transform", "translate(0," + 10 * height / 100 + ")")
       .call(d3.axisTop(x));
   
       svg.append("g")			
@@ -107,19 +107,20 @@ function createCurvePlot(data, width, height) {
           .tickSize(-width)
           .tickFormat("")
       )
-      .attr("transform", "translate(" + 30 + "," + 0 * width / 100 +")")
+      .attr("transform", "translate(" + 10*width/100 + "," + 0 +")")
       .style("opacity","0.2")
       
 
 
   svg.append("g")			
       .attr("class", "grid")
-      .attr("transform", "translate("+0+ "," +30 + ")")
+      .attr("transform", "translate("+0+ "," +10*height/100 + ")")
       .call(make_x_gridlines()
           .tickSize(-height)
           .tickFormat("")
       )   
       .style("opacity","0.2")
+        
       
       
   function make_x_gridlines() {		
