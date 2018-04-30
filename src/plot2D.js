@@ -45,10 +45,10 @@ function createPlot(data, width, height) {
 
   //axis
   let x = d3.scaleLinear()
-      .range([5 * width / 100, 90 * width / 100]);
+      .range([10 * width / 100, 90 * width / 100]);
 
   let y = d3.scaleLinear()
-      .range([90 * height / 100, 5 * height / 100 ]);
+      .range([90 * height / 100, 10 * height / 100 ]);
 
   
   let valueline = d3.line()
@@ -56,8 +56,8 @@ function createPlot(data, width, height) {
       .y(function(d) { return y(d.y); });
 
 
-  x.domain([0,d3.max(data,function(d)  { return d.x; })]);
-  y.domain([d3.max(data, function(d) { return d.y; }),0]);
+  x.domain([d3.min(data,function(d)  { return d.x; }),d3.max(data,function(d)  { return d.x; })]);
+  y.domain([d3.max(data, function(d) { return d.y; }),d3.min(data,function(d)  { return d.y; })]);
 
   svg.append("path")
       .attr("class", "line")
@@ -70,7 +70,7 @@ function createPlot(data, width, height) {
       .data(data)
       .enter()
       .append("circle")
-      .attr("r", 5)
+      .attr("r", 2.5)
       .attr("cx", function(d) {
           return x(d.x)
       })
@@ -90,11 +90,11 @@ function createPlot(data, width, height) {
           });
    
   svg.append("g")
-      .attr("transform", "translate(" + 30 + "," + 0 * width / 100 +")")
+      .attr("transform", "translate(" + 10 * width / 100 + ",0)")
       .call(d3.axisLeft(y));
 
   svg.append("g")
-      .attr("transform", "translate(" + 0 +   "," + 30 +")")
+      .attr("transform", "translate(0," + 10 * height / 100 + ")")
       .call(d3.axisTop(x));
 
 
@@ -104,13 +104,13 @@ function createPlot(data, width, height) {
           .tickSize(-width)
           .tickFormat("")
       )
-      .attr("transform", "translate(" + 30 + "," + 0 * width / 100 +")")
+      .attr("transform", "translate(" + 10*width/100 + "," + 0 +")")
       .style("opacity","0.2")
 
 
   svg.append("g")			
       .attr("class", "grid")
-      .attr("transform", "translate("+0+ "," +30 + ")")
+      .attr("transform", "translate("+0+ "," +10*height/100 + ")")
       .call(make_x_gridlines()
           .tickSize(-height)
           .tickFormat("")
