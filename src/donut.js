@@ -28,8 +28,6 @@
  * Create a Donut in svg and returns it
  *
  * @author Marie Economides, Pauline Bock
- * 
- * TODO : add interactive labels, virer les classes trop petites ou les zoomer ... 
  */
 
 function createDonut(data, width, height) {
@@ -45,31 +43,32 @@ function createDonut(data, width, height) {
     svg.append("g")
     .attr("class", "labelValue");
 
+    let arcWidth = 0.5;
+    let arcWidthMouseOut = 0.5;
+    let arcWidthMouseOn = 0.45;
+
     let radius = Math.min(width, height) / 2,
-        innerRadius = radius * 0.5,
-        innerRadiusFinal = radius * .5,
-        innerRadiusZoom = radius * .45;
+        innerRadius = radius * arcWidth,
+        innerRadiusFinal = radius * arcWidthMouseOut,
+        innerRadiusZoom = radius * arcWidthMouseOn;
 
     let color = d3.scaleOrdinal(d3.schemeAccent);
 
+    let arcWidthChange = 20;
     let arc = d3.arc()
-        .outerRadius(radius - 10)
+        .outerRadius(radius - arcWidthChange)
         .innerRadius(innerRadius);
 
-    let arcFinal = d3.arc().innerRadius(innerRadiusFinal).outerRadius(radius - 10);
-    let arcZoom = d3.arc().innerRadius(innerRadiusZoom).outerRadius(radius - 10);
+    let arcFinal = d3.arc().innerRadius(innerRadiusFinal).outerRadius(radius - arcWidthChange);
+    let arcZoom = d3.arc().innerRadius(innerRadiusZoom).outerRadius(radius - arcWidthChange);
     
     let legendBoxSize = (radius * 0.05);
-    let legendSpacing = radius * 0.02;
+    let legendSpacing = (radius * 0.02);
 
     let div = d3.select("body").append("div").attr("class", "toolTip");
 
-    let labelArc = d3.arc()
-        .outerRadius(radius - 40)
-        .innerRadius(radius - 40);
-    
     let pie = d3.pie()
-        .sort(function(a,b){return d3.descending(a.nb, b.nb);})
+        .sort(function(a,b){ if (a.labels != "Other" && b.labels != "Other") {return d3.descending(a.nb, b.nb);}})
         .value(function(d) { return d.nb;});
 
     let g = svg.append("g")
@@ -88,10 +87,12 @@ function createDonut(data, width, height) {
         });
 
     g.append("path")
+        //.attr("fill", function(d) {return d3.interpolateRainbow(parseInt(d.data.labels.slice(-3)) / (d.data.length)) })
         .attr("fill", function(d, i) { return color(i); })
         .attr("d", arc)
         .attr("stroke", "#fff");
     
+    let hzshift = 3;
     let legend = svg.selectAll(".legend")
         .data(color.domain())
         .enter()
@@ -100,7 +101,7 @@ function createDonut(data, width, height) {
         .attr("transform", function (d,i) {
             let h = legendBoxSize + legendSpacing;
             let offset = h * color.domain().length / 2;
-            let horiz = -3 * legendBoxSize;
+            let horiz = -hzshift * legendBoxSize;
             let vert = i * h - offset;
             return "translate(" + horiz + "," + vert + ")";
         });
