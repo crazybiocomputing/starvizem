@@ -26,14 +26,43 @@
 'use strict';
 
 function createStackedBarChart(data, width, height) {
+    // constants declaration
+    let padding = 0.8;
+    let cutClassName = 13;
+    // for the tooltip
+    let tooltipWidth = 30;
+    let tooltipHeight = 20;
+    let textTooltipPosition = 15;
+    let xPositionTooltip = 15;
+    let yPositionToolTip = 25;
+    let tooltipOpacity = 0.5;
+    let squarePosition = width - 20;
+    let X_PositionInSquare = width - 25;
+    let Y_PositionInSquare = 10;
+    // for the zoom
+    let minZoom = 1;
+    let maxZoom = 6;
+    // for the legend
+    let legendWidth = 20;
+    let legendHeight = 20;
+    let legendPadding = 20;
+    let legendTextFontSize = 10;
+    //for the axis
+    let yRange = [90* height/100,10*height/100];
+    let xRange = [10*height/100,90*width/100];
+    let xTranslate = 90 * height / 100;
+    let yTranslate = 10 * width / 100;
+
+    // datas declaration
     let starobj = Star.create(data);
     let tableStat = starobj.getTable('statistics');
     let tableHisto = starobj.getTable('histogram_resolution');
+
     //create svg
     let svg = d3.create("svg")
         .attr("width", width)
         .attr("height", height)
-        .call(d3.zoom().scaleExtent([1,6])
+        .call(d3.zoom().scaleExtent([minZoom,maxZoom])
         .on("zoom",zoom))
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
@@ -42,11 +71,11 @@ function createStackedBarChart(data, width, height) {
 
     //axis
     let y = d3.scaleLinear()
-        .rangeRound([90* height/100,10*height/100]);
+        .rangeRound(yRange);
 
     let x = d3.scaleBand()
-        .rangeRound([10*height/100,90*width/100])
-        .paddingInner(0.8);
+        .rangeRound(xRange)
+        .paddingInner(padding);
 
     //color
     let z = d3.scaleOrdinal()
@@ -55,25 +84,18 @@ function createStackedBarChart(data, width, height) {
     let xAxis = d3.axisBottom(x);
 
     let yAxis = d3.axisLeft(y);
-    //datas
-    //let datas = data.imagenbperclass;
-    //console.log(datas);
 
     //keys
     let keys = tableStat.headers.filter( (h) => h.search(/_svzBin\d+/) !== -1);
-    //console.log(keys);
     let start = tableStat.getColumnIndex('_svzNumberPerClass001');
     let datas = tableHisto.data.map ( (d,j) => {
       let v = {
         total: tableStat.data[start + j],
-        name: tableStat.headers[start + j].slice(13)
+        name: tableStat.headers[start + j].slice(cutClassName)
       };
       keys.map( (key,i) => v[key]= d[i]);
       return v;
     });
-
-    //console.log(datas)
-    //console.log(d3.stack().keys(keys)(datas));
 
     //domains for each axis
     datas.sort( (a, b) => b.total - a.total);
@@ -97,8 +119,8 @@ function createStackedBarChart(data, width, height) {
       .on("mouseover", function() { tooltip.style("display", null); })
       .on("mouseout", function() { tooltip.style("display", "none"); })
       .on("mousemove", function(d) {
-        var xPosition = d3.mouse(this)[0] - 15;
-        var yPosition = d3.mouse(this)[1] - 25;
+        var xPosition = d3.mouse(this)[0] - xPositionTooltip;
+        var yPosition = d3.mouse(this)[1] - yPositionToolTip;
         tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
         tooltip.select("text").text((d[1]) - (d[0]));
       });
@@ -106,13 +128,13 @@ function createStackedBarChart(data, width, height) {
     //create x axis
     g.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," + 90 * height / 100 + ")")
+        .attr("transform", "translate(0," + xTranslate + ")")
         .call(xAxis);
 
     //create y axis
     g.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(" + 10 * width / 100 + ",0)")
+        .attr("transform", "translate(" + yTranslate + ",0)")
         .call(yAxis);
 
     //tooltip
@@ -121,13 +143,13 @@ function createStackedBarChart(data, width, height) {
       .style("display", "none");
 
     tooltip.append("rect")
-      .attr("width", 30) // set the height and width of the tooltip
-      .attr("height", 20)
+      .attr("width", tooltipWidth)
+      .attr("height", tooltipHeight)
       .attr("fill", "white")
-      .style("opacity", 0.5);
+      .style("opacity", tooltipOpacity);
 
     tooltip.append("text")
-      .attr("x", 15) // position of the text in the tooltip
+      .attr("x", textTooltipPosition)
       .attr("dy", "1.2em")
       .style("text-anchor", "middle")
       .attr("font-size", "12px")
@@ -136,22 +158,22 @@ function createStackedBarChart(data, width, height) {
     //legend
     var legend = g.append("g")
       .attr("font-family", "sans-serif")
-      .attr("font-size", 10)
+      .attr("font-size", legendTextFontSize)
       .attr("text-anchor", "end")
       .selectAll("g")
       .data(keys.slice().reverse())
       .enter().append("g")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + i * legendPadding + ")"; });
 
     legend.append("rect")
-      .attr("x", width - 20)// position of each square
-      .attr("width", 20)
-      .attr("height", 20)
+      .attr("x", squarePosition)
+      .attr("width", legendWidth)
+      .attr("height", legendHeight)
       .attr("fill", z);
 
     legend.append("text")
-      .attr("x", width - 25)// position of the text corresponding to squares
-      .attr("y", 10)
+      .attr("x", X_PositionInSquare)
+      .attr("y", Y_PositionInSquare)
       .attr("dy", "0.32em")
       .text(function(d) { return d; });
 
