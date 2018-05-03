@@ -34,6 +34,21 @@
 'use strict';
 
 function createCurvePlot(data, width, height) {
+  let radius=2.5;
+  let eventDuration=200;
+  let nbTicks=5;
+  let opacity=0.9;
+  let tooltipOpacity=0;
+  let gridlinesOpacity=0.2;
+  let xrangeMin=10 * width / 100;
+  let xrangeMax= 90 * width / 100;
+  let yrangeMin=90 * height / 100;
+  let yrangeMax=10 * height / 100;
+  let yTranslateMin=10 * width / 100;
+  let yTranslateMax=0;
+  let xTranslateMin=0;
+  let xTranslateMax=10 * height / 100;
+
   let svg = d3.create("svg")
       .attr("width", width)
       .attr("height", height)
@@ -41,14 +56,14 @@ function createCurvePlot(data, width, height) {
 
   let div = d3.select("body").append("div")
       .attr("class", "tooltip")
-      .style("opacity", 0);
+      .style("opacity", tooltipOpacity);
 
   //axis
   let x = d3.scaleLinear()
-      .range([10 * width / 100, 90 * width / 100]);
+      .range([xrangeMin,xrangeMax]);
 
   let y = d3.scaleLinear()
-      .range([90 * height / 100, 10 * height / 100 ]);
+      .range([yrangeMin,yrangeMax]);
 
     data.sort(function(a, b) {
         return a.x - b.y;
@@ -74,7 +89,7 @@ function createCurvePlot(data, width, height) {
       .data(data)
       .enter()
       .append("circle")
-      .attr("r", 5)
+      .attr("r", radius)
       .attr("cx", function(d) {
           return x(d.x)
       })
@@ -84,9 +99,9 @@ function createCurvePlot(data, width, height) {
       .style("fill", "black")
       .on("mouseover", function(d) {
           div.transition()
-            .duration(200)
-            .style("opacity", .9);
-          div .html(
+            .duration(eventDuration)
+            .style("opacity", opacity);
+          div.html(
             "<strong>"+"X: "+"</strong>"+d.x + "</br>"+            
             "<strong>"+"Y: "+"</strong>"+d.y)     
             .style("left", (d3.event.pageX) + "px")             
@@ -94,11 +109,11 @@ function createCurvePlot(data, width, height) {
           });
   
   svg.append("g")
-      .attr("transform", "translate(" + 10 * width / 100 + ",0)")
+      .attr("transform", "translate(" + yTranslateMin + ","+ yTranslateMax+")")
       .call(d3.axisLeft(y));
 
   svg.append("g")
-      .attr("transform", "translate(0," + 10 * height / 100 + ")")
+      .attr("transform", "translate("+xTranslateMin+ "," + xTranslateMax + ")")
       .call(d3.axisTop(x));
   
       svg.append("g")			
@@ -107,31 +122,31 @@ function createCurvePlot(data, width, height) {
           .tickSize(-width)
           .tickFormat("")
       )
-      .attr("transform", "translate(" + 10*width/100 + "," + 0 +")")
-      .style("opacity","0.2")
+      .attr("transform", "translate(" + yTranslateMin + "," + yTranslateMax +")")
+      .style("opacity",gridlinesOpacity)
       
 
 
   svg.append("g")			
       .attr("class", "grid")
-      .attr("transform", "translate("+0+ "," +10*height/100 + ")")
+      .attr("transform", "translate("+xTranslateMin+ "," +xTranslateMax + ")")
       .call(make_x_gridlines()
           .tickSize(-height)
           .tickFormat("")
       )   
-      .style("opacity","0.2")
+      .style("opacity",gridlinesOpacity)
         
-      
       
   function make_x_gridlines() {		
         return d3.axisTop(x)
-            .ticks(5)
+            .ticks(nbTicks)
     }   
 
   function make_y_gridlines() {		
         return d3.axisLeft(y)
-            .ticks(5)
+            .ticks(nbTicks)
     }    
   
+
 return svg.node();
 }
