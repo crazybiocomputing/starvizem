@@ -30,6 +30,11 @@
       </div>
     </section>
     <header>
+    <section>
+      <aside>
+          <content id="arcDiag"></content>
+      </aside>
+    </section>  
     <h2>STAR File</h2>
     <form id="getstar" action="/star" method="post">
     <select id="process" name="process" onchange="changeProcessHandler(event)">
@@ -47,10 +52,10 @@
     <input style="display: inline" type='button' id='btnLoad' value='Load' onclick='loadFile();'>
     </form>
     <br />
-    <section>
-      <aside>
-        <content id="graphs"></content>
-      </aside>
+    <section id ="graphsection">
+        <div id="graph1"></div>
+        <div id="graph2"></div>
+        <div id="graph3"></div>
     </section>
     <h2>Table</h2>
     <form id="getPlot" action="" method="post">
@@ -70,12 +75,14 @@
     <form id="keywords">
     </form>
     </header>
-    <content id="d3"></content>
+    <section id ="plotSection">
+        <div id="plot1"></div>
+        <div id="plot2"></div>
+    </section>
 
 
     <section id="fig"> 
-    <svg id="chart">
-    </svg>
+  <div id="container" class="svg-container">     
   <script type="text/javascript">
   // Global variable
   let workflow;
@@ -147,8 +154,15 @@
       };
       return v;
     });
-    console.log(data);
-    createPlots('d3', data);
+    let plot1 = document.getElementById('plot1');
+    let plot2 = document.getElementById('plot2');
+    console.log(plot1.firstChild);
+    if(plot1.firstChild) {
+          console.log("Change graphs");
+          plot1.removeChild(plot1.firstChild);
+          plot2.removeChild(plot2.firstChild);
+        }
+    createPlots('plot1','plot2', data);
   }
   
   
@@ -213,18 +227,29 @@
       .then ( (data) => {
         console.log(data);
         starobj = data;
+        let graph1 = document.getElementById('graph1');
+        let graph2 = document.getElementById('graph2');
+        let graph3 = document.getElementById('graph3');
+        console.log(graph1.firstChild);
+        if(graph1.firstChild) {
+          console.log("Change graphs");
+          graph1.removeChild(graph1.firstChild);
+          graph2.removeChild(graph2.firstChild);
+          graph3.removeChild(graph3.firstChild);
+        }
         createXYForm(data);
-        createGraph("graphs",path);
+        createArcDiagrams('arcDiag',data);
+        createGraph("graph1","graph2",path);
         //loadFile(path);
     });
   };
     
-  const createGraph = (rootID,job) => {
+  const createGraph = (donutID,barchartID,job) => {
     console.log(job);
   // Get JSON data from web service
   d3.json(job).then(function(graph) {
                 console.log(graph)
-                let width = 400;
+                let width = 600;
                 let height = 400;
                 let starobj = Star.create(graph);
                 let tableStat = starobj.getTable('statistics');
@@ -235,21 +260,21 @@
                 labels: tableStat.headers[start + i].slice(13)
                 }));
                 dataR = regroupLowData(datas);
-                let donutplace= document.getElementById(rootID);
+                let donutplace= document.getElementById(donutID);
                 donutplace.appendChild(createDonut(dataR, width, height));
             });
   d3.json(job).then(function(graph) {
-                let width = 400;
+                let width = 600;
                 let height = 400;
-                let barplace = document.getElementById(rootID);
+                let barplace = document.getElementById(barchartID);
                 barplace.appendChild(createStackedBarChart(graph, width, height));
   
             });
         
   }
-  const createPlots = (rootID, datas) => {
+  const createPlots = (plot1DID,plot2DID, datas) => {
   // Get JSON data from web service
-    let width = 400;
+    let width = 600;
     let height = 400;
     let data = [];
     for (let i = 0; i < datas[0].d.length; i++){
@@ -261,10 +286,44 @@
     }
     console.log(data);
     
-    let plotplace = document.getElementById(rootID);
-    plotplace.appendChild(createPlot(data, width, height));
-    plotplace.appendChild(createCurvePlot(data, width, height));
+    let plot1Dplace = document.getElementById(plot1DID);
+    plot1Dplace.appendChild(createPlot(data, width, height));
+    let plot2Dplace = document.getElementById(plot2DID);
+    plot2Dplace.appendChild(createCurvePlot(data, width, height));
   };  
+
+
+   const createArcDiagrams = (rootID,graph) => {
+  // Get JSON data from web service
+  d3.json('/pipeline').then(function(graph) {
+    let width = 1200;
+    let height = 250;
+    let data_nodes = [];
+    let data_links = [];
+    graph.jobs.forEach((d) => {
+        data_nodes.push({
+        id: d.jobID,
+        process: d.process,
+        value: d.targets.length,
+        name: d.name,
+        alias: d.alias
+        });
+       if (d.targets.length !== 0) {
+            d.targets.forEach((t) => {
+            data_links.push({
+            source: d.jobID,
+            value: d.targets.length,
+            target: t
+            });
+            });
+            }
+      });
+
+      console.log(graph);
+      let arcDiagramPlace=document.getElementById(rootID);
+      arcDiagramPlace.appendChild(createArcDiagram({nodes: data_nodes,links: data_links}, width, height));
+    });
+    };
   
   function regroupLowData(data){
         let values = [];
@@ -334,8 +393,11 @@
           }*/
           let raster = Raster.create(readMRC(fr));
           let montage = raster.montage();
-          montage.style = "width: 400px; height: 400px; border: 2px solid rgba(2, 0, 34, 0.897);float:left; overflow-y: scroll;";
-          document.getElementById("graphs").appendChild(montage);
+          montage.style = "width: 600px; height: 400px; border: 2px solid rgba(2, 0, 34, 0.897);float:left; overflow-y: scroll ";
+          montage.setAttribute("preserveAspectRatio", "xMinYMin meet");
+          montage.setAttribute("viewBox", "0 0 600 400");
+          montage.setAttribute("svg-content", true);
+          document.getElementById("graph3").appendChild(montage);
         }
       }
       
@@ -346,30 +408,47 @@
       document.getElementById("graphs").appendChild(elm);
     }
     </script>
+    </div>
+      
     </section>
     
     <style>
-    @media screen and (max-width: 1060px) {     
+    @media screen and (max-width: 1660px) {     
       
     html { 
       font-size:100%; 
-      }  
+      }
+
+    #plotSection {
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+    #plot1 {
+        grid-column: 1;
+    }
+
+    #plot2 {
+        grid-column: 2;
+    }
 
 
-    .svg-container {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding-bottom: 100%; /* aspect ratio */
-    vertical-align: top;
-    overflow: hidden;
-}
-.svg-content-responsive {
-    display: inline-block;
-    position: absolute;
-    top: 10px;
-    left: 0;
-}
+    #graphsection {
+        display:grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    #graph1 {
+        grid-column: 1;
+    }
+
+    #graph2 {
+        grid-column: 2;
+    }
+
+      #graph3 {
+        grid-column: 3;
+      }
 
     .montage {
       display: flex;
