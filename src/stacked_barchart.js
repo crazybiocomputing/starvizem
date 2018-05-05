@@ -59,10 +59,13 @@ function createStackedBarChart(data, width, height) {
     let tableHisto = starobj.getTable('histogram_resolution');
 
     //create svg
-    let svg = d3.create("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .call(d3.zoom().scaleExtent([minZoom,maxZoom])
+    let svg = d3.select("#graph2").append("svg")
+        //.attr("width", width)
+        //.attr("height", height)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 600 400")
+        .classed("svg-content", true)
+        .call(d3.zoom().scaleExtent([1,6])
         .on("zoom",zoom))
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
