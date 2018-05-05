@@ -49,9 +49,12 @@ function createCurvePlot(data, width, height) {
   let xTranslateMin=0;
   let xTranslateMax=10 * height / 100;
 
-  let svg = d3.create("svg")
-      .attr("width", width)
-      .attr("height", height)
+  let svg = d3.select("#plot1").append("svg")
+      //.attr("width", width)
+      //.attr("height", height)
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", "0 0 600 400")
+      .classed("svg-content", true)
       .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
   let div = d3.select("body").append("div")
