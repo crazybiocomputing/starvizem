@@ -37,8 +37,11 @@
 function createArcDiagram(data, width, height) {
     //create svg
     let svg = d3.create("svg")
-        .attr("width", width)
-        .attr("height", height)
+        //.attr("width", width)
+        //.attr("height", height)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 1200 250")
+        .classed("svg-content", true)
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
 
