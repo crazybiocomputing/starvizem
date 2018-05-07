@@ -49,7 +49,7 @@ function createStackedBarChart(data, width, height) {
     let legendTextFontSize = 10;
     //for the axis
     let yRange = [90* height/100,10*height/100];
-    let xRange = [10*height/100,90*width/100];
+    let xRange = [10*width/100,90*width/100];
     let xTranslate = 90 * height / 100;
     let yTranslate = 10 * width / 100;
 
