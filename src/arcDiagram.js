@@ -29,7 +29,7 @@
 /**
  * Create Arc Diagram
  *
- * @author Marie
+ * @author Marie , Pauline , Guillaume
  * 
  * 
  */
@@ -137,6 +137,22 @@ function createArcDiagram(data, width, height) {
         .on('mouseout', function(d) {
             d3.select("#tooltip").remove();
             link.style('stroke', null);
+        });
+    
+        //Highlighted nodes when we click on them
+        node.on("mouseover", function(d) {
+            let thisNode = d.id
+            let connected = data.links.filter(function(e) {
+                return e.source === thisNode || e.target === thisNode
+            });
+           
+            link.attr("opacity", function(d) {
+                return (d.source == thisNode || d.target== thisNode) ? 1 : 0.1
+            })
+        })
+        
+        node.on("mouseout", function(d) {
+            link.attr("opacity",1);   
         });
 
     let link = svg.append("g").selectAll("link")
