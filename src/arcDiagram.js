@@ -64,7 +64,8 @@ function createArcDiagram(data, width, height) {
             id: d.id,
             process: d.process,
             name: d.name,
-            alias: d.alias
+            alias: d.alias,
+            mainOutput: d.mainOutput
         }
         return out;
     });
