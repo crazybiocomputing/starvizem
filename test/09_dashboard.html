@@ -69,8 +69,6 @@
         <div id="plot2"></div>
     </section>
 
-
-    <section id="fig"> 
   <div id="container" class="svg-container">     
   <script type="text/javascript">
   // Global variable
@@ -326,8 +324,6 @@
     </script>
     </div>
       
-    </section>
-    
     <style>
     @media screen and (max-width: 1660px) {     
       
@@ -362,9 +358,9 @@
         grid-column: 2;
     }
 
-      #graph3 {
+    #graph3 {
         grid-column: 3;
-      }
+    }
 
     .montage {
       display: flex;
@@ -372,11 +368,13 @@
       flex-wrap: wrap;
       max-width: 100%;
     }
+      
     .zoom {
       padding: 1px;
       transition: transform .2s; /* Animation */
       margin: 1px;
     }
+      
     .zoom:hover {
       transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
     }
@@ -385,7 +383,7 @@
       border: 1px solid black;
     }
 
-     #head{
+    #head{
         width: auto;
         height: 100px;
         text-align: left;
@@ -406,14 +404,7 @@
         height: 30%;
         text-align: center;
     }
-
-    #fig{
-        max-width: 100%;
-        height:200px;
-        padding: 5px;
-
-    }
-
+      
     .labelValue{
         font-size: 60%;
         opacity: .5;
