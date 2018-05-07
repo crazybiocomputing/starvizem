@@ -25,7 +25,10 @@
 
 'use strict';
 
-
+/*
+*On a node click, get back node star file data and draw graphs
+*
+*/
 const getSTARFile = (datas) => {
   console.log('getSTARFile');
   // Get JSON data
