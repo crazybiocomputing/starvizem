@@ -69,7 +69,12 @@ const processes = [
 ];
 
 const getProcessName = (index) => processes[index];
-
+const getProcessNumber = (name) => {
+  let attachedProcesses = [];
+  processes.forEach( function (element){  let e= element.replace(" ",""); attachedProcesses.push(e);} );
+  attachedProcesses.forEach(function (e) { console.log(e+" "+name)});
+  return attachedProcesses.indexOf(name);
+}
 
 
 /**
