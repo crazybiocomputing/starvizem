@@ -137,6 +137,9 @@ function createArcDiagram(data, width, height) {
         .on('mouseout', function(d) {
             d3.select("#tooltip").remove();
             link.style('stroke', null);
+        })
+        .on('click', function(d){
+            getSTARFile(d);
         });
     
         //Highlighted nodes when we click on them
