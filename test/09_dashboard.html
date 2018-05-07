@@ -19,6 +19,7 @@
     <script src="../js/plot2D.js"></script>
     <script src="../js/mrc.js"></script>
     <script src="../js/raster.js"></script>
+    <script src="../js/events.js"></script>
   </head>
   <body onload="createForm()">
     <section id="head" class="hero  is-primary">
@@ -35,18 +36,6 @@
           <content id="arcDiag"></content>
       </aside>
     </section>  
-    <h2>STAR File</h2>
-    <form id="getstar" action="/star" method="post">
-    <select id="process" name="process" onchange="changeProcessHandler(event)">
-    <option>----</option>
-    </select>
-    <select id="job" name="job" onchange="changeJobHandler(event)">
-    <option>----</option>
-    </select>
-    <select id="starfile" name="starfile">
-    <option>----</option>
-    </select>
-    <button type="submit">Get STAR</button>
     <h3 style="display: inline">Show Images</h3>
     <input type='file' id='fileinput' ><br/>
     <input style="display: inline" type='button' id='btnLoad' value='Load' onclick='loadFile();'>
@@ -87,11 +76,7 @@
   // Global variable
   let workflow;
   let starobj;
-  let mainForm = document.getElementById("getstar");
-   mainForm.addEventListener("submit", function(event) {
-    event.preventDefault();
-    getSTARFile();
-  });
+
   let plotForm = document.getElementById("getPlot");
    plotForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -104,19 +89,7 @@
     d3.json('/pipeline')
       .then( (graph) => {
         workflow = graph;
-        
-        let set = new Set();
-        graph.jobs.forEach( (job)=> {
-          set.add(job.process);
-        });
-        console.log(set);
-        let select = document.getElementById('process');
-        for (p of set) {
-          let opt = document.createElement('option');
-          opt.value = p;
-          opt.text = getProcessName(p);
-          select.appendChild(opt);
-        }
+        createArcDiagrams('arcDiag',graph);
       });
   };
   // Onload get default_pipeline.star and create form items
@@ -167,27 +140,6 @@
   
   
   // Events
-  const changeProcessHandler = (event) => {
-    let selectedJobs = workflow.jobs.filter( (job) => job.process === parseInt(event.target.value));
-    let select = document.getElementById('job');
-    for (j of selectedJobs) {
-      let opt = document.createElement('option');
-      opt.value = j.jobID;
-      opt.text = j.name.split('/')[1];
-      select.appendChild(opt);
-    }
-  };
-  const changeJobHandler = (event) => {
-    let job = workflow.jobs.find( (j) => j.jobID === parseInt(event.target.value));
-    let select = document.getElementById('starfile');
-    for (k in job.outputs) {
-      let filename = job.outputs[k].file.split('/')[2];
-      let opt = document.createElement('option');
-      opt.value = filename;
-      opt.text = filename;
-      select.appendChild(opt);
-    }
-  };
   const changeTableHandler = (event) => {
     let table = starobj.tables.find( (table) => table.name === event.target.value);
     let selectX = document.getElementById('colX');
@@ -204,44 +156,6 @@
       opt.text = head;
       selectY.appendChild(opt);
     }
-  };
-  // Get the STAR File
-  const getSTARFile = (rootID,datas) => {
-    console.log('getSTARFile');
-    // Get JSON data
-    let formData = new FormData(document.getElementById('getstar'));
-    let jsonFormData = {};
-    for (let pair of formData.entries()) {
-      jsonFormData[pair[0]] = pair[1];
-    }
-    let processName = getProcessName(jsonFormData.process).replace(/\s/g,"");
-    let jobnb = "job"+jsonFormData.job.toString().padStart(3,'0');
-    let path = "/"+processName+"/"+jobnb+"/";
-    fetch('/star',{
-      headers: new Headers({'Content-Type': 'application/json'}),
-      method: "POST",
-      mode: 'cors',
-      body: JSON.stringify(jsonFormData) // formData
-    })
-      .then ( (response) => response.json() )
-      .then ( (data) => {
-        console.log(data);
-        starobj = data;
-        let graph1 = document.getElementById('graph1');
-        let graph2 = document.getElementById('graph2');
-        let graph3 = document.getElementById('graph3');
-        console.log(graph1.firstChild);
-        if(graph1.firstChild) {
-          console.log("Change graphs");
-          graph1.removeChild(graph1.firstChild);
-          graph2.removeChild(graph2.firstChild);
-          graph3.removeChild(graph3.firstChild);
-        }
-        createXYForm(data);
-        createArcDiagrams('arcDiag',data);
-        createGraph("graph1","graph2",path);
-        //loadFile(path);
-    });
   };
     
   const createGraph = (donutID,barchartID,job) => {
@@ -307,6 +221,8 @@
         value: d.targets.length,
         name: d.name,
         alias: d.alias
+        //Get the first output file by default
+        mainOutput: d.outputs[0].file
         });
        if (d.targets.length !== 0) {
             d.targets.forEach((t) => {
