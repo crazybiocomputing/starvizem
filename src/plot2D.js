@@ -34,20 +34,32 @@
 'use strict';
 
 function createPlot(data, labels, width, height) {
-    let radius=2.5;
-    let eventDuration=200;
-    let nbTicks=5;
-    let opacity=0.9;
-    let tooltipOpacity=0;
-    let gridlinesOpacity=0.2;
-    let xrangeMin=10 * width / 100;
-    let xrangeMax= 90 * width / 100;
-    let yrangeMin=90 * height / 100;
-    let yrangeMax=10 * height / 100;
-    let yTranslateMin=10 * width / 100;
-    let yTranslateMax=0;
-    let xTranslateMin=0;
-    let xTranslateMax=10 * height / 100;
+  let radius=2.5;
+  let eventDuration=200;
+  let nbTicks=5;
+  let opacity=0.9;
+  
+  //tooltip
+  let tooltipOpacity=0;
+  let positionLeftTooltip=10;
+  let positionTopTooltip=25;
+  let gridlinesOpacity=0.2;
+
+  //Domaine and range
+  let xrangeMin=10 * width / 100;
+  let xrangeMax= 90 * width / 100;
+  let yrangeMin=90 * height / 100;
+  let yrangeMax=10 * height / 100;
+  let yTranslateMin=10 * width / 100;
+  let yTranslateMax=0;
+  let xTranslateMin=0;
+  let xTranslateMax=10 * height / 100;
+
+  //labelsTransform
+  let ylabelTransX=(width - (width-15));
+  let ylabelTransY=(height/2);
+  let xlabelTransX=(width/2);
+  let xlabelTransY=(height - (height-20))
 
   let svg = d3.select("#plot2").append("svg")
       //.attr("width", width)
@@ -58,15 +70,14 @@ function createPlot(data, labels, width, height) {
       .style("border", "1px solid rgba(2, 0, 34, 0.897");
 
   let div = d3.select("body").append("div")
-      .attr("class", "tooltip")
-      .style("opacity", tooltipOpacity);
+      .attr("class", "toolTip");
 
   //axis
   let x = d3.scaleLinear()
-      .range([10 * width / 100, 90 * width / 100]);
+      .range([xrangeMin,xrangeMax]);
 
   let y = d3.scaleLinear()
-      .range([90 * height / 100, 10 * height / 100 ]);
+      .range([yrangeMin,yrangeMax]);
 
   
   let valueline = d3.line()
@@ -96,24 +107,23 @@ function createPlot(data, labels, width, height) {
           return y(d.y)
       })
       .style("fill", "black")
-      .on("mouseover", function(d) {
-          div.transition()
-            .duration(eventDuration)
-            .style("opacity", opacity);
-          div .html(
-            "<strong>"+"X: "+"</strong>"+d.x + "</br>"+            
-            "<strong>"+"Y: "+"</strong>"+d.y)     
-            .style("left", (d3.event.pageX) + "px")             
-            .style("top", (d3.event.pageY ) + "px");
-          });
-   
+      .on("mouseover",function(){div.style("display",null);})
+      .on("mouseout",function(){div.style("display","none");})
+      .on("mousemove", function(d){
+        div.style("left", d3.event.pageX+positionLeftTooltip+"px");
+        div.style("top", d3.event.pageY-positionTopTooltip+"px");
+        div.style("display", "inline-block");
+        div.html("X:"+(d.x)+"<br>"+"Y:"+(d.y));
+      });
+      
+        	        
   svg.append("g")
       .attr("transform", "translate(" + yTranslateMin + ","+ yTranslateMax+")")
       .call(d3.axisLeft(y));
  
   svg.append("text")
        .attr("text-anchor", "middle")
-       .attr("transform", "translate("+(width - (width-15)) +","+(height/2)+")rotate(-90)")
+       .attr("transform", "translate("+ylabelTransX +","+ylabelTransY+")rotate(-90)")
        .text(labels.ylabel);
 
   svg.append("g")
@@ -122,7 +132,7 @@ function createPlot(data, labels, width, height) {
  
   svg.append("text")
       .attr("text-anchor", "middle")
-      .attr("transform", "translate("+(width/2) +","+(height - (height-20))+")")
+      .attr("transform", "translate("+xlabelTransX +","+xlabelTransY+")")
       .text(labels.xlabel);
 
   svg.append("g")			
