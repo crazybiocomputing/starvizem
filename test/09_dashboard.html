@@ -121,6 +121,7 @@
     let dataTable = starclass.getTable(table);
     let data = cols.map( (d,i) => {
       let v = {
+        name : d,
         d : dataTable.getColumn(d)
       };
       return v;
@@ -189,6 +190,10 @@
     let width = 600;
     let height = 400;
     let data = [];
+    let labels = { 
+      xlabel : datas[0].name,
+      ylabel : datas[1].name
+    };
     for (let i = 0; i < datas[0].d.length; i++){
       let temp = {};
       temp["x"] = datas[0].d[i];
@@ -199,9 +204,9 @@
     console.log(data);
     
     let plot1Dplace = document.getElementById(plot1DID);
-    plot1Dplace.appendChild(createPlot(data, width, height));
+    plot1Dplace.appendChild(createPlot(data, labels, width, height));
     let plot2Dplace = document.getElementById(plot2DID);
-    plot2Dplace.appendChild(createCurvePlot(data, width, height));
+    plot2Dplace.appendChild(createCurvePlot(data, labels, width, height));
   };  
 
 
