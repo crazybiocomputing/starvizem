@@ -40,7 +40,7 @@ function createArcDiagram(data, width, height) {
         //.attr("width", width)
         //.attr("height", height)
         .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 1200 250")
+        .attr("viewBox", "0 0 1200 300")
         .classed("svg-content", true)
         .style("border", "2px solid rgba(2, 0, 34, 0.897");
 
@@ -100,8 +100,8 @@ function createArcDiagram(data, width, height) {
             .append("text")
             .text(text)
             .attr("x", x)
-            .attr("y", y + 20)
-            .attr("dy", r * 2)
+            .attr("y", y + 13.5)
+            .attr("dy", r * 1.2)
             .attr("id", "tooltip");
 
         let offset = tooltip.node().getBBox().width / 2;
@@ -133,18 +133,7 @@ function createArcDiagram(data, width, height) {
         })
         .attr("fill", function(d) { return d3.interpolateRainbow(d.process / 20) })
         .on('mouseover', function(d) {
-            addTooltip(d3.select(this));
-        })
-        .on('mouseout', function(d) {
-            d3.select("#tooltip").remove();
-            link.style('stroke', null);
-        })
-        .on('click', function(d){
-            getSTARFile(d);
-        });
-    
-        //Highlighted nodes when we click on them
-        node.on("mouseover", function(d) {
+            addTooltip(d3.select(this))
             let thisNode = d.id
             let connected = data.links.filter(function(e) {
                 return e.source === thisNode || e.target === thisNode
@@ -154,11 +143,15 @@ function createArcDiagram(data, width, height) {
                 return (d.source == thisNode || d.target== thisNode) ? 1 : 0.1
             })
         })
-        
-        node.on("mouseout", function(d) {
-            link.attr("opacity",1);   
+        .on('mouseout', function(d) {
+            d3.select("#tooltip").remove();
+            link.style('stroke', null);
+            link.attr("opacity",1);
+        })
+        .on('click', function(d){
+            getSTARFile(d);
         });
-
+   
     let link = svg.append("g").selectAll("link")
         .data(svglink)
         .enter()
