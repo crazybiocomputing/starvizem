@@ -139,8 +139,8 @@ function createArcDiagram(data, width, height) {
                 return e.source === thisNode || e.target === thisNode
             });
            
-            link.attr("opacity", function(d) {
-                return (d.source == thisNode || d.target== thisNode) ? 1 : 0.1
+             link.attr("stroke", function(d) {
+                return (d.source == thisNode || d.target== thisNode) ? '#d62333' : 'black'
             })
         })
         .on('mouseout', function(d) {
