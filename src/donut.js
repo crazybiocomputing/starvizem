@@ -104,6 +104,15 @@ function createDonut(data, width, height) {
             .duration(750)
             .attr("d", arcFinal);
     }
+    
+     //svg title
+    svg.append("text")
+        .attr("x", (width / 4))             
+        .attr("y", 18 )
+        .attr("text-anchor", "middle")  
+        .style("font-weight","bold")
+        .style("font-size", "22px")   
+        .text("Number of images per class");  
 
     return svg.node();
 }
