@@ -36,7 +36,7 @@ function createDonut(data, width, height) {
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 400")
         .classed("svg-content", true)
-        .style("border", "2px solid rgba(2, 0, 34, 0.897");
+        .style("border", "1px solid rgba(2, 0, 34, 0.897");
     
     svg.append("g")
     .attr("class", "labelName");
