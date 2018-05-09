@@ -139,14 +139,13 @@ function createArcDiagram(data, width, height) {
                 return e.source === thisNode || e.target === thisNode
             });
            
-             link.attr("stroke", function(d) {
+             link.style("stroke", function(d) {
                 return (d.source == thisNode || d.target== thisNode) ? '#d62333' : 'black'
             })
         })
         .on('mouseout', function(d) {
             d3.select("#tooltip").remove();
             link.style('stroke', null);
-            link.attr("opacity",1);
         })
         .on('click', function(d){
             getSTARFile(d);
