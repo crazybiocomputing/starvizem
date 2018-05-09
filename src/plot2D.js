@@ -113,7 +113,7 @@ function createPlot(data, labels, width, height) {
  
   svg.append("text")
        .attr("text-anchor", "middle")
-       .attr("transform", "translate("+(width - (width-10)) +","+(height/2)+")rotate(90)")
+       .attr("transform", "translate("+(width - (width-15)) +","+(height/2)+")rotate(-90)")
        .text(labels.ylabel);
 
   svg.append("g")
