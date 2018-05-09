@@ -67,7 +67,7 @@ function createStackedBarChart(data, width, height) {
         .classed("svg-content", true)
         .call(d3.zoom().scaleExtent([1,6])
         .on("zoom",zoom))
-        .style("border", "2px solid rgba(2, 0, 34, 0.897");
+        .style("border", "1px solid rgba(2, 0, 34, 0.897");
 
     //create g
     let g = svg.append("g");
