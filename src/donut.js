@@ -33,8 +33,6 @@
 function createDonut(data, width, height) {
     
     let svg = d3.select("#graph1").append("svg")
-        //.attr("width",width)
-        //.attr("height",height)
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 400")
         .classed("svg-content", true)
@@ -65,10 +63,8 @@ function createDonut(data, width, height) {
     let arcFinal = d3.arc().innerRadius(innerRadiusFinal).outerRadius(radius - arcWidthChange);
     let arcZoom = d3.arc().innerRadius(innerRadiusZoom).outerRadius(radius - arcWidthChange);
     
-    let legendBoxSize = (radius * 0.05);
-    let legendSpacing = (radius * 0.02);
-
-    let div = d3.select("body").append("div").attr("class", "toolTip");
+    //tooltip
+    let tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
     let pie = d3.pie()
         .sort(function(a,b){ if (a.labels != "Other" && b.labels != "Other") {return d3.descending(a.nb, b.nb);}})
@@ -83,10 +79,10 @@ function createDonut(data, width, height) {
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("mousemove", function(d){
-            div.style("left", d3.event.pageX+10+"px");
-            div.style("top", d3.event.pageY-25+"px");
-            div.style("display", "inline-block");
-            div.html("Class "+(d.data.labels)+"<br>"+(d.data.nb)+" images");
+            tooltip.style("left", d3.event.pageX+10+"px");
+            tooltip.style("top", d3.event.pageY-25+"px");
+            tooltip.style("display", "inline-block");
+            tooltip.html("Class "+(d.data.labels)+"<br>"+(d.data.nb)+" images");
         });
 
     g.append("path")
@@ -94,39 +90,16 @@ function createDonut(data, width, height) {
         .attr("fill", function(d, i) { return color(i); })
         .attr("d", arc)
         .attr("stroke", "#fff");
-    
-    let hzshift = 3;
-    let legend = svg.selectAll(".legend")
-        .data(color.domain())
-        .enter()
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", function (d,i) {
-            let h = legendBoxSize + legendSpacing;
-            let offset = h * color.domain().length / 2;
-            let horiz = -hzshift * legendBoxSize;
-            let vert = i * h - offset;
-            return "translate(" + horiz + "," + vert + ")";
-        });
-
-    legend.append("rect")
-        .attr("width", legendBoxSize)
-        .attr("height", legendBoxSize)
-        .style("fill", color)
-        .style("stroke", color);
-
-    legend.append("text")
-        .attr("x", legendBoxSize + legendSpacing)
-        .attr("y", legendBoxSize - legendSpacing)
-        .text(function(d){return d;});
 
     function mouseover() {
+        tooltip.style("display", null);
         d3.select(this).select("path").transition()
             .duration(750)
             .attr("d", arcZoom)
     }
 
     function mouseout() {
+        tooltip.style("display", "none");
         d3.select(this).select("path").transition()
             .duration(750)
             .attr("d", arcFinal);
