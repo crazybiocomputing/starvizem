@@ -33,7 +33,7 @@
 
 'use strict';
 
-function createPlot(data, width, height) {
+function createPlot(data, labels, width, height) {
     let radius=2.5;
     let eventDuration=200;
     let nbTicks=5;
