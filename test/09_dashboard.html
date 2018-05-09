@@ -31,13 +31,9 @@
       </div>
     </section>
     <header>
-    <section>
-      <aside>
-          <content id="arcDiag"></content>
-      </aside>
-    </section>  
-    <h3 style="display: inline">Show Images</h3>
-    <input type='file' id='fileinput' ><br/>
+    <section id="arcDiag"></section>  
+    <h3 style="display: inline;font-weight:bold; margin-left:2%">Show Images:</h3>
+    <input type='file' id='fileinput' >
     <input style="display: inline" type='button' id='btnLoad' value='Load' onclick='loadFile();'>
     </form>
     <br />
@@ -46,8 +42,8 @@
         <div id="graph2"></div>
         <div id="graph3"></div>
     </section>
-    <h2>Table</h2>
-    <form id="getPlot" action="" method="post">
+    <form id="getPlot" action="" method="post" style="margin-left: 2%;display: inline-block">
+    <h2 style="font-weight:bold;display: inline-block">Table:</h2>  
     <select id="table" name="table" onchange="changeTableHandler(event)">
     <option>----</option>
     </select>
@@ -74,7 +70,6 @@
   // Global variable
   let workflow;
   let starobj;
-
   let plotForm = document.getElementById("getPlot");
    plotForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -208,12 +203,10 @@
     let plot2Dplace = document.getElementById(plot2DID);
     plot2Dplace.appendChild(createCurvePlot(data, labels, width, height));
   };  
-
-
    const createArcDiagrams = (rootID,graph) => {
   // Get JSON data from web service
   d3.json('/pipeline').then(function(graph) {
-    let width = 1200;
+    let width = 1600;
     let height = 300;
     let data_nodes = [];
     let data_links = [];
@@ -237,7 +230,6 @@
             });
             }
       });
-
       console.log(graph);
       let arcDiagramPlace=document.getElementById(rootID);
       arcDiagramPlace.appendChild(createArcDiagram({nodes: data_nodes,links: data_links}, width, height));
@@ -312,7 +304,7 @@
           }*/
           let raster = Raster.create(readMRC(fr));
           let montage = raster.montage();
-          montage.style = "width: 600px; height: 400px; border: 2px solid rgba(2, 0, 34, 0.897);float:left; overflow-y: scroll ";
+          montage.style = "width: 600px; height: 400px; border: 1px solid rgba(2, 0, 34, 0.897);float:left; overflow-y: scroll ";
           montage.setAttribute("preserveAspectRatio", "xMinYMin meet");
           montage.setAttribute("viewBox", "0 0 600 400");
           montage.setAttribute("svg-content", true);
@@ -333,35 +325,48 @@
     @media screen and (max-width: 3000px) {     
       
     html { 
-      font-size:100%; 
-      }
+      max-font-size:100%; 
+    }
+
+    #arcDiag{
+      margin-top: 2%;
+      margin-left: 2%;
+      margin-right: 2%;
+    }
 
     #plotSection {
         display:grid;
         grid-template-columns: 1fr 1fr;
-      }
+        padding-top: 2%;
+        padding-left: 2%;
+    }
 
     #plot1 {
         grid-column: 1;
+        margin-right: 3%
     }
 
     #plot2 {
         grid-column: 2;
+        padding-right: 3%
     }
-
 
     #graphsection {
         display:grid;
         grid-template-columns: 33% 33% 33%;
-        padding: 2%;
+        padding-top: 1%;
+        padding-left: 2%;
+        padding-bottom: 1%;
     }
 
     #graph1 {
         grid-column: 1;
+        margin-right: 3%;
     }
 
     #graph2 {
         grid-column: 2;
+        margin-right: 3%;
     }
 
     #graph3 {
@@ -395,20 +400,25 @@
 
     #head{
         width: auto;
-        height: 100px;
+        height: 10%;
         text-align: left;
+        background-color: rgba(0, 195, 255, 0.624);
     }
 
     #txt{
         display: inline;
         margin: auto;
-        font-size:1rem;
+        font-size:1.4rem;
     }
 
+    #txtBottom{
+        display: inline;
+        margin: auto;
+        font-size:1rem;
+    }
     #box{
         margin:auto;
     }
-
     #bas{
         width: auto;
         height: 30%;
@@ -419,7 +429,6 @@
         font-size: 60%;
         opacity: .5;
     }
-
     div.tooltip {
         position: absolute;
         width: auto;
@@ -430,7 +439,6 @@
         border: 0px;
         border-radius: 8px;
       }
-
     .toolTip {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         position: absolute;
@@ -454,13 +462,13 @@
     <footer id="bas" class="footer">
      <div id="box" class="container">
        <div class="content has-text-centered">
-         <p id="txt">
+         <p id="txtBottom">
            <strong>StarVizEM</strong> by Jean-Christophe Taveau.</p> </br></br> <p>The source code is licensed GPLv3.0. The website content
            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.</p>
          </p>
-         <p id="txt"><strong>Contributors</strong>: Pauline Bock, Cyril Dourthe, Marie Econimides, Guillaume Sotton.</p>
+         <p id="txtBottom"><strong>Contributors</strong>: Pauline Bock, Cyril Dourthe, Marie Econimides, Guillaume Sotton.</p>
         </br></br>
-         <p id="txt">
+         <p id="txtBottom">
            <span class="tag is-dark">STAR Files</span>
            <span class="tag is-dark">cryoEM</span>
            <span class="tag is-dark">RELION</span>
