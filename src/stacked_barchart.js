@@ -260,6 +260,15 @@ function createStackedBarChart(data, width, height) {
       .attr("y", Y_PositionInSquare)
       .attr("dy", "0.32em")
       .text(function(d) { return d; });
+    
+    //svg title
+    svg.append("text")
+    .attr("x", (width / 3.6))             
+    .attr("y", 20 )
+    .attr("text-anchor", "middle")  
+    .style("font-weight","bold")
+    .style("font-size", "22px")   
+    .text("Resolution of images per class");  
 
       function zoom() {
         g.attr("transform", d3.event.transform);
