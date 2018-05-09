@@ -110,11 +110,20 @@ function createPlot(data, width, height) {
   svg.append("g")
       .attr("transform", "translate(" + yTranslateMin + ","+ yTranslateMax+")")
       .call(d3.axisLeft(y));
+ 
+  svg.append("text")
+       .attr("text-anchor", "middle")
+       .attr("transform", "translate("+(width - (width-10)) +","+(height/2)+")rotate(90)")
+       .text(labels.ylabel);
 
   svg.append("g")
       .attr("transform", "translate("+xTranslateMin+ "," + xTranslateMax + ")")
       .call(d3.axisTop(x));
-
+ 
+  svg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate("+(width/2) +","+(height - (height-20))+")")
+      .text(labels.xlabel);
 
   svg.append("g")			
       .attr("class", "grid")
