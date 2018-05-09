@@ -33,7 +33,7 @@
 
 'use strict';
 
-function createCurvePlot(data, width, height) {
+function createCurvePlot(data, labels, width, height) {
   let radius=2.5;
   let eventDuration=200;
   let nbTicks=5;
