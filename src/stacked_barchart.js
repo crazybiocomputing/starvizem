@@ -105,7 +105,10 @@ function createStackedBarChart(data, width, height) {
     x.domain(datas.map( (d) => d.name));
     y.domain([0,d3.max(datas, (d) => d.total)]);
     z.domain(keys);
-
+    
+    //tooltip
+    let tooltip = d3.select("body").append("div").attr("class", "toolTip");
+    
     //create each rect in g
     g.append("g")
     .selectAll("g")
@@ -121,11 +124,11 @@ function createStackedBarChart(data, width, height) {
       .attr("width", x.bandwidth())
       .on("mouseover", function() { tooltip.style("display", null); })
       .on("mouseout", function() { tooltip.style("display", "none"); })
-      .on("mousemove", function(d) {
-        var xPosition = d3.mouse(this)[0] - xPositionTooltip;
-        var yPosition = d3.mouse(this)[1] - yPositionToolTip;
-        tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-        tooltip.select("text").text((d[1]) - (d[0]));
+      .on("mousemove", function(d){
+        tooltip.style("left", d3.event.pageX+10+"px");
+        tooltip.style("top", d3.event.pageY-25+"px");
+        tooltip.style("display", "inline-block");
+        tooltip.html((d[1]-d[0])+" images");
       });
 
     //create x axis
@@ -139,24 +142,6 @@ function createStackedBarChart(data, width, height) {
         .attr("class", "axis")
         .attr("transform", "translate(" + yTranslate + ",0)")
         .call(yAxis);
-
-    //tooltip
-    var tooltip = svg.append("g")
-      .attr("class", "tooltip")
-      .style("display", "none");
-
-    tooltip.append("rect")
-      .attr("width", tooltipWidth)
-      .attr("height", tooltipHeight)
-      .attr("fill", "white")
-      .style("opacity", tooltipOpacity);
-
-    tooltip.append("text")
-      .attr("x", textTooltipPosition)
-      .attr("dy", "1.2em")
-      .style("text-anchor", "middle")
-      .attr("font-size", "12px")
-      .attr("font-weight", "bold");
 
     //legend
     var legend = g.append("g")
