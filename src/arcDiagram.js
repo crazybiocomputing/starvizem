@@ -178,6 +178,15 @@ function createArcDiagram(data, width, height) {
             link.style('stroke', 'black');
             node.style('fill', null);
         });
+    
+   //svg title
+   svg.append("text")
+     .attr("x", (width / 16))             
+     .attr("y", 20 )
+     .attr("text-anchor", "middle")  
+     .style("font-weight","bold")
+     .style("font-size", "20px")   
+     .text("Nodes chronology"); 
 
     return svg.node();
 
