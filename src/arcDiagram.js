@@ -40,9 +40,9 @@ function createArcDiagram(data, width, height) {
         //.attr("width", width)
         //.attr("height", height)
         .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 1200 300")
+        .attr("viewBox", "0 0 1600 300")
         .classed("svg-content", true)
-        .style("border", "2px solid rgba(2, 0, 34, 0.897");
+        .style("border", "1px solid rgba(2, 0, 34, 0.897");
 
 
     let datanode = data.nodes;
