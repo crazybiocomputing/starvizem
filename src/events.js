@@ -292,32 +292,3 @@ const createPlots = (plot1DID,plot2DID, datas) => {
     document.getElementById("graphs").appendChild(elm);
   }
 
-/*
-*Highlight the graphs elements that are commons
-*/
-const highlightItems = (e) => {
-  //Browse the DOM
-  for (let i = 0; i < document.body.childNodes.length; i++) {
-    let element = document.body.childNodes[i];
-    if (element.style.opacity == "0.5"){element.style.opacity = "1";};
-    if (e.id == element.id){
-      console.log("same id found "+e.id +" " + element.id);
-      e.style.opacity = "0.5";
-      element.style.opacity = "0.5";
-    } 
-  }
-}
-
-const setupListeners = () => {
-  arcs.addEventlistener("click", highlightItems(e));
-  bars.addEventlistener("click", highlightItems(e));
-} 
-
-let graph1 = document.getElementById('graph1');
-console.log(graph1.firstChild);
-if (graph1.firstChild){
-  let arcs = document.getElementsByClassName("arcs");
-  console.log(arcs);
-  let bars = document.getElementsByClassName("bars");
-  window.addEventListener("load", setupListeners);
-}
