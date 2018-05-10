@@ -25,6 +25,40 @@
 
 'use strict';
 
+const createArcDiagrams = (rootID,graph) => {
+  // Get JSON data from web service
+  d3.json('/pipeline').then(function(graph) {
+    let width = 1600;
+    let height = 300;
+    let data_nodes = [];
+    let data_links = [];
+    graph.jobs.forEach((d) => {
+        data_nodes.push({
+        id: d.jobID,
+        process: d.process,
+        value: d.targets.length,
+        name: d.name,
+        alias: d.alias,
+        //Get the first output file by default
+        mainOutput: d.outputs[0].file
+        });
+       if (d.targets.length !== 0) {
+            d.targets.forEach((t) => {
+            data_links.push({
+            source: d.jobID,
+            value: d.targets.length,
+            target: t
+            });
+            });
+            }
+      });
+      console.log(graph);
+      let arcDiagramPlace=document.getElementById(rootID);
+      arcDiagramPlace.appendChild(createArcDiagram({nodes: data_nodes,links: data_links}, width, height));
+    });
+  };
+
+
 /*
 *On a node click, get back node star file data and draw graphs
 *
@@ -73,6 +107,191 @@ const getSTARFile = (datas) => {
   });
 }
 
+const createGraph = (donutID,barchartID,job) => {
+    console.log(job);
+  // Get JSON data from web service
+  d3.json(job).then(function(graph) {
+                console.log(graph)
+                let width = 600;
+                let height = 400;
+                let starobj = Star.create(graph);
+                let tableStat = starobj.getTable('statistics');
+                let tableHisto = starobj.getTable('histogram_resolution');
+                let start = tableStat.getColumnIndex('_svzNumberPerClass001');
+                let datas = tableHisto.data.map ( (d,i) => ({
+                nb: tableStat.data[start + i],
+                labels: tableStat.headers[start + i].slice(13)
+                }));
+                let dataR = regroupLowData(datas);
+                let donutplace= document.getElementById(donutID);
+                donutplace.appendChild(createDonut(dataR, width, height));
+            });
+  d3.json(job).then(function(graph) {
+                let width = 600;
+                let height = 400;
+                let barplace = document.getElementById(barchartID);
+                barplace.appendChild(createStackedBarChart(graph, width, height));
+  
+            });
+        
+  }
+
+  function regroupLowData(data){
+    let values = [];
+    let deletevalues = [];
+    data.forEach(function(e){ return values.push(e.nb); });
+    let totalvalues = values.reduce((a, b) => a + b, 0);
+    values.sort(function(a,b){ return a-b;});
+    let threshval = 5*totalvalues/100;
+    let somme = 0;
+    let bool = false;
+    
+    for (let i = 0; i < values.length; i++){
+        somme = somme + values[i];
+        if (somme >= threshval){
+            let index = i-1;
+            somme = somme - values[i];
+            for(let j = 0; j < index; j++){
+                deletevalues.push(values.shift());
+                bool = true;
+            }
+            if (bool == true){
+                values.push(somme);
+            }
+        break;
+        }
+    }
+    for (let i = 0; i < data.length; i++){
+        for (let j = 0; j < deletevalues.length; j++){
+            if (deletevalues[j]){
+                data = data.filter(function (item){
+                    return item.nb !== deletevalues[j]
+                });
+            }
+        }
+    }
+    if (deletevalues.length != 0){
+        data.push({labels: "Other", nb: somme });
+    }
+    return data;
+}
+
+// Events
+const changeTableHandler = (event) => {
+  let table = starobj.tables.find( (table) => table.name === event.target.value);
+  let selectX = document.getElementById('colX');
+  for (head of table.headers) {
+    let opt = document.createElement('option');
+    opt.value = head;
+    opt.text = head;
+    selectX.appendChild(opt);
+  }
+  let selectY = document.getElementById('colY');
+  for (head of table.headers) {
+    let opt = document.createElement('option');
+    opt.value = head;
+    opt.text = head;
+    selectY.appendChild(opt);
+  }
+};
+
+const drawPlot = () => {
+  console.log('Draw Plot');
+  let formData = new FormData(document.getElementById('getPlot'));
+  let cols = [];
+  let table;
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ', ' + pair[1]);
+    if (pair[0] !== "table") {cols.push(pair[1]);}
+    if (pair[0] == "table") {table = pair[1]};
+  }
+  let starclass = Star.create(starobj);
+  let dataTable = starclass.getTable(table);
+  let data = cols.map( (d,i) => {
+    let v = {
+      name : d,
+      d : dataTable.getColumn(d)
+    };
+    return v;
+  });
+  let plot1 = document.getElementById('plot1');
+  let plot2 = document.getElementById('plot2');
+  console.log(plot1.firstChild);
+  if(plot1.firstChild) {
+        console.log("Change graphs");
+        plot1.removeChild(plot1.firstChild);
+        plot2.removeChild(plot2.firstChild);
+      }
+  createPlots('plot1','plot2', data);
+}
+
+const createPlots = (plot1DID,plot2DID, datas) => {
+// Get JSON data from web service
+  let width = 600;
+  let height = 400;
+  let data = [];
+  let labels = { 
+    xlabel : datas[0].name,
+    ylabel : datas[1].name
+  };
+  for (let i = 0; i < datas[0].d.length; i++){
+    let temp = {};
+    temp["x"] = datas[0].d[i];
+    temp["y"] = datas[1].d[i];
+    console.log(temp);
+    data.push(temp);
+  }
+  console.log(data);
+  
+  let plot1Dplace = document.getElementById(plot1DID);
+  plot1Dplace.appendChild(createPlot(data, labels, width, height));
+  let plot2Dplace = document.getElementById(plot2DID);
+  plot2Dplace.appendChild(createCurvePlot(data, labels, width, height));
+};  
+
+  function loadFile() {
+      var input, file, fr;
+      if (typeof window.FileReader !== 'function') {
+          appendImage("p", "The file API isn't supported on this browser yet.");
+          return;
+      }
+      input = document.getElementById('fileinput');
+      if (!input) {
+          appendText("p", "Um, couldn't find the fileinput element.");
+      }
+      else if (!input.files) {
+          appendText("p", "This browser doesn't seem to support the `files` property of file inputs.");
+      }
+      else if (!input.files[0]) {
+          appendText("p", "Please select a file before clicking 'Load'");
+      }
+      else {
+          file = input.files[0];
+          fr = new FileReader();
+          fr.readAsArrayBuffer(file);
+          fr.onload = readStack;
+      }
+      function readStack() {
+        /*if ( (childnode = document.querySelector('section')) !== null) {
+          childnode.remove();
+        }*/
+        let raster = Raster.create(readMRC(fr));
+        let montage = raster.montage();
+        montage.style = "width: 600px; height: 10%;border: 1px solid rgba(2, 0, 34, 0.897); overflow-y: scroll";
+        montage.setAttribute("preserveAspectRatio", "xMinYMin meet");
+        montage.setAttribute("viewBox", "0 0 600 20");
+        montage.setAttribute("svg-content", true);
+        document.getElementById("graph3").appendChild(montage);
+      }
+    }
+    
+  function appendText(tagName, innerHTML) {
+    var elm;
+    elm = document.createElement(tagName);
+    elm.innerHTML = innerHTML;
+    document.getElementById("graphs").appendChild(elm);
+  }
+
 /*
 *Highlight the graphs elements that are commons
 */
@@ -80,8 +299,11 @@ const highlightItems = (e) => {
   //Browse the DOM
   for (let i = 0; i < document.body.childNodes.length; i++) {
     let element = document.body.childNodes[i];
+    if (element.style.opacity == "0.5"){element.style.opacity = "1";};
     if (e.id == element.id){
       console.log("same id found "+e.id +" " + element.id);
+      e.style.opacity = "0.5";
+      element.style.opacity = "0.5";
     } 
   }
 }
