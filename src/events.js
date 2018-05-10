@@ -71,4 +71,26 @@ const getSTARFile = (datas) => {
       
       createGraph("graph1","graph2",path);
   });
-};
+}
+
+const highlightItems = () => {
+  if (arcs.id == bars.id){
+    console.log("same id found "+e.id +" " + bars.id);
+  } 
+}
+
+const setupListeners = () => {
+  arcs.addEventlistener("click", highlightItems);
+  bars.addEventlistener("click", highlightItems);
+} 
+
+//MAIN
+let graph1 = document.getElementById('graph1');
+console.log(graph1.firstChild);
+/*
+if (graph1.firstChild){
+  let arcs = document.getElementsByClassName("arcs");
+  console.log(arcs);
+  let bars = document.getElementsByClassName("bars");
+  window.addEventListener("load", setupListeners);
+}*/
