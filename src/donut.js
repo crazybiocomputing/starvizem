@@ -76,6 +76,7 @@ function createDonut(data, width, height) {
         .data(pie(data))
         .enter().append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+        .attr("id", function (d) { return d.data.labels;})
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("mousemove", function(d){
