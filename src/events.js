@@ -102,8 +102,8 @@ const getSTARFile = (datas) => {
       }
       if(graph3.firstChild){ graph3.removeChild(graph3.firstChild);}
       createXYForm(data);
-      
       createGraph("graph1","graph2",path);
+      clickEvents();
   });
 }
 
