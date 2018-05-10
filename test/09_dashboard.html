@@ -64,17 +64,25 @@
         <div id="plot1"></div>
         <div id="plot2"></div>
     </section>
-
-  <div id="container" class="svg-container">     
   <script type="text/javascript">
   // Global variable
   let workflow;
   let starobj;
+    
   let plotForm = document.getElementById("getPlot");
    plotForm.addEventListener("submit", (event) => {
     event.preventDefault();
     drawPlot();
   });
+    
+   let graph1 = document.getElementById('graph1');
+   console.log(graph1.firstChild);
+   if (graph1.firstChild){
+      let arcs = document.getElementsByClassName("arcs");
+      console.log(arcs);
+      let bars = document.getElementsByClassName("bars");
+      window.addEventListener("load", setupListeners);
+   }
   
   // Onload get default_pipeline.star and create form items
   const createForm = () => {
@@ -85,6 +93,7 @@
         createArcDiagrams('arcDiag',graph);
       });
   };
+    
   // Onload get default_pipeline.star and create form items
   const createXYForm = (obj) => {
     console.log('createXYForm');
@@ -101,353 +110,7 @@
       opt.text = p;
       select.appendChild(opt);
     }
-  };
-  const drawPlot = () => {
-    console.log('Draw Plot');
-    let formData = new FormData(document.getElementById('getPlot'));
-    let cols = [];
-    let table;
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
-      if (pair[0] !== "table") {cols.push(pair[1]);}
-      if (pair[0] == "table") {table = pair[1]};
-    }
-    let starclass = Star.create(starobj);
-    let dataTable = starclass.getTable(table);
-    let data = cols.map( (d,i) => {
-      let v = {
-        name : d,
-        d : dataTable.getColumn(d)
-      };
-      return v;
-    });
-    let plot1 = document.getElementById('plot1');
-    let plot2 = document.getElementById('plot2');
-    console.log(plot1.firstChild);
-    if(plot1.firstChild) {
-          console.log("Change graphs");
-          plot1.removeChild(plot1.firstChild);
-          plot2.removeChild(plot2.firstChild);
-        }
-    createPlots('plot1','plot2', data);
-  }
-  
-  
-  // Events
-  const changeTableHandler = (event) => {
-    let table = starobj.tables.find( (table) => table.name === event.target.value);
-    let selectX = document.getElementById('colX');
-    for (head of table.headers) {
-      let opt = document.createElement('option');
-      opt.value = head;
-      opt.text = head;
-      selectX.appendChild(opt);
-    }
-    let selectY = document.getElementById('colY');
-    for (head of table.headers) {
-      let opt = document.createElement('option');
-      opt.value = head;
-      opt.text = head;
-      selectY.appendChild(opt);
-    }
-  };
-    
-  const createGraph = (donutID,barchartID,job) => {
-    console.log(job);
-  // Get JSON data from web service
-  d3.json(job).then(function(graph) {
-                console.log(graph)
-                let width = 600;
-                let height = 400;
-                let starobj = Star.create(graph);
-                let tableStat = starobj.getTable('statistics');
-                let tableHisto = starobj.getTable('histogram_resolution');
-                let start = tableStat.getColumnIndex('_svzNumberPerClass001');
-                let datas = tableHisto.data.map ( (d,i) => ({
-                nb: tableStat.data[start + i],
-                labels: tableStat.headers[start + i].slice(13)
-                }));
-                dataR = regroupLowData(datas);
-                let donutplace= document.getElementById(donutID);
-                donutplace.appendChild(createDonut(dataR, width, height));
-            });
-  d3.json(job).then(function(graph) {
-                let width = 600;
-                let height = 400;
-                let barplace = document.getElementById(barchartID);
-                barplace.appendChild(createStackedBarChart(graph, width, height));
-  
-            });
-        
-  }
-  const createPlots = (plot1DID,plot2DID, datas) => {
-  // Get JSON data from web service
-    let width = 600;
-    let height = 400;
-    let data = [];
-    let labels = { 
-      xlabel : datas[0].name,
-      ylabel : datas[1].name
-    };
-    for (let i = 0; i < datas[0].d.length; i++){
-      let temp = {};
-      temp["x"] = datas[0].d[i];
-      temp["y"] = datas[1].d[i];
-      console.log(temp);
-      data.push(temp);
-    }
-    console.log(data);
-    
-    let plot1Dplace = document.getElementById(plot1DID);
-    plot1Dplace.appendChild(createPlot(data, labels, width, height));
-    let plot2Dplace = document.getElementById(plot2DID);
-    plot2Dplace.appendChild(createCurvePlot(data, labels, width, height));
   };  
-   const createArcDiagrams = (rootID,graph) => {
-  // Get JSON data from web service
-  d3.json('/pipeline').then(function(graph) {
-    let width = 1600;
-    let height = 300;
-    let data_nodes = [];
-    let data_links = [];
-    graph.jobs.forEach((d) => {
-        data_nodes.push({
-        id: d.jobID,
-        process: d.process,
-        value: d.targets.length,
-        name: d.name,
-        alias: d.alias,
-        //Get the first output file by default
-        mainOutput: d.outputs[0].file
-        });
-       if (d.targets.length !== 0) {
-            d.targets.forEach((t) => {
-            data_links.push({
-            source: d.jobID,
-            value: d.targets.length,
-            target: t
-            });
-            });
-            }
-      });
-      console.log(graph);
-      let arcDiagramPlace=document.getElementById(rootID);
-      arcDiagramPlace.appendChild(createArcDiagram({nodes: data_nodes,links: data_links}, width, height));
-    });
-    };
-  
-  function regroupLowData(data){
-        let values = [];
-        let deletevalues = [];
-        data.forEach(function(e){ return values.push(e.nb); });
-        let totalvalues = values.reduce((a, b) => a + b, 0);
-        values.sort(function(a,b){ return a-b;});
-        let threshval = 5*totalvalues/100;
-        let somme = 0;
-        let bool = false;
-        
-        for (let i = 0; i < values.length; i++){
-            somme = somme + values[i];
-            if (somme >= threshval){
-                let index = i-1;
-                somme = somme - values[i];
-                for(let j = 0; j < index; j++){
-                    deletevalues.push(values.shift());
-                    bool = true;
-                }
-                if (bool == true){
-                    values.push(somme);
-                }
-            break;
-            }
-        }
-        for (let i = 0; i < data.length; i++){
-            for (let j = 0; j < deletevalues.length; j++){
-                if (deletevalues[j]){
-                    data = data.filter(function (item){
-                        return item.nb !== deletevalues[j]
-                    });
-                }
-            }
-        }
-        if (deletevalues.length != 0){
-            data.push({labels: "Other", nb: somme });
-        }
-        return data;
-    }
-    
-    function loadFile() {
-        var input, file, fr;
-        if (typeof window.FileReader !== 'function') {
-            appendImage("p", "The file API isn't supported on this browser yet.");
-            return;
-        }
-        input = document.getElementById('fileinput');
-        if (!input) {
-            appendText("p", "Um, couldn't find the fileinput element.");
-        }
-        else if (!input.files) {
-            appendText("p", "This browser doesn't seem to support the `files` property of file inputs.");
-        }
-        else if (!input.files[0]) {
-            appendText("p", "Please select a file before clicking 'Load'");
-        }
-        else {
-            file = input.files[0];
-            fr = new FileReader();
-            fr.readAsArrayBuffer(file);
-            fr.onload = readStack;
-        }
-        function readStack() {
-          /*if ( (childnode = document.querySelector('section')) !== null) {
-            childnode.remove();
-          }*/
-          let raster = Raster.create(readMRC(fr));
-          let montage = raster.montage();
-          montage.style = "width:600px;height:400px;border: 1px solid rgba(2, 0, 34, 0.897);float:left; overflow-y: scroll";
-          montage.setAttribute("preserveAspectRatio", "xMinYMin meet");
-          montage.setAttribute("viewBox", "0 0 600 400");
-          montage.setAttribute("svg-content", true);
-          document.getElementById("graph3").appendChild(montage);
-        }
-      }
-      
-    function appendText(tagName, innerHTML) {
-      var elm;
-      elm = document.createElement(tagName);
-      elm.innerHTML = innerHTML;
-      document.getElementById("graphs").appendChild(elm);
-    }
-    </script>
-    </div>
-      
-    <style>
-    @media screen and (max-width: 3000px) {     
-      
-    html { 
-      font-size:100%; 
-    }
-
-    #arcDiag{
-      margin-top: 2%;
-      margin-left: 2%;
-      margin-right: 2%;
-    }
-
-    #plotSection {
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        padding-top: 2%;
-        padding-left: 2%;
-    }
-
-    #plot1 {
-        grid-column: 1;
-        margin-right: 3%
-    }
-
-    #plot2 {
-        grid-column: 2;
-        padding-right: 3%
-    }
-
-    #graphsection {
-        display:grid;
-        grid-template-columns: 33% 33% 33%;
-        padding-top: 1%;
-        padding-left: 2%;
-        padding-bottom: 1%;
-    }
-
-    #graph1 {
-        grid-column: 1;
-        margin-right: 3%;
-    }
-
-    #graph2 {
-        grid-column: 2;
-        margin-right: 3%;
-    }
-
-    #graph3 {
-        grid-column: 3;
-    }
-
-    .montage {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      max-width: 100%;
-    }
-      
-    .zoom {
-      padding: 1%;
-      transition: transform .2s; /* Animation */
-      margin: 0.5%;
-      width: 30%;
-      height: 30%;
-    }
-      
-    .zoom:hover {
-      transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
-    }
-    
-    figure canvas {
-      border: 1px solid black;
-      width: 65%;
-      height: 65%;
-    }
-
-    #head{
-        width: auto;
-        height: 10%;
-        text-align: left;
-        background-color: rgba(0, 195, 255, 0.624);
-    }
-
-    #txt{
-        display: inline;
-        margin: auto;
-        font-size:1.4rem;
-    }
-
-    #txtBottom{
-        display: inline;
-        margin: auto;
-        font-size:1rem;
-    }
-    #box{
-        margin:auto;
-    }
-    #bas{
-        width: auto;
-        height: 30%;
-        text-align: center;
-    }
-      
-    .labelValue{
-        font-size: 60%;
-        opacity: .5;
-    }
-  
-    .toolTip {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        position: absolute;
-        display: none;
-        width: auto;
-        height: auto;
-        background: none repeat scroll 0 0 white;
-        border: 0 none;
-        border-radius: 8px 8px 8px 8px;
-        box-shadow: -3px 3px 15px #888888;
-        color: black;
-        font-size:0.8rem;
-        padding: 5px;
-        text-align: center;
-    
-    }
-  }
-    </style>
   </script>
  <section >
     <footer id="bas" class="footer">
