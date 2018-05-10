@@ -111,6 +111,28 @@
       select.appendChild(opt);
     }
   };  
+    
+    
+/*
+*Highlight the graphs elements that are commons
+*/
+const highlightItems = (e) => {
+  //Browse the DOM
+  for (let i = 0; i < document.body.childNodes.length; i++) {
+    let element = document.body.childNodes[i];
+    if (element.style.opacity == "0.5"){element.style.opacity = "1";};
+    if (e.id == element.id){
+      console.log("same id found "+e.id +" " + element.id);
+      e.style.opacity = "0.5";
+      element.style.opacity = "0.5";
+    } 
+  }
+}
+
+const setupListeners = () => {
+  arcs.addEventlistener("click", highlightItems(e));
+  bars.addEventlistener("click", highlightItems(e));
+} 
   </script>
  <section >
     <footer id="bas" class="footer">
