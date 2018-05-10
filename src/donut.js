@@ -37,12 +37,6 @@ function createDonut(data, width, height) {
         .attr("viewBox", "0 0 600 400")
         .classed("svg-content", true)
         .style("border", "1px solid rgba(2, 0, 34, 0.897");
-    
-    svg.append("g")
-    .attr("class", "labelName");
-
-    svg.append("g")
-    .attr("class", "labelValue");
 
     let arcWidth = 0.5;
     let arcWidthMouseOut = 0.5;
@@ -71,12 +65,13 @@ function createDonut(data, width, height) {
         .value(function(d) { return d.nb;});
 
     let g = svg.append("g")
-        .attr("class", "arc")
+        .attr("class", "arcs")
         .selectAll("g")
         .data(pie(data))
         .enter().append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
         .attr("id", function (d) { return d.data.labels;})
+        .attr("class", "arc")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("mousemove", function(d){
