@@ -277,9 +277,9 @@ const createPlots = (plot1DID,plot2DID, datas) => {
         }*/
         let raster = Raster.create(readMRC(fr));
         let montage = raster.montage();
-        montage.style = "width: 600px; height: 10%;border: 1px solid rgba(2, 0, 34, 0.897); overflow-y: scroll";
-        montage.setAttribute("preserveAspectRatio", "xMinYMin meet");
-        montage.setAttribute("viewBox", "0 0 600 20");
+         montage.style = "width:600px;height:273px;border: 1px solid rgba(2, 0, 34, 0.897);float:left; overflow-y: scroll; margin-right:2%";
+         montage.setAttribute("preserveAspectRatio", "xMinYMin meet");
+         montage.setAttribute("viewBox", "0 0 600 273");
         montage.setAttribute("svg-content", true);
         document.getElementById("graph3").appendChild(montage);
       }
