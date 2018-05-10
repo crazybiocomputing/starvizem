@@ -76,7 +76,7 @@ const getSTARFile = (datas) => {
 /*
 *Highlight the graphs elements that are commons
 */
-const highlightItems = () => {
+const highlightItems = (e) => {
   //Browse the DOM
   for (let i = 0; i < document.body.childNodes.length; i++) {
     let element = document.body.childNodes[i];
