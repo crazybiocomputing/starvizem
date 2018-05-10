@@ -64,6 +64,9 @@ const createArcDiagrams = (rootID,graph) => {
 *
 */
 const getSTARFile = (datas) => {
+  //resetSelect("colY");
+  //resetSelect("colX");
+  //resetSelect("table");
   console.log('getSTARFile');
   // Get JSON data
   console.log(datas);
@@ -292,3 +295,17 @@ const createPlots = (plot1DID,plot2DID, datas) => {
     document.getElementById("graphs").appendChild(elm);
   }
 
+  const resetSelect = (list) => {
+    console.log("deleting ... "+ list);
+    let tableSelect = document.getElementById(list);
+    /*
+    var length = tableSelect.options.length;
+    console.log("lenght:" + length);
+    for (let i = 0; i < length-1; i++) {
+      console.log(tableSelect.options[i].innerText);
+      if (tableSelect.options[i].innerText!=="----" && tableSelect.options[i].innerText!=="_svzRowNumber"){
+        console.log(i);
+        tableSelect.remove(i);
+      }
+    }*/
+  }
