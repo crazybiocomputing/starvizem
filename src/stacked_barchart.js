@@ -127,6 +127,8 @@ function createStackedBarChart(data, width, height) {
     .selectAll("rect")
     .data(function(d) { return d; })
     .enter().append("rect")
+      .attr("id", function (d) { return d.data.name;})
+      .attr("class", "bars")
       .attr("x", function(d) { return x(d.data.name); })
       .attr("y", function(d) { return y(d[1]); })
       .attr("height", function(d) { return y(d[0]) - y(d[1]) })
