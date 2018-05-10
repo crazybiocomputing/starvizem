@@ -81,6 +81,7 @@
     let arcs = document.getElementsByClassName("arc");
     let bars = document.getElementsByClassName("bar");
     console.log(arcs);
+    console.log("length: "+arcs.length);
     for (let i=0; i < arcs.length; i++){
       console.log(arcs[i].id);
       arcs[i].addEventlistener("click", highlightItems("graph2"));
