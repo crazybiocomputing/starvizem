@@ -73,24 +73,29 @@ const getSTARFile = (datas) => {
   });
 }
 
+/*
+*Highlight the graphs elements that are commons
+*/
 const highlightItems = () => {
-  if (arcs.id == bars.id){
-    console.log("same id found "+e.id +" " + bars.id);
-  } 
+  //Browse the DOM
+  for (let i = 0; i < document.body.childNodes.length; i++) {
+    let element = document.body.childNodes[i];
+    if (e.id == element.id){
+      console.log("same id found "+e.id +" " + element.id);
+    } 
+  }
 }
 
 const setupListeners = () => {
-  arcs.addEventlistener("click", highlightItems);
-  bars.addEventlistener("click", highlightItems);
+  arcs.addEventlistener("click", highlightItems(e));
+  bars.addEventlistener("click", highlightItems(e));
 } 
 
-//MAIN
 let graph1 = document.getElementById('graph1');
 console.log(graph1.firstChild);
-/*
 if (graph1.firstChild){
   let arcs = document.getElementsByClassName("arcs");
   console.log(arcs);
   let bars = document.getElementsByClassName("bars");
   window.addEventListener("load", setupListeners);
-}*/
+}
