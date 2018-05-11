@@ -281,14 +281,14 @@ const createPlots = (plot1DID,plot2DID, datas) => {
   const resetSelect = (list) => {
     console.log("deleting ... "+ list);
     let tableSelect = document.getElementById(list);
-    /*
+    
     var length = tableSelect.options.length;
     console.log("lenght:" + length);
     for (let i = 0; i < length-1; i++) {
       console.log(tableSelect.options[i].innerText);
-      if (tableSelect.options[i].innerText!=="----" && tableSelect.options[i].innerText!=="_svzRowNumber"){
+      if (tableSelect.options[i].innerText!=="----" && tableSelect.options[i].innerText!=="_svzRowNumber" && tableSelect.options[i].innerText!=="default"){
         console.log(i);
-        tableSelect.remove(i);
+        tableSelect.innerText=="----";
       }
-    }*/
+    }
   }
