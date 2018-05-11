@@ -307,14 +307,15 @@ const displayImage = (job, classnumber) => {
               graph3.removeChild(graph3.firstChild);
             }
             let tile = document.createElement("svg");
-            tile.setAttribute("style", "width:600; height:400; border: 1px solid rgba(2, 0, 34, 0.897);");
+            tile.setAttribute("style", "width: 600px; height:400 px; border: solid 1px;");
             tile.setAttribute("viewBox", "0 0 600 400");
             tile.setAttribute("preserveAspectRatio", "xMinYMin meet");
+            tile.setAttribute("svg-content", "false");
             graph3.appendChild(tile);
             let classindex = parseInt(classnumber.substr(-3))-1;
             let elm = Raster.create(readMRC(fr)).display(classindex);
+            elm.setAttribute("style", "width:30%; height:40%; display: block; margin:auto; margin-top:18%;");
             tile.appendChild(elm);
-            elm.setAttribute("style", "width:20px; height:20px;");
           });
     });
 };
