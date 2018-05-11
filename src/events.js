@@ -64,9 +64,9 @@ const createArcDiagrams = (rootID,graph) => {
 *
 */
 const getSTARFile = (datas) => {
-  resetSelect("table");
-  resetSelect("colX");
   resetSelect("colY");
+  resetSelect("colX");
+  resetSelect("table");
   
   console.log('getSTARFile');
   // Get JSON data
@@ -285,11 +285,9 @@ const createPlots = (plot1DID,plot2DID, datas) => {
     
     var length = tableSelect.options.length;
     console.log("lenght:" + length);
-    for (let i = 0; i < length-1; i++) {
-      console.log(tableSelect.options[i].innerText);
-      if (tableSelect.options[i].innerText!=="----" && tableSelect.options[i].innerText!=="_svzRowNumber" && tableSelect.options[i].innerText!=="default"){
-        console.log(i);
-        tableSelect.innerText=="----";
+    for (let i = length-1; i>=0; i--) {
+      if (tableSelect.options[i].innerText!="----" && tableSelect.options[i].innerText!="_svzRowNumber"){
+        tableSelect.remove(i);
       }
     }
   }
