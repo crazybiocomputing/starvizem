@@ -22,7 +22,6 @@
  * Jean-Christophe Taveau
  */
 
-
 'use strict';
 /**
  * Create a Donut in svg and returns it
@@ -32,21 +31,25 @@
 
 function createDonut(job, data, width, height) {
     
+    //SVG creation and responsive properties
     let svg = d3.select("#graph1").append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 400")
         .classed("svg-content", true)
         .style("border", "1px solid rgba(2, 0, 34, 0.897");
 
+    //Attributes
     let arcWidth = 0.5;
     let arcWidthMouseOut = 0.5;
     let arcWidthMouseOn = 0.45;
 
+    //Radius calculation
     let radius = Math.min(width, height) / 2,
         innerRadius = radius * arcWidth,
         innerRadiusFinal = radius * arcWidthMouseOut,
         innerRadiusZoom = radius * arcWidthMouseOn;
 
+    //Color table
     let color = d3.scaleOrdinal(d3.schemeAccent);
 
     let arcWidthChange = 20;
@@ -57,13 +60,14 @@ function createDonut(job, data, width, height) {
     let arcFinal = d3.arc().innerRadius(innerRadiusFinal).outerRadius(radius - arcWidthChange);
     let arcZoom = d3.arc().innerRadius(innerRadiusZoom).outerRadius(radius - arcWidthChange);
     
-    //tooltip
+    //Tooltip
     let tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
     let pie = d3.pie()
         .sort(function(a,b){ if (a.labels != "Other" && b.labels != "Other") {return d3.descending(a.nb, b.nb);}})
         .value(function(d) { return d.nb;});
 
+    //Donuts events
     let g = svg.append("g")
         .attr("class", "arcs")
         .selectAll("g")
@@ -81,15 +85,16 @@ function createDonut(job, data, width, height) {
             tooltip.html("Class "+(d.data.labels)+"<br>"+(d.data.nb)+" images");
         })
         .on("click", function (d) {
+            //Display the associated average image
             displayImage(job, d.data.labels);
         });
 
     g.append("path")
-        //.attr("fill", function(d) {return d3.interpolateRainbow(parseInt(d.data.labels.slice(-3)) / (d.data.length)) })
         .attr("fill", function(d, i) { return color(i); })
         .attr("d", arc)
         .attr("stroke", "#fff");
 
+    //Animations events
     function mouseover() {
         tooltip.style("display", null);
         d3.select(this).select("path").transition()
@@ -104,7 +109,7 @@ function createDonut(job, data, width, height) {
             .attr("d", arcFinal);
     }
     
-     //svg title
+    //Svg title
     svg.append("text")
         .attr("x", (width / 4))             
         .attr("y", 18 )
