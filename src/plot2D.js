@@ -23,7 +23,7 @@
  */
  
 /**
- * Create a Donut in svg and returns it
+ * Create a 2Dimension plot in svg and returns it
  *
  *
  * @return svg
@@ -34,18 +34,19 @@
 'use strict';
 
 function createPlot(data, labels, width, height) {
+  //Attributes
   let radius=2.5;
   let eventDuration=200;
   let nbTicks=5;
   let opacity=0.9;
   
-  //tooltip
+  //Tooltip
   let tooltipOpacity=0;
   let positionLeftTooltip=10;
   let positionTopTooltip=25;
   let gridlinesOpacity=0.2;
 
-  //Domaine and range
+  //Domain and range
   let xrangeMin=10 * width / 100;
   let xrangeMax= 90 * width / 100;
   let yrangeMin=90 * height / 100;
@@ -55,36 +56,35 @@ function createPlot(data, labels, width, height) {
   let xTranslateMin=0;
   let xTranslateMax=10 * height / 100;
 
-  //labelsTransform
+  //Labels Transform
   let ylabelTransX=(width - (width-15));
   let ylabelTransY=(height/2);
   let xlabelTransX=(width/2);
   let xlabelTransY=(height - (height-20))
 
+  //SVG creation and responsive properties
   let svg = d3.select("#plot2").append("svg")
-      //.attr("width", width)
-      //.attr("height", height)
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr("viewBox", "0 0 600 400")
       .classed("svg-content", true)
       .style("border", "1px solid rgba(2, 0, 34, 0.897");
 
+  //Tooltip variable
   let div = d3.select("body").append("div")
       .attr("class", "toolTip");
 
-  //axis
+  //Axis
   let x = d3.scaleLinear()
       .range([xrangeMin,xrangeMax]);
 
   let y = d3.scaleLinear()
       .range([yrangeMin,yrangeMax]);
 
-  
   let valueline = d3.line()
       .x(function(d) { return x(d.x); })
       .y(function(d) { return y(d.y); });
 
-
+  //Axis domain
   x.domain([d3.min(data,function(d)  { return d.x; }),d3.max(data,function(d)  { return d.x; })]);
   y.domain([d3.max(data, function(d) { return d.y; }),d3.min(data,function(d)  { return d.y; })]);
 
@@ -95,6 +95,7 @@ function createPlot(data, labels, width, height) {
       .style("stroke-width", "1")
       .style("fill", "none");
 
+  //Circle creation and events
   svg.selectAll("circle")
       .data(data)
       .enter()
@@ -116,11 +117,12 @@ function createPlot(data, labels, width, height) {
         div.html("X:"+(d.x)+"<br>"+"Y:"+(d.y));
       });
       
-        	        
+  //Axis calibration     
   svg.append("g")
       .attr("transform", "translate(" + yTranslateMin + ","+ yTranslateMax+")")
       .call(d3.axisLeft(y));
  
+  //Axis labels
   svg.append("text")
        .attr("text-anchor", "middle")
        .attr("transform", "translate("+ylabelTransX +","+ylabelTransY+")rotate(-90)")
@@ -135,6 +137,7 @@ function createPlot(data, labels, width, height) {
       .attr("transform", "translate("+xlabelTransX +","+xlabelTransY+")")
       .text(labels.xlabel);
 
+  //Graph gridelines
   svg.append("g")			
       .attr("class", "grid")
       .call(make_y_gridlines()
@@ -144,7 +147,6 @@ function createPlot(data, labels, width, height) {
       .attr("transform", "translate(" + yTranslateMin + ","+ yTranslateMax+")")
       .style("opacity",gridlinesOpacity)
 
-
   svg.append("g")			
       .attr("class", "grid")
       .attr("transform", "translate("+xTranslateMin+ "," + xTranslateMax + ")")
@@ -153,7 +155,8 @@ function createPlot(data, labels, width, height) {
           .tickFormat("")
       )   
       .style("opacity",gridlinesOpacity)
-      
+
+  //Make gridelines
   function make_x_gridlines() {		
         return d3.axisTop(x)
             .ticks(nbTicks)
