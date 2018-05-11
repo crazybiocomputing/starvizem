@@ -25,7 +25,7 @@
 
 'use strict';
 
-function createStackedBarChart(data, width, height) {
+function createStackedBarChart(job, data, width, height) {
     // constants declaration
     let padding = 0.5;
     let cutClassName = 13;
@@ -140,10 +140,10 @@ function createStackedBarChart(data, width, height) {
         tooltip.style("top", d3.event.pageY-25+"px");
         tooltip.style("display", "inline-block");
         tooltip.html((d[1]-d[0])+" images");
-      });
-      /*.on("click", function (d) {
+      })
+      .on("click", function (d) {
         displayImage(job, d.data.name);
-      });*/
+      });
 
     //create x axis
     g.append("g")
