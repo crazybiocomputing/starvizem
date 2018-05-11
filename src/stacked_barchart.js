@@ -22,14 +22,14 @@
  * Jean-Christophe Taveau
  */
 
-
 'use strict';
 
 function createStackedBarChart(job, data, width, height) {
-    // constants declaration
+    //Constants declaration
     let padding = 0.5;
     let cutClassName = 13;
-    // for the tooltip
+    
+    //For the tooltip
     let tooltipWidth = 30;
     let tooltipHeight = 20;
     let textTooltipPosition = 15;
@@ -39,29 +39,30 @@ function createStackedBarChart(job, data, width, height) {
     let squarePosition = width - 20;
     let X_PositionInSquare = width - 25;
     let Y_PositionInSquare = 10;
-    // for the zoom
+    
+    //For the zoom
     let minZoom = 1;
     let maxZoom = 6;
-    // for the legend
+    
+    //For the legend
     let legendWidth = 20;
     let legendHeight = 20;
     let legendPadding = 20;
     let legendTextFontSize = 10;
-    //for the axis
+    
+    //For the axis
     let yRange = [90* height/100,10*height/100];
     let xRange = [10*width/100,90*width/100];
     let xTranslate = 90 * height / 100;
     let yTranslate = 10 * width / 100;
 
-    // datas declaration
+    //Datas declaration
     let starobj = Star.create(data);
     let tableStat = starobj.getTable('statistics');
     let tableHisto = starobj.getTable('histogram_resolution');
 
-    //create svg
+    //SVG creation and responsive properties
     let svg = d3.select("#graph2").append("svg")
-        //.attr("width", width)
-        //.attr("height", height)
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 400")
         .classed("svg-content", true)
@@ -69,10 +70,10 @@ function createStackedBarChart(job, data, width, height) {
         .on("zoom",zoom))
         .style("border", "1px solid rgba(2, 0, 34, 0.897");
 
-    //create g
+    //Create g
     let g = svg.append("g");
 
-    //axis
+    //Axis
     let y = d3.scaleLinear()
         .rangeRound(yRange);
 
@@ -80,15 +81,14 @@ function createStackedBarChart(job, data, width, height) {
         .rangeRound(xRange)
         .paddingInner(padding);
 
-    //color
+    //Color
     let z = d3.scaleOrdinal()
         .range(["#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
     let xAxis = d3.axisBottom(x);
-
     let yAxis = d3.axisLeft(y);
 
-    //keys
+    //Keys
     let keys = tableStat.headers.filter( (h) => h.search(/_svzBin\d+/) !== -1);
     let start = tableStat.getColumnIndex('_svzNumberPerClass001');
     let datas = tableHisto.data.map ( (d,j) => {
@@ -109,16 +109,16 @@ function createStackedBarChart(job, data, width, height) {
     let isScrollDisplayed = barWidth * datas.length > width;
     console.log(isScrollDisplayed);
 
-    //domains for each axis
+    //Domains for each axis
     datas.sort( (a, b) => b.total - a.total);
     x.domain(datas.map( (d) => d.name));
     y.domain([0,d3.max(datas, (d) => d.total)]);
     z.domain(keys);
 
-    //tooltip
+    //Tooltip
     let tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
-    //create each rect in g
+    //Create each rectangle in g and events associated
     g.append("g")
     .selectAll("g")
     .data(d3.stack().keys(keys)(datas))
@@ -145,13 +145,13 @@ function createStackedBarChart(job, data, width, height) {
         displayImage(job, d.data.name);
       });
 
-    //create x axis
+    //Create x axis
     g.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + xTranslate + ")")
         .call(xAxis);
 
-    //create y axis
+    //Create y axis
     g.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(" + yTranslate + ",0)")
@@ -244,8 +244,8 @@ function createStackedBarChart(job, data, width, height) {
 
              }
 
-    //legend
-    var legend = g.append("g")
+    //Legend
+    let legend = g.append("g")
       .attr("font-family", "sans-serif")
       .attr("font-size", legendTextFontSize)
       .attr("text-anchor", "end")
@@ -266,7 +266,7 @@ function createStackedBarChart(job, data, width, height) {
       .attr("dy", "0.32em")
       .text(function(d) { return d; });
     
-    //svg title
+    //Svg title
     svg.append("text")
     .attr("x", (width / 3.6))             
     .attr("y", 20 )
@@ -275,9 +275,9 @@ function createStackedBarChart(job, data, width, height) {
     .style("font-size", "22px")   
     .text("Resolution of images per class");  
 
-      function zoom() {
+    function zoom() {
         g.attr("transform", d3.event.transform);
-      }
+    }
 
     d3.select("body").append( () => svg.node());
     return svg.node();
