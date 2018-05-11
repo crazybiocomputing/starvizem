@@ -64,9 +64,10 @@ const createArcDiagrams = (rootID,graph) => {
 *
 */
 const getSTARFile = (datas) => {
-  //resetSelect("colY");
-  //resetSelect("colX");
-  //resetSelect("table");
+  resetSelect("table");
+  resetSelect("colX");
+  resetSelect("colY");
+  
   console.log('getSTARFile');
   // Get JSON data
   console.log(datas);
