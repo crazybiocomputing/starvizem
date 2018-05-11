@@ -22,32 +22,28 @@
  * Jean-Christophe Taveau
  */
 
-
 'use strict';
-
 
 /**
  * Create Arc Diagram
  *
  * @author Marie , Pauline , Guillaume
  * 
- * 
  */
 
 function createArcDiagram(data, width, height) {
-    //create svg
+    
+    //SVG creation and responsive properties
     let svg = d3.create("svg")
-        //.attr("width", width)
-        //.attr("height", height)
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 1600 300")
         .classed("svg-content", true)
         .style("border", "1px solid rgba(2, 0, 34, 0.897");
 
-
     let datanode = data.nodes;
     let datalink = data.links;
 
+    //Attributes
     let pad = 33 * height / 100; // actual padding amount
     let radius = 10; // fixed node radius
     let yfixed = pad + radius; // y position for all nodes
@@ -55,7 +51,7 @@ function createArcDiagram(data, width, height) {
     let x = d3.scaleLinear().range([5 * width / 100, 90 * width / 100]);
     x.domain([0, d3.max(datanode, function(d) { return d.id; }) - 1]);
 
-    // calculate pixel location for each node
+    //Calculate pixel location for each node
     let svgnode = datanode.map(function(d, i) {
         let out = {
             x: x(i),
@@ -81,9 +77,8 @@ function createArcDiagram(data, width, height) {
         }
         return out;
     })
-    console.log("svglink", svglink);
-    console.log("svgnode", svgnode);
-
+  
+    //Node radius 
     let nodeRadius = d3.scaleSqrt().range([5, 20]);
     nodeRadius.domain(d3.extent(datanode, function(d) {
         return d.value;
@@ -108,9 +103,9 @@ function createArcDiagram(data, width, height) {
 
         tooltip.attr("text-anchor", "middle");
         tooltip.attr("dx", 0);
-
     }
 
+    //Nodes creation and their properties
     let node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
@@ -151,6 +146,7 @@ function createArcDiagram(data, width, height) {
             getSTARFile(d);
         });
    
+    //Links creation and their properties
     let link = svg.append("g").selectAll("link")
         .data(svglink)
         .enter()
@@ -163,8 +159,8 @@ function createArcDiagram(data, width, height) {
                     'A', (d.xtarget - d.xsource) / 2, ',',
                     (d.xtarget - d.xsource) / 5, 0, 1, ',',
                     1, d.xtarget, ',', d.y
-                ]
-                .join(' ');
+                    ]
+         .join(' ');
         })
         .on('mouseover', function(d) {
             link.style('stroke', 'black');
@@ -178,15 +174,14 @@ function createArcDiagram(data, width, height) {
             node.style('fill', null);
         });
     
-   //svg title
-   svg.append("text")
-     .attr("x", (width / 16))             
-     .attr("y", 20 )
-     .attr("text-anchor", "middle")  
-     .style("font-weight","bold")
-     .style("font-size", "20px")   
-     .text("Nodes chronology"); 
+       //Svg title
+       svg.append("text")
+         .attr("x", (width / 16))             
+         .attr("y", 20 )
+         .attr("text-anchor", "middle")  
+         .style("font-weight","bold")
+         .style("font-size", "20px")   
+         .text("Nodes chronology"); 
 
     return svg.node();
-
 }

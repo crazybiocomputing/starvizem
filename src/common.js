@@ -133,10 +133,7 @@ class Star {
   static getExtension(filename) {
     return filename.split('.').pop();
   }
-
 }
-
-
 
 /**
  * @class Star
@@ -172,8 +169,6 @@ class Table {
   getItem(rowIndex,headername) {
     return this.data[this.getColumnIndex(headername)][rowIndex];
   } 
-
-
 }
 
 
