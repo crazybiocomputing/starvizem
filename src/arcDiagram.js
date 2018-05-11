@@ -22,9 +22,7 @@
  * Jean-Christophe Taveau
  */
 
-
 'use strict';
-
 
 /**
  * Create Arc Diagram
@@ -32,7 +30,6 @@
  * @author Marie , Pauline , Guillaume
  * 
  */
-
 
 function createArcDiagram(data, width, height) {
     
@@ -46,6 +43,7 @@ function createArcDiagram(data, width, height) {
     let datanode = data.nodes;
     let datalink = data.links;
 
+    //Attributes
     let pad = 33 * height / 100; // actual padding amount
     let radius = 10; // fixed node radius
     let yfixed = pad + radius; // y position for all nodes
