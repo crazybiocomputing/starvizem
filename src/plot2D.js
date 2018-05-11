@@ -117,7 +117,7 @@ function createPlot(data, labels, width, height) {
         div.html("X:"+(d.x)+"<br>"+"Y:"+(d.y));
       });
       
-  //Axis calibration     
+  //Axis creation and calibration     
   svg.append("g")
       .attr("transform", "translate(" + yTranslateMin + ","+ yTranslateMax+")")
       .call(d3.axisLeft(y));
