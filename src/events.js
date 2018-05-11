@@ -106,7 +106,6 @@ const getSTARFile = (datas) => {
       if(graph3.firstChild){ graph3.removeChild(graph3.firstChild);}
       createXYForm(data);
       createGraph("graph1","graph2",path);
-      clickEvents();
   });
 }
 
@@ -127,13 +126,13 @@ const createGraph = (donutID,barchartID,job) => {
                 }));
                 let dataR = regroupLowData(datas);
                 let donutplace= document.getElementById(donutID);
-                donutplace.appendChild(createDonut(dataR, width, height));
+                donutplace.appendChild(createDonut(job, dataR, width, height));
             });
   d3.json(job).then(function(graph) {
                 let width = 600;
                 let height = 400;
                 let barplace = document.getElementById(barchartID);
-                barplace.appendChild(createStackedBarChart(graph, width, height));
+                barplace.appendChild(createStackedBarChart(job, graph, width, height));
   
             });
         
@@ -252,41 +251,25 @@ const createPlots = (plot1DID,plot2DID, datas) => {
   plot2Dplace.appendChild(createCurvePlot(data, labels, width, height));
 };  
 
-  function loadFile() {
-      var input, file, fr;
-      if (typeof window.FileReader !== 'function') {
-          appendImage("p", "The file API isn't supported on this browser yet.");
-          return;
-      }
-      input = document.getElementById('fileinput');
-      if (!input) {
-          appendText("p", "Um, couldn't find the fileinput element.");
-      }
-      else if (!input.files) {
-          appendText("p", "This browser doesn't seem to support the `files` property of file inputs.");
-      }
-      else if (!input.files[0]) {
-          appendText("p", "Please select a file before clicking 'Load'");
-      }
-      else {
-          file = input.files[0];
-          fr = new FileReader();
-          fr.readAsArrayBuffer(file);
-          fr.onload = readStack;
-      }
-      function readStack() {
-        /*if ( (childnode = document.querySelector('section')) !== null) {
-          childnode.remove();
-        }*/
+
+  function displayImage(job, classnumber) {
+    fetch(`/data/relion_dataset${job}run_it025_classes.mrcs`)
+      .then ( (response) => response.arrayBuffer())
+      .then ( (data) => {
+        console.log(data);
+        let fr;
+        fr = new FileReader();
+        fr.readAsArrayBuffer(data);
+        data.onload = readStack;
+      });
+
+      function readStack(classnumber) {
         let raster = Raster.create(readMRC(fr));
-        let montage = raster.montage();
-         montage.style = "width:600px;height:273px;border: 1px solid rgba(2, 0, 34, 0.897);float:left; overflow-y: scroll; margin-right:2%";
-         montage.setAttribute("preserveAspectRatio", "xMinYMin meet");
-         montage.setAttribute("viewBox", "0 0 600 273");
-        montage.setAttribute("svg-content", true);
+        let montage = raster.montage(classnumber.substr(-3));
+        montage.style = "width:600px;height:273px;border: 1px solid rgba(2, 0, 34, 0.897); margin-right:2%";
         document.getElementById("graph3").appendChild(montage);
       }
-    }
+  }
     
   function appendText(tagName, innerHTML) {
     var elm;
