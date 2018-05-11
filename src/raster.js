@@ -34,6 +34,10 @@ class Raster {
     return new Raster(other);
   }
   
+  get depth() {
+     return this.nSlices;
+  }
+  
   /**
    * Get Uint8Array image buffer
    *
