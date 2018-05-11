@@ -263,9 +263,6 @@ const createPlots = (plot1DID,plot2DID, datas) => {
       });
 
       function readStack(classnumber) {
-        if ( (childnode = document.querySelector('section')) !== null) {
-          childnode.remove();
-        }
         let raster = Raster.create(readMRC(fr));
         let montage = raster.montage(classnumber.substr(-3));
         montage.style = "width:600px;height:273px;border: 1px solid rgba(2, 0, 34, 0.897); margin-right:2%";
