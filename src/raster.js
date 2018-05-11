@@ -108,17 +108,17 @@ class Raster {
     montage.id = 'fig001';
     
     Array.from({length: this.nSlices}, (v,i)=> i).map( (index) => {
-      //let nb = index+1;
-      //let strnb = nb.toString();
-      //if(strnb == classnumber){
+      let nb = index+1;
+      let strnb = nb.toString();
+      if(strnb == classnumber){
         let elm = document.createElement('figure');
         let canvas = this.display(index);
         elm.className = 'zoom';
         elm.innerHTML = `<span>${(index+1).toString().padStart(3,'0')}</span>`;
         elm.appendChild(canvas);
-        //elm.id = strnb.padStart(3,0);
+        elm.id = strnb.padStart(3,0);
         montage.appendChild(elm);
-      //}
+      }
     });
     return montage;
   }
