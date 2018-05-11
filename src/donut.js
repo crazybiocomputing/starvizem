@@ -79,6 +79,9 @@ function createDonut(data, width, height) {
             tooltip.style("top", d3.event.pageY-25+"px");
             tooltip.style("display", "inline-block");
             tooltip.html("Class "+(d.data.labels)+"<br>"+(d.data.nb)+" images");
+        })
+        .on("click", function (d) {
+            displayImage(job, d.data.labels);
         });
 
     g.append("path")
