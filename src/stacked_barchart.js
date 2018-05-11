@@ -140,10 +140,10 @@ function createStackedBarChart(data, width, height) {
         tooltip.style("top", d3.event.pageY-25+"px");
         tooltip.style("display", "inline-block");
         tooltip.html((d[1]-d[0])+" images");
-      })
-      .on("click", function (d) {
-        displayImage(job, d.data.name);
       });
+      /*.on("click", function (d) {
+        displayImage(job, d.data.name);
+      });*/
 
     //create x axis
     g.append("g")
