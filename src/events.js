@@ -302,9 +302,19 @@ const displayImage = (job, classnumber) => {
         let fr = new FileReader();
         loadMRC(blob)
           .then( (fr) => {
+            let graph3 = document.getElementById("graph3");
+            if (graph3.firstChild){
+              graph3.removeChild(graph3.firstChild);
+            }
+            let tile = document.createElement("svg");
+            tile.setAttribute("style", "width:600; height:400; border: 1px solid rgba(2, 0, 34, 0.897);");
+            tile.setAttribute("viewBox", "0 0 600 400");
+            tile.setAttribute("preserveAspectRatio", "xMinYMin meet");
+            graph3.appendChild(tile);
             let classindex = parseInt(classnumber.substr(-3))-1;
             let elm = Raster.create(readMRC(fr)).display(classindex);
-            document.getElementById("graph3").appendChild(elm);
+            tile.appendChild(elm);
+            elm.setAttribute("style", "width:20px; height:20px;");
           });
     });
 };
