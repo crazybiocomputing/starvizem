@@ -251,6 +251,7 @@ const createPlots = (plot1DID,plot2DID, datas) => {
   plot2Dplace.appendChild(createCurvePlot(data, labels, width, height));
 };  
 
+/*
   function displayImage(job, classnumber) {
     fetch(`/data/relion_dataset${job}run_it025_classes.mrcs`)
       .then ( (response) => response.arrayBuffer())
@@ -268,7 +269,7 @@ const createPlots = (plot1DID,plot2DID, datas) => {
         montage.style = "width:600px;height:273px;border: 1px solid rgba(2, 0, 34, 0.897); margin-right:2%";
         document.getElementById("graph3").appendChild(montage);
       }
-  }
+  }*/
     
   function appendText(tagName, innerHTML) {
     var elm;
