@@ -251,10 +251,40 @@ const createPlots = (plot1DID,plot2DID, datas) => {
   plot2Dplace.appendChild(createCurvePlot(data, labels, width, height));
 };  
 
-
+/**
+ * Display MRC(S) Image or Stack
+ */
   function displayImage(job, classnumber) {
-    fetch(`/data/relion_dataset${job}run_it025_classes.mrcs`)
-      .then ( (response) => response.arrayBuffer())
+  
+    function loadMRC(blob) {
+      return new Promise((resolve, reject) => {
+        let fr = new FileReader();  
+        fr.onload = () => {
+          resolve(fr);
+          console.log(fr);
+        };
+        fr.readAsArrayBuffer(blob);
+      });
+    }
+
+    console.log('Display Image');
+    console.log(`/mrc${job}run_it025_classes.mrcs`);
+
+    fetch(`/mrc${job}run_it025_classes.mrcs`)
+      .then ( (response) => response.blob() )
+      .then( (blob) => {
+        let fr = new FileReader();
+        loadMRC(blob)
+          .then( (fr) => {
+            // WARNING only display first slice of stack
+            let elm = Raster.create(readMRC(fr)).display(0);
+            document.body.appendChild(elm);
+          });
+      });
+      
+/*
+    fetch(`/mrc${job}run_it025_classes.mrcs`)
+      .then ( (response) => console.log(JSON.stringify(response)))
       .then ( (data) => {
         console.log(data);
         let fr;
@@ -269,6 +299,7 @@ const createPlots = (plot1DID,plot2DID, datas) => {
         montage.style = "width:600px;height:273px;border: 1px solid rgba(2, 0, 34, 0.897); margin-right:2%";
         document.getElementById("graph3").appendChild(montage);
       }
+*/
   }
     
   function appendText(tagName, innerHTML) {

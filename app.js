@@ -105,6 +105,13 @@ app.get('/test/:file',  (req, res,next) => {
   res.sendFile(path.join(__dirname, `./test/${req.params.file}`));
 });
 
+app.get('/mrc/:process/:job/:file',  (req, res,next) => {
+  console.log(__dirname);
+  console.log(__filename); 
+  console.log(`FILE MRC: ${process.env.PWD}/${req.params.process}/${req.params.job}/${req.params.file}`);
+  res.sendFile(`${process.env.PWD}/${req.params.process}/${req.params.job}/${req.params.file}`);
+});
+
 
 // Routes - JSON response
 app.get('/Class2D/:job/', (req, res,next) => {

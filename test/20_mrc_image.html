@@ -55,6 +55,7 @@
         }
         else {
             file = input.files[0];
+            console.log(file);
             fr = new FileReader();
             fr.readAsArrayBuffer(file);
             fr.onload = readRaster;
