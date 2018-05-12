@@ -116,7 +116,6 @@ app.get('/mrc/:process/:job/:file',  (req, res,next) => {
 // Routes - JSON response
 app.get('/Class2D/:job/', (req, res,next) => {
   console.log('Class2D');
-  // TODO
   let id = parseInt(req.params.job.match(/\d+/g)[0]);
   svzm.getClass2D(5)(`./Class2D/${req.params.job}/run_it025_data.star`).then( (data) => res.json(data), (err) => console.log(err));
 
@@ -126,7 +125,6 @@ app.get('/Class2D/:job/', (req, res,next) => {
 
 app.get('/Class3D/:job/', (req, res,next) => {
   console.log('Class3D');
-  // TODO
   let id = parseInt(req.params.job.match(/\d+/g)[0]);
   svzm.getClass2D(5)(`./Class3D/${req.params.job}/run_it025_data.star`).then( (data) => res.json(data), (err) => console.log(err));
 
@@ -136,7 +134,6 @@ app.get('/Class3D/:job/', (req, res,next) => {
 
 
 app.get('/MotionCorr/:job', (req, res,next) => {
-  // TODO
   let id = parseInt(req.params.job.match(/\d+/g)[0]);
   res.json({"id": id, "type": "MotionCorr", "name": req.params.job}) 
 });
