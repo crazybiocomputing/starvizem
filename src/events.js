@@ -28,7 +28,7 @@
 /**
  * @param {string} rootID 
  * @param {json Object} graph 
- * @author Marie ECONOMIDES,Guillaume SOTTON
+ * @author Marie Economides,Guillaume Sotton
  * 
  * Get pipeline data, change data, create an arc diagram and add it to the DOM
  */
