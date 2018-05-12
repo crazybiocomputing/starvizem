@@ -28,7 +28,7 @@
 /**
  * @param {string} rootID 
  * @param {json Object} graph 
- * @author Marie Economides
+ * @author Marie ECONOMIDES,Guillaume SOTTON
  * 
  * Get pipeline data, change data, create an arc diagram and add it to the DOM
  */
@@ -314,7 +314,7 @@ const displayImage = (job, classnumber) => {
             graph3.appendChild(tile);
             let classindex = parseInt(classnumber.substr(-3))-1;
             let elm = Raster.create(readMRC(fr)).display(classindex);
-            elm.setAttribute("style", "width:30%; height:40%; display: block; margin:auto; margin-top:18%;");
+            elm.setAttribute("style", "width:30%; height:40%; display: block; margin:auto;margin-top:19.5%");
             tile.appendChild(elm);
           });
     });
