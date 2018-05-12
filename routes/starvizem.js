@@ -22,16 +22,15 @@
  * Jean-Christophe Taveau
  */
  
-
 'use strict';
 
-
+//Necessary files
 const {getSTAR,readSTAR,processes} = require('./server/stargate.js');
 const {getPipeline} = require('./server/pipeline.js');
 const {getClass2D} = require('./server/class2d.js');
 const {init} = require('./server/init.js');
 
-
+//Export
 module.exports = {
   getSTAR: getSTAR,
   getPipeline: getPipeline,
