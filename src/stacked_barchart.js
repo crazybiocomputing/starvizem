@@ -26,7 +26,7 @@
 
 function createStackedBarChart(job, data, width, height) {
     //Constants declaration
-    let padding = 0.5;
+    let padding = 0.8;
     let cutClassName = 13;
 
     //For the tooltip
@@ -144,7 +144,13 @@ function createStackedBarChart(job, data, width, height) {
     g.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + xTranslate + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+          .style("text-anchor", "end")
+          .attr("font-size", 4.5)
+          .attr("dx", "-1.5em")
+          .attr("dy", "-1.5em")
+          .attr("transform", "rotate(-90)");
 
     //Create y axis
     g.append("g")
