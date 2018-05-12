@@ -77,8 +77,7 @@ function createArcDiagram(data, width, height) {
     let uniqProcesses = processes.filter(function(item, pos) {
         return processes.indexOf(item) == pos;
     });
-
-
+    
     let svglink = datalink.map(function(d) {
         let out = {
             source: d.source,
@@ -91,6 +90,13 @@ function createArcDiagram(data, width, height) {
         return out;
     })
   
+    //18 distinct colors for the 18 processes possible
+    let colors = ["rgb(255 255 0)","rgb(74 92 136)","rgb(255 0 223)","rgb(0 255 104)",
+    "rgb(255 173 0)","rgb(79 255 0)","rgb(0 255 193)","rgb(0 153 255)","rgb(104 0 255)",
+    "rgb(193 0 255)","rgb(196 99 99)","rgb(96 53 95)","rgb(168 255 0)",
+    "rgb(0 30 255)","rgb(140 93 189)","rgb(255 0 119)","rgb(255 84 0)",
+    "rgb(136 74 74)","rgb(98 193 108)"];
+    
     //Node radius 
     let nodeRadius = d3.scaleSqrt().range([5, 20]);
     nodeRadius.domain(d3.extent(datanode, function(d) {
@@ -139,7 +145,7 @@ function createArcDiagram(data, width, height) {
                 return job.substr(-7, 6);
             }
         })
-        .attr("fill", function(d) { return d3.interpolateSinebow(d.process / (uniqProcesses.length)) })
+        .attr("fill", function (d) { return colors[d.process];})
         .on('mouseover', function(d) {
             addTooltip(d3.select(this))
             let thisNode = d.id
@@ -210,7 +216,7 @@ function createArcDiagram(data, width, height) {
     .attr("x", squarePosition)
     .attr("width", legendWidth)
     .attr("height", legendHeight)
-    .attr("fill", function(d) { return d3.interpolateSinebow(d / (uniqProcesses.length)) });
+    .attr("fill", function (d,i) { return colors[d]; });
 
     legend.append("text")
     .attr("x", X_PositionInSquare)
