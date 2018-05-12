@@ -22,9 +22,7 @@
  * Jean-Christophe Taveau
  */
  
-
 'use strict';
-
 
 const fs = require('fs');
 const Star = require('./Star');
@@ -93,7 +91,6 @@ const readSTARHeader = (filestats) => (data) => {
   }
 
   //Parse StarFile
-
   return parse(data);
 }
 
@@ -172,11 +169,9 @@ const readSTAR = (filestats) => (data) => {
     return star;
   }
 
-  
   //MAIN - Parse StarFile
   return parse(data);
 }
-
 
 /**
  * Get STAR file
