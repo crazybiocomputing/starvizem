@@ -45,31 +45,9 @@ html {
     grid-column: 2;
     margin-right: 3%;
 }
-
-#fig001 {
-    grid-column: 3;
-    margin-right: 3%;
-}
-
-.montage {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  max-width: 100%;
-  max-height: 100%;
-}
   
-/*Zoom for all the pictures*/
-.zoom {
-  padding: 1%;
-  transition: transform .2s; /* Animation */
-  margin: 0.5%;
-  width: 30%;
-  height: 30%;
-}
-  
-.zoom:hover {
-  transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+#graph3 {
+  grid-column: 3;
 }
   
 /*Zoom for 1 canvas */  
@@ -84,7 +62,6 @@ canvas {
 canvas:hover {
   transform: scale(2.6); /* (260% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }  
-  
 
 figure canvas {
   border: 1px solid black;
@@ -126,6 +103,7 @@ figure canvas {
     opacity: .5;
 }
 
+ /*Legend box for graphs*/
 .toolTip {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     position: absolute;
@@ -141,5 +119,5 @@ figure canvas {
     padding: 5px;
     text-align: center;
 
-}
+  }
 }
