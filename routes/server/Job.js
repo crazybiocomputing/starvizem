@@ -25,7 +25,6 @@
  
 'use strict';
 
-//Export
 module.exports = class Job {
 
   constructor(other) {
