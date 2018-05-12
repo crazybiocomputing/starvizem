@@ -59,6 +59,7 @@ html {
   max-height: 100%;
 }
   
+/*Zoom for all the pictures*/
 .zoom {
   padding: 1%;
   transition: transform .2s; /* Animation */
@@ -70,6 +71,20 @@ html {
 .zoom:hover {
   transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
+  
+/*Zoom for 1 canvas */  
+canvas {
+  padding: 1%;
+  transition: transform .2s; /* Animation */
+  margin: 0.5%;
+  width: 30%;
+  height: 30%;
+}
+  
+canvas:hover {
+  transform: scale(2.6); /* (260% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}  
+  
 
 figure canvas {
   border: 1px solid black;
@@ -95,9 +110,11 @@ figure canvas {
     margin: auto;
     font-size:1rem;
 }
+  
 #box{
     margin:auto;
 }
+  
 #bas{
     width: auto;
     height: 30%;
@@ -108,16 +125,7 @@ figure canvas {
     font-size: 60%;
     opacity: .5;
 }
-div.tooltip {
-    position: absolute;
-    width: auto;
-    height: auto;
-    padding: 5px;
-    font-size:0.8rem;
-    background: lightsteelblue;
-    border: 0px;
-    border-radius: 8px;
-  }
+
 .toolTip {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     position: absolute;
