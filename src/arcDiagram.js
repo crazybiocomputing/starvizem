@@ -139,7 +139,7 @@ function createArcDiagram(data, width, height) {
                 return job.substr(-7, 6);
             }
         })
-        .attr("fill", function(d) { return d3.interpolateRainbow(d.process / (uniqProcesses.length)) })
+        .attr("fill", function(d) { return d3.interpolateSinebow(d.process / (uniqProcesses.length)) })
         .on('mouseover', function(d) {
             addTooltip(d3.select(this))
             let thisNode = d.id
@@ -210,7 +210,7 @@ function createArcDiagram(data, width, height) {
     .attr("x", squarePosition)
     .attr("width", legendWidth)
     .attr("height", legendHeight)
-    .attr("fill", function(d) { return d3.interpolateRainbow(d / (uniqProcesses.length)) });
+    .attr("fill", function(d) { return d3.interpolateSinebow(d / (uniqProcesses.length)) });
 
     legend.append("text")
     .attr("x", X_PositionInSquare)
