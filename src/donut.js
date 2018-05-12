@@ -36,7 +36,9 @@ function createDonut(job, data, width, height) {
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 400")
         .classed("svg-content", true)
-        .style("border", "1px solid rgba(2, 0, 34, 0.897");
+        .style("border", "2px solid rgba(63, 127, 191, 0.63)")
+        .style("border-radius", "2px")
+        .style("background-color", "rgba(253, 254, 253, 0.80)");
 
     //Attributes
     let arcWidth = 0.5;
@@ -114,8 +116,7 @@ function createDonut(job, data, width, height) {
         .attr("x", (width / 4))             
         .attr("y", 18 )
         .attr("text-anchor", "middle")  
-        .style("font-weight","bold")
-        .style("font-size", "22px")   
+        .attr("class", "title")
         .text("Number of images per class");  
 
     return svg.node();
