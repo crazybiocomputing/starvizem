@@ -77,8 +77,6 @@ const readPipeline = (filestats) => (starjson) => {
    * @author Jean-Christophe Taveau
    */
   const getNumRaster = (pipejob) => {
-    // TODO WIP
-
     // NODE_MOVIES      - 2D micrograph movie(s), e.g. Falcon001_movie.mrcs or micrograph_movies.star
     // NODE_MICS        - 2D micrograph(s), possibly with CTF information as well, e.g. Falcon001.mrc or micrographs.star
     // NODE_MIC_COORDS  - Suffix for particle coordinates in micrographs (e.g. autopick.star or .box)
@@ -97,7 +95,7 @@ const readPipeline = (filestats) => (starjson) => {
           // Get file stats
           let stats = fs.statSync('./'+node.file);
           node.mtime = stats.mtime;
-          // Read... and Parse
+          // Read and Parse
           num = svzm.readSTARHeader(stats)(fs.readFileSync('./'+node.file,'utf-8')).tables[0].my;
           node.numRasters = num;
         }
@@ -110,7 +108,6 @@ const readPipeline = (filestats) => (starjson) => {
     return num;
   };
   
-
   /*
    * Parse the RELION `default_pipeline.star`
    *
@@ -124,7 +121,6 @@ const readPipeline = (filestats) => (starjson) => {
     let starobj = Star.create(input);
     
     // Pipeline data structure
-
     let pipe = {
       comment : 'Created by StarVizEM',
       date: new Date(Date.now()).toString().split(' ').splice(1,4).join('/'),
@@ -176,7 +172,6 @@ const readPipeline = (filestats) => (starjson) => {
         let srcJob = getJob(Star.getJobID(inputfile),pipe);
         let targetid = Star.getJobID(table.getItem(index,'_rlnPipeLineEdgeProcess'));
         let targetJob = getJob(targetid,pipe);
-        // HACK Expressed in `id` or `jobid` ???
         targetJob.sources.push(srcJob.jobID);
         srcJob.targets.push(targetid);
         // Add input
