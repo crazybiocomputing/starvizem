@@ -1,123 +1,132 @@
 @media screen and (max-width: 3000px) {     
   
-html { 
-  font-size:100%; 
-}
-
-#arcDiag{
-  margin-top: 2%;
-  margin-left: 2%;
-  margin-right: 2%;
-}
-
-#plotSection {
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    padding-top: 2%;
-    padding-left: 2%;
-}
-
-#plot1 {
-    grid-column: 1;
-    margin-right: 3%
-}
-
-#plot2 {
-    grid-column: 2;
-    padding-right: 3%
-}
-
-#graphsection {
-    display:grid;
-    grid-template-columns: 33% 33% 33%;
-    padding-top: 1%;
-    padding-left: 2%;
-    padding-bottom: 1%;
-    grid-auto-rows: 20%;
-}
-
-#graph1 {
-    grid-column: 1;
-    margin-right: 3%;
-}
-
-#graph2 {
-    grid-column: 2;
-    margin-right: 3%;
-}
-  
-#graph3 {
-  grid-column: 3;
-}
-  
-/*Zoom for 1 canvas */  
-canvas {
-  padding: 1%;
-  transition: transform .2s; /* Animation */
-  margin: 19%;
-  width: 30%;
-  height: 30%;
-}
-  
-canvas:hover {
-  transform: scale(2.6); /* (260% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
-}  
-
-figure canvas {
-  border: 1px solid black;
-  width: 65%;
-  height: 65%;
-}
-
-#head{
-    width: auto;
-    height: 10%;
-    text-align: left;
-    background-color: rgba(0, 195, 255, 0.624);
-}
-
-#txt{
-    display: inline;
-    margin: auto;
-    font-size:1.4rem;
-}
-
-#txtBottom{
-    display: inline;
-    margin: auto;
-    font-size:1rem;
-}
-  
-#box{
-    margin:auto;
-}
-  
-#bas{
-    width: auto;
-    height: 30%;
-    text-align: center;
-}
-  
-.labelValue{
-    font-size: 60%;
-    opacity: .5;
-}
-
- /*Legend box for graphs*/
-.toolTip {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    position: absolute;
-    display: none;
-    width: auto;
-    height: auto;
-    background: none repeat scroll 0 0 white;
-    border: 0 none;
-    border-radius: 8px 8px 8px 8px;
-    box-shadow: -3px 3px 15px #888888;
-    color: black;
-    font-size:0.8rem;
-    padding: 5px;
-    text-align: center;
-
+  html { 
+    font-size:100%; 
   }
+
+  body {
+    background-color: rgba(170, 196, 193, 0.253);
+  }
+
+  #arcDiag{
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  #plotSection {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 2%;
+      padding-left: 2%;
+  }
+
+  #plot1 {
+      grid-column: 1;
+      margin-right: 3%;
+  }
+
+  #plot2 {
+      grid-column: 2;
+      padding-right: 3%;
+  }
+
+  #graphsection {
+      display:grid;
+      grid-template-columns: 33% 33% 33%;
+      padding-top: 1%;
+      padding-left: 2%;
+      padding-bottom: 1%;
+      grid-auto-rows: 20%;
+  }
+
+  #graph1 {
+      grid-column: 1;
+      margin-right: 3%;
+  }
+
+  #graph2 {
+      grid-column: 2;
+      margin-right: 3%;
+  }
+
+  #graph3 {
+    grid-column: 3;
+  }
+
+  /*Zoom for 1 canvas */  
+  canvas {
+    padding: 1%;
+    transition: transform .2s; /* Animation */
+    margin: 19%;
+    width: 30%;
+    height: 30%;
+  }
+
+  canvas:hover {
+    transform: scale(2.6); /* (260% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  }  
+
+  figure canvas {
+    border: 1px solid black;
+    width: 65%;
+    height: 65%;
+  }
+
+  #head{
+      width: auto;
+      height: 10%;
+      text-align: left;
+      background-color: rgba(0, 170, 192, 0.877);
+  }
+
+  #txt{
+      display: inline;
+      margin: auto;
+      font-size:1.4rem;
+  }
+
+  #txtBottom{
+      display: inline;
+      margin: auto;
+      font-size:1rem;
+  }
+
+  #box{
+      margin:auto;
+  }
+
+  #bas{
+      width: auto;
+      height: 30%;
+      text-align: center;
+  }
+
+  .labelValue{
+      font-size: 60%;
+      opacity: .5;
+  }
+
+  /*Legend box for graphs*/
+  .toolTip {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      position: absolute;
+      display: none;
+      width: auto;
+      height: auto;
+      background: none repeat scroll 0 0 white;
+      border: 0 none;
+      border-radius: 8px 8px 8px 8px;
+      box-shadow: -3px 3px 15px #888888;
+      color: black;
+      font-size:0.8rem;
+      padding: 5px;
+      text-align: center;
+  }
+
+  .title {
+       fill: rgba(42, 44, 56, 0.90);
+       font-weight : bold;
+       font-size: 22px;
+   }
 }
