@@ -54,7 +54,7 @@ html {
 canvas {
   padding: 1%;
   transition: transform .2s; /* Animation */
-  margin: 0.5%;
+  margin: 19%;
   width: 30%;
   height: 30%;
 }
