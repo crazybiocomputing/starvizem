@@ -55,6 +55,5 @@ module.exports = class Table {
     return this.data[this.getColumnIndex(headername)][rowIndex];
   } 
 
-
 }
 
