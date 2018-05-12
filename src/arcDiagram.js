@@ -181,8 +181,7 @@ function createArcDiagram(data, width, height) {
          .attr("x", (width / 16))             
          .attr("y", 20 )
          .attr("text-anchor", "middle")  
-         .style("font-weight","bold")
-         .style("font-size", "20px")   
+         .attr("class", "title")
          .text("Nodes chronology"); 
 
     return svg.node();
