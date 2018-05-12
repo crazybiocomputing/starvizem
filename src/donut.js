@@ -69,6 +69,8 @@ function createDonut(job, data, width, height) {
     let pie = d3.pie()
         .sort(function(a,b){ if (a.labels != "Other" && b.labels != "Other") {return d3.descending(a.nb, b.nb);}})
         .value(function(d) { return d.nb;});
+    
+    let classnb = data.length;
 
     //Donuts events
     let g = svg.append("g")
@@ -93,7 +95,15 @@ function createDonut(job, data, width, height) {
         });
 
     g.append("path")
-        .attr("fill", function(d, i) { return color(i); })
+        .attr("fill", function(d) { 
+            if (d.data.labels != "Other"){
+                let nb = parseInt(d.data.labels.substr(-3));
+                return d3.interpolateSinebow(nb / classnb);
+            }    
+            else{
+                return d3.color("steelblue");
+            } 
+        })
         .attr("d", arc)
         .attr("stroke", "#fff");
 
