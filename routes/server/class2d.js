@@ -44,8 +44,7 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
 
   const parseClass2D = (input) => {
 
-    //creation of variables and objects in the incoming json
-
+    //creation of variables and objects in the incoming JSON
     let starobj = Star.create(input);
     
     //Get columns _rlnClassNumber and _rlnCtfMaxResolution for statistics
@@ -71,6 +70,7 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
         res: Array.from({length: classNum+1}, (v) => new Array(binNum).fill(0))
       }
     );
+    
     // Remove class #0 because RELION starts at 1
     stats.num = stats.num.slice(1);
     stats.res = stats.res.slice(1);
@@ -117,29 +117,10 @@ const readClass2D = (classNum,binNum) => (json2d) =>{
 
   //Parse JSONFile
   return parseClass2D(json2d);
-  
-  /*
-    // TODO??
-      // Get data in `run.job`
-      try {
-        fs.readFileSync('./' + job.path+'/run.job','utf-8')
-          .split(/\n/)
-          .forEach( (line) => {
-            let pair = line.split(' == ');
-            job.params.push(pair);
-          });
-      }
-      catch (err) {
-      
-      };
-      */
-
 }
 
-/**
- * Get JSON file
- */
-
+// Get JSON file
+ 
 exports.getClass2D = (binNum) => (datafile) => {
   // Step #1 - Read and parse run_it???_data.star and run_it???_model.star
   let words = Star.splitPath(datafile);
@@ -163,7 +144,6 @@ exports.getClass2D = (binNum) => (datafile) => {
     let starjson = JSON.parse(fs.readFileSync(`./StarVizEM/${filenamejson}`,'utf-8'));
 
     //Check timestamp if file modified
-    // TODO - WARNING - Assume files are stored in the same way
     let isModified = (starfiles.filter( (file,i) => starjson.files[i].timestamp !== file.timestamp) === undefined);
     console.log('isModified ',isModified);
     if ( !isModified) {
