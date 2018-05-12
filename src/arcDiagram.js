@@ -4,6 +4,7 @@
  *
  *  This file is part of StarVizEM
  *
+ * The source code is licensed GPLv3.0.
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -67,6 +68,16 @@ function createArcDiagram(data, width, height) {
         }
         return out;
     });
+    
+    let processes = [];
+    svgnode.forEach( function(d) {
+        processes.push(d.process);
+    });
+
+    let uniqProcesses = processes.filter(function(item, pos) {
+        return processes.indexOf(item) == pos;
+    });
+
 
     let svglink = datalink.map(function(d) {
         let out = {
@@ -176,13 +187,44 @@ function createArcDiagram(data, width, height) {
             node.style('fill', null);
         });
     
-       //Svg title
-       svg.append("text")
-         .attr("x", (width / 16))             
-         .attr("y", 20 )
-         .attr("text-anchor", "middle")  
-         .attr("class", "title")
-         .text("Nodes chronology"); 
+    //For the legend
+    let legendWidth = 20;
+    let legendHeight = 20;
+    let legendPadding = 20;
+    let legendTextFontSize = 10;
+    let squarePosition = width - 20;
+    let X_PositionInSquare = width - 25;
+    let Y_PositionInSquare = 10;
+
+    //Legend
+    let legend = svg.append("g")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", legendTextFontSize)
+    .attr("text-anchor", "end")
+    .selectAll("g")
+    .data(uniqProcesses)
+    .enter().append("g")
+    .attr("transform", function(d, i) { return "translate(0," + i * legendPadding + ")"; });
+
+    legend.append("rect")
+    .attr("x", squarePosition)
+    .attr("width", legendWidth)
+    .attr("height", legendHeight)
+    .attr("fill", function(d) { return d3.interpolateRainbow(d / 20) });
+
+    legend.append("text")
+    .attr("x", X_PositionInSquare)
+    .attr("y", Y_PositionInSquare)
+    .attr("dy", "0.32em")
+    .text(function(d) { return getProcessName(d); });
+    
+     //Svg title
+     svg.append("text")
+       .attr("x", (width / 16))             
+       .attr("y", 20 )
+       .attr("text-anchor", "middle")  
+       .attr("class", "title")
+       .text("Nodes chronology"); 
 
     return svg.node();
 }
