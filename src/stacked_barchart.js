@@ -72,7 +72,9 @@ function createStackedBarChart(job, data, width, height) {
         .classed("svg-content", true)
         .call(d3.zoom().scaleExtent([1,6])
         .on("zoom",zoom))
-        .style("border", "1px solid rgba(2, 0, 34, 0.897");
+        .style("border", "2px solid rgba(63, 127, 191, 0.63)")
+        .style("border-radius", "2px")
+        .style("background-color", "rgba(253, 254, 253, 0.80)");
 
     //Create g
     let g = svg.append("g");
@@ -185,8 +187,7 @@ function createStackedBarChart(job, data, width, height) {
     .attr("x", xTitlePosition)
     .attr("y", yTitlePosition)
     .attr("text-anchor", "middle")
-    .style("font-weight","bold")
-    .style("font-size", "22px")
+    .attr("class", "title")
     .text("Resolution of images per class");
 
     function zoom() {
